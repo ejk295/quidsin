@@ -545,7 +545,7 @@ banner_html = (
     '    <div class="matchup-split-screen">'
     '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
     '            <div class="team-panel-text">'
-    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
+    '                ' <span>' + next_home_owner + '</span>' + next_home_flag + ' ' + next_home + '
     '            </div>'
     '        </div>'
     '        '
