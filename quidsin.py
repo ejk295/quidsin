@@ -303,6 +303,14 @@ if API_TOKEN != "placeholder":
     except Exception:
         next_home, next_away, next_date = "API Connection", "Error", ""
 
+# 1. Fetching crests correctly for the banner
+def get_crest(team_name):
+    for group in standings_list:
+        for row in group.get("table", []):
+            if row.get("team", {}).get("name") == team_name:
+                return row.get("team", {}).get("crest", "")
+    return ""
+
 # --- BRANDING HEADER TITLE ---
 st.markdown("""
     <div class="title-area">
@@ -311,21 +319,41 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Lookup colors/crests
-home_color = TEAM_COLORS.get(next_home, "#FF6B00")
-away_color = TEAM_COLORS.get(next_away, "#FF6B00")
+# --- NEW STABLE BANNER ---
+st.markdown("<div style='margin-top: 20px; font-size: 11px; font-weight: 800; color: #666; text-transform: uppercase;'>⏳ Next Match</div>", unsafe_allow_html=True)
 
-# Fetch crests (you already have logic for this inside the loops, 
-# but we need them here for the banner)
-def get_crest(team_name):
-    for group in standings_list:
-        for row in group.get("table", []):
-            if row.get("team", {}).get("name") == team_name:
-                return row.get("team", {}).get("crest", "")
-    return ""
+# Create 3 columns: Home, VS, Away
+cols = st.columns([5, 1, 5])
 
-h_crest = get_crest(next_home)
-a_crest = get_crest(next_away)
+home_col_color = TEAM_COLORS.get(next_home, "#FF6B00")
+away_col_color = TEAM_COLORS.get(next_away, "#FF6B00")
+
+with cols[0]:
+    st.markdown(f"""
+        <div style="background-color: {home_col_color}; color: white; padding: 15px; border-radius: 10px 0 0 10px; text-align: center;">
+            <img src="{get_crest(next_home)}" style="width: 40px; margin-bottom: 5px;">
+            <div style="font-weight: 900; font-size: 18px;">{next_home}</div>
+            <div style="font-size: 12px; opacity: 0.8;">{next_home_owner.replace('(','').replace(')','')}</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+with cols[1]:
+    st.markdown("""
+        <div style="background-color: #333; color: white; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 12px;">
+            VS
+        </div>
+    """, unsafe_allow_html=True)
+
+with cols[2]:
+    st.markdown(f"""
+        <div style="background-color: {away_col_color}; color: white; padding: 15px; border-radius: 0 10px 10px 0; text-align: center;">
+            <img src="{get_crest(next_away)}" style="width: 40px; margin-bottom: 5px;">
+            <div style="font-weight: 900; font-size: 18px;">{next_away}</div>
+            <div style="font-size: 12px; opacity: 0.8;">{next_away_owner.replace('(','').replace(')','')}</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+st.markdown(f"<div style='text-align: center; margin-top: 10px; font-weight: 700; color: #333;'>🗓️ {next_date}</div>", unsafe_allow_html=True)
 
 # --- REPLACED SPLIT-SCREEN BANNER ---
 st.markdown(f"""
