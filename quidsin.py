@@ -88,10 +88,11 @@ st.markdown("""
             width: 50%;
             display: flex;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 15px;
             box-sizing: border-box;
             height: 100%;
-            min-height: 80px;
+            min-height: 90px;
         }
 
         .home-panel {
@@ -111,15 +112,17 @@ st.markdown("""
             font-weight: 900 !important;
             text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
             display: flex;
+            flex-direction: column; /* THIS STACKS THE ITEMS */
             align-items: center;
+            text-align: center;
         }
 
         .team-panel-text span {
             font-size: 13px;
-            font-weight: 400 !important;
+            font-weight: 600 !important;
             opacity: 0.9;
             color: #FFFFFF !important;
-            margin: 0 4px;
+            margin-top: 4px; /* ADDS SPACE BETWEEN TEAM AND OWNER */
         }
 
         .vs-marker-bubble {
@@ -530,7 +533,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown("""
         <div class="title-area" style="text-align: center;">
-            <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
+            <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE 🏆</h1>
             <p>Live standings</p>
         </div>
     """, unsafe_allow_html=True)
@@ -542,26 +545,29 @@ banner_html = (
     '        <div class="next-match-title">⏳ Next Match</div>'
     '    </div>'
     '    '
-    '    <div class="matchup-split-screen">'
-    '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
-    '            <div class="team-panel-text">'
-    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
-    '            </div>'
-    '        </div>'
-    '        '
-    '        <div class="vs-marker-bubble">VS</div>'
-    '        '
-    '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
-    '            <div class="team-panel-text">'
-    '                <span>' + next_away_owner + '</span> ' + next_away + ' ' + next_away_flag + ''
-    '            </div>'
+    '<div class="matchup-split-screen">'
+    # HOME PANEL
+    '    <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
+    '        <div class="team-panel-text">'
+    '            <div style="display: flex; align-items: center;">' + next_home_flag + ' ' + next_home + '</div>'
+    '            <span>' + next_home_owner + '</span>'
     '        </div>'
     '    </div>'
+    '    '
+    '    <div class="vs-marker-bubble">VS</div>'
+    '    '
+    # AWAY PANEL
+    '    <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
+    '        <div class="team-panel-text">'
+    '            <div style="display: flex; align-items: center;">' + next_away + ' ' + next_away_flag + '</div>'
+    '            <span>' + next_away_owner + '</span>'
+    '        </div>'
+    '    </div>'
+    '</div>'
     '    '
     '    <div class="banner-bottom-time">🗓️ ' + next_date + '</div>'
     '</div>'
 )
-st.markdown(banner_html, unsafe_allow_html=True)
 
 # --- STATS ROW ---
 stat_cols = st.columns(3)
