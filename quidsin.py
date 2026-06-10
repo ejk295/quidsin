@@ -107,23 +107,22 @@ st.markdown("""
         }
 
         .team-panel-text {
-            color: #FFFFFF !important;
-            font-size: 20px;
-            font-weight: 900 !important;
-            text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
-            display: flex;
-            flex-direction: column; /* THIS STACKS THE ITEMS */
-            align-items: center;
-            text-align: center;
-        }
+    color: #FFFFFF !important;
+    font-size: 20px;
+    font-weight: 900 !important;
+    text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column; /* This forces the span to the next line */
+    align-items: center;    /* This keeps everything centered */
+}
 
-        .team-panel-text span {
-            font-size: 13px;
-            font-weight: 600 !important;
-            opacity: 0.9;
-            color: #FFFFFF !important;
-            margin-top: 4px; /* ADDS SPACE BETWEEN TEAM AND OWNER */
-        }
+.team-panel-text span {
+    font-size: 13px;
+    font-weight: 400 !important;
+    opacity: 0.9;
+    color: #FFFFFF !important;
+    margin: 2px 0 0 0; /* Only top margin */
+}
 
         .vs-marker-bubble {
             position: absolute;
