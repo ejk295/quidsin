@@ -295,16 +295,19 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# --- NEW FULL-WIDTH NEXT MATCH BANNER ---
 st.markdown(f"""
-    <div class="next-match-banner">
-        <div class="next-match-title">⏳ Next Match</div>
-        <div class="next-match-teams">
-            {next_home}<span>{next_home_owner}</span> 
-            <span class="next-match-vs">v</span> 
-            {next_away}<span>{next_away_owner}</span>
+    <div class="match-banner-container">
+        <div class="banner-top-pane"><div class="next-match-title">⏳ Next Match</div></div>
+        <div class="matchup-split-screen">
+            <div class="team-panel home-panel">
+                <div class="team-panel-text">{next_home} <span>{next_home_owner.replace('(','').replace(')','')}</span></div>
+            </div>
+            <div class="vs-marker-bubble">VS</div>
+            <div class="team-panel away-panel">
+                <div class="team-panel-text">{next_away} <span>{next_away_owner.replace('(','').replace(')','')}</span></div>
+            </div>
         </div>
-        <div class="next-match-time">🗓️ {next_date}</div>
+        <div class="banner-bottom-time">🗓️ {next_date}</div>
     </div>
 """, unsafe_allow_html=True)
 
