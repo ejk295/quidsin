@@ -364,8 +364,8 @@ else:
                     with row_cols[j]:
                         st.markdown(f"<span class='group-header-text'>🔹 {group_name}</span>", unsafe_allow_html=True)
                         
-                        # --- MOBILE SAFENED GROUP TABLES ---
-                        table_html = f"""
+                        # --- MOBILE SAFENED GROUP TABLES (FIXED CONCATENATION LOOP) ---
+                        table_html = """
                         <div class="table-responsive-wrapper">
                             <table class="custom-dashboard-table">
                                 <thead>
@@ -391,22 +391,21 @@ else:
                             owner = SWEEPSTAKE_MAPPING.get(t_name, "Unassigned")
                             flag_html = f'<img src="{t_crest}" class="flag-img">' if t_crest else ''
                             
-                            table_html += f"""
-                                    <tr>
-                                        <td>{flag_html} <b>{t_name}</b> <span style="font-size:11px; color:#666;">({owner})</span></td>
-                                        <td style="text-align:center;">{row.get("playedGames")}</td>
-                                        <td style="text-align:center;">{row.get("won")}</td>
-                                        <td style="text-align:center;">{row.get("draw")}</td>
-                                        <td style="text-align:center;">{row.get("lost")}</td>
-                                        <td style="text-align:center;">{row.get("goalsFor")}</td>
-                                        <td style="text-align:center;">{row.get("goalsAgainst")}</td>
-                                        <td style="text-align:center;">{row.get("goalDifference")}</td>
-                                        <td style="text-align:center;"><b>{row.get("points")}</b></td>
-                                    </tr>
-                            """
+                            table_html += "<tr>"
+                            table_html += f'<td>{flag_html} <b>{t_name}</b> <span style="font-size:11px; color:#666;">({owner})</span></td>'
+                            table_html += f'<td style="text-align:center;">{row.get("playedGames")}</td>'
+                            table_html += f'<td style="text-align:center;">{row.get("won")}</td>'
+                            table_html += f'<td style="text-align:center;">{row.get("draw")}</td>'
+                            table_html += f'<td style="text-align:center;">{row.get("lost")}</td>'
+                            table_html += f'<td style="text-align:center;">{row.get("goalsFor")}</td>'
+                            table_html += f'<td style="text-align:center;">{row.get("goalsAgainst")}</td>'
+                            table_html += f'<td style="text-align:center;">{row.get("goalDifference")}</td>'
+                            table_html += f'<td style="text-align:center;"><b>{row.get("points")}</b></td>'
+                            table_html += "</tr>"
+                            
                         table_html += "</tbody></table></div>"
                         
-                        # Added unsafe_allow_html=True flag down here to process table correctly
+                        # Executed cleanly as structural HTML layout
                         st.markdown(table_html, unsafe_allow_html=True)
                         
                         # --- CHRONOLOGICAL FIXTURES SUBSECTION ---
@@ -485,18 +484,16 @@ else:
             op_formatted = f"+{op_val}" if op_val > 0 else str(op_val)
             score_color = "#107C41" if op_val > 0 else ("#A80000" if op_val < 0 else "#333333")
             
-            master_table_html += f"""
-                    <tr>
-                        <td><b>{pos_str}</b></td>
-                        <td>{flag_html} <b>{team_row['name']}</b> <span style="font-size:11px; color:#666;">({owner})</span></td>
-                        <td style="text-align:center; color:#555;">#{team_row['expected_rank']}</td>
-                        <td style="text-align:center; color:#555;">#{team_row['actual_rank']}</td>
-                        <td style="text-align:center;">{team_row['played']}</td>
-                        <td style="text-align:center;">{team_row['gd']}</td>
-                        <td style="text-align:center;">{team_row['pts']}</td>
-                        <td style="text-align:right; padding-right:15px; color:{score_color}; font-weight:bold;">{op_formatted}</td>
-                    </tr>
-            """
+            master_table_html += "<tr>"
+            master_table_html += f"<td><b>{pos_str}</b></td>"
+            master_table_html += f"<td>{flag_html} <b>{team_row['name']}</b> <span style='font-size:11px; color:#666;'>({owner})</span></td>"
+            master_table_html += f"<td style='text-align:center; color:#555;'>#{team_row['expected_rank']}</td>"
+            master_table_html += f"<td style='text-align:center; color:#555;'>#{team_row['actual_rank']}</td>"
+            master_table_html += f"<td style='text-align:center;'>{team_row['played']}</td>"
+            master_table_html += f"<td style='text-align:center;'>{team_row['gd']}</td>"
+            master_table_html += f"<td style='text-align:center;'>{team_row['pts']}</td>"
+            master_table_html += f"<td style='text-align:right; padding-right:15px; color:{score_color}; font-weight:bold;'>{op_formatted}</td>"
+            master_table_html += "</tr>"
             
         master_table_html += "</tbody></table></div>"
         
