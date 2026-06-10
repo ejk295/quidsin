@@ -31,7 +31,7 @@ st.markdown("""
         }
         .title-area h1 {
             margin: 0px !important;
-            font-size: 28px; /* Slightly scaled down for mobile displays */
+            font-size: 28px;
         }
         .title-area p {
             margin: 4px 0px 0px 0px !important;
@@ -49,7 +49,7 @@ st.markdown("""
             box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
             margin: 15px 0px;
             display: flex;
-            flex-direction: column; /* Stacks layout cleanly on phone screens */
+            flex-direction: column;
             gap: 10px;
             text-align: center;
         }
@@ -124,10 +124,10 @@ st.markdown("""
             text-align: right;
         }
 
-        /* Responsive Table Canvas Controls to completely kill structural breaking on mobile */
+        /* Responsive Table Canvas Controls */
         .table-responsive-wrapper {
             width: 100%;
-            overflow-x: auto; /* Adds clean horizontal swipe scroll if screen is too narrow */
+            overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             margin-bottom: 20px;
         }
@@ -137,7 +137,7 @@ st.markdown("""
             border-collapse: collapse;
             font-size: 13px;
             text-align: left;
-            white-space: nowrap; /* Forces data items onto a single row */
+            white-space: nowrap;
         }
         .custom-dashboard-table th {
             background-color: #FAFAFA;
@@ -165,7 +165,6 @@ st.markdown("""
             align-items: center;
             justify-content: space-between;
         }
-        /* Strict Flag Layout Overrides */
         .flag-img {
             vertical-align: middle;
             margin: 0px 4px;
@@ -174,7 +173,6 @@ st.markdown("""
             object-fit: cover !important;
             display: inline-block;
         }
-        /* Aligned header design element overrides */
         .group-header-text {
             color: #FF6B00;
             font-family: 'Arial Black', Gadget, sans-serif;
@@ -337,7 +335,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- TRIPLE STATS ROW ---
-stat_cols = st.columns([1, 1, 1]) if not st.get_option("browser.gatherUsageStats") else st.columns(3)
+stat_cols = st.columns(3)
 with stat_cols[0]:
     st.markdown('<div class="stat-banner-box"><medium>💰 Prize Pot</medium><span>£96</span></div>', unsafe_allow_html=True)
 with stat_cols[1]:
@@ -353,9 +351,8 @@ if API_TOKEN == "placeholder":
     st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists and matches.")
 else:
     if standings_list:
-        # Use simple iterative columns for group split layout (will stack nicely on phones natively)
         for i in range(0, len(standings_list), 2):
-            row_cols = st.columns([1, 1]) if not st.get_option("browser.gatherUsageStats") else st.columns(2)
+            row_cols = st.columns(2)
             
             for j in range(2):
                 if i + j < len(standings_list):
@@ -408,6 +405,8 @@ else:
                                     </tr>
                             """
                         table_html += "</tbody></table></div>"
+                        
+                        # Added unsafe_allow_html=True flag down here to process table correctly
                         st.markdown(table_html, unsafe_allow_html=True)
                         
                         # --- CHRONOLOGICAL FIXTURES SUBSECTION ---
@@ -419,7 +418,7 @@ else:
                             st.caption("No fixtures currently listed for this group.")
                         else:
                             group_fixtures.sort(key=lambda x: x.get("utcDate", ""))
-                            for match in group_fixtures[:6]:  # Limit rows per block to avoid immense scroll
+                            for match in group_fixtures[:6]:
                                 m_status = match.get("status")
                                 home_t, away_t = match.get("homeTeam", {}), match.get("awayTeam", {})
                                 h_name, a_name = home_t.get("name", "TBD"), away_t.get("name", "TBD")
@@ -452,14 +451,13 @@ else:
                                 """, unsafe_allow_html=True)
                         st.write("<br>", unsafe_allow_html=True)
 
-        # --- SECTION DIVIDER FOR ADVANCED MOBILE RECONSTRUCTED OVERPERFORMANCE LEADERBOARD ---
+        # --- OVERPERFORMANCE LEADERBOARD ---
         st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #FF6B00;'>", unsafe_allow_html=True)
         st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overall Sweepstake Overperformance Table</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by Overperformance: (Expected Baseline Seed Rank - Current Performance Position)</p>", unsafe_allow_html=True)
         
         master_flat_leaderboard.sort(key=lambda x: (-x["overperformance"], x["actual_rank"]))
         
-        # Build Master Fluid HTML Table
         master_table_html = """
         <div class="table-responsive-wrapper">
             <table class="custom-dashboard-table" style="width:100%;">
@@ -502,7 +500,6 @@ else:
             
         master_table_html += "</tbody></table></div>"
         
-        # Render the full master layout cleanly inside centered space blocks
-        m_center_cols = st.columns([1, 22, 1]) if not st.get_option("browser.gatherUsageStats") else st.columns([1, 10, 1])
+        m_center_cols = st.columns([1, 10, 1])
         with m_center_cols[1]:
             st.markdown(master_table_html, unsafe_allow_html=True)
