@@ -502,11 +502,11 @@ else:
             # Leaderboard Headers
             h_cols = st.columns([0.6, 3.6, 1.2, 1.2, 0.6, 0.6, 0.6, 0.6, 0.7])
             h_cols[0].write("**Pos**")
-            h_cols[1].write("**Team & Sweepstake Owner**")
-            h_cols[2].write("**Expected Seed**")
-            h_cols[3].write("**Actual Rank**")
-            h_cols[4].write("**P**")
-            h_cols[5].write("**GD**")
+            h_cols[1].write("**Team**")
+            h_cols[2].write("**Expected seed**")
+            h_cols[3].write("**Actual rank**")
+            h_cols[4].write("**Played**")
+            h_cols[5].write("**Goal difference**")
             h_cols[6].write("**Pts**")
             h_cols[7].write("") # Blank buffer 
             h_cols[8].write("**Score**")
