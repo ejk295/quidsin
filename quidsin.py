@@ -14,16 +14,27 @@ st.set_page_config(
 # Run page auto-refresh every 30 seconds to keep live scores syncing
 st_autorefresh(interval=30 * 1000, key="datarefresh")
 
-# Custom branding & layout safety styles for mobile responsiveness
+# Custom branding & layout safety styles with strict light-mode overrides
 st.markdown("""
     <style>
-        .stApp {
-            background-color: #FAFAFA;
+        /* Force global app body background and standard text to light mode */
+        .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+            background-color: #FAFAFA !important;
+            color: #333333 !important;
         }
+        
+        /* Force all standard text elements to stay dark charcoal */
+        p, span, div, label, small {
+            color: #333333 !important;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        /* Keep headers fixed to brand orange */
         h1, h2, h3 {
             color: #FF6B00 !important;
-            font-family: 'Arial Black', Gadget, sans-serif;
+            font-family: 'Arial Black', Gadget, sans-serif !important;
         }
+        
         .header-container {
             border-bottom: 2px solid #FF6B00;
             padding-bottom: 15px;
@@ -35,15 +46,14 @@ st.markdown("""
         }
         .title-area p {
             margin: 4px 0px 0px 0px !important;
-            color: #555555;
+            color: #555555 !important;
             font-weight: bold;
             font-size: 16px;
         }
         
         /* Mobile-responsive Flex Container for Next Match Banner */
         .next-match-banner {
-            background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
-            color: white !important;
+            background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%) !important;
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
@@ -61,17 +71,26 @@ st.markdown("""
                 text-align: left;
             }
         }
+        /* Ensure text inside next match banner stays white */
+        .next-match-banner, 
+        .next-match-title, 
+        .next-match-teams, 
+        .next-match-teams span, 
+        .next-match-vs, 
+        .next-match-time {
+            color: #FFFFFF !important;
+        }
         .next-match-title {
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-family: 'Arial Black', sans-serif;
+            font-family: 'Arial Black', sans-serif !important;
             font-weight: bold;
             opacity: 0.9;
         }
         .next-match-teams {
             font-size: 18px;
-            font-family: 'Arial Black', sans-serif;
+            font-family: 'Arial Black', sans-serif !important;
             font-weight: bold;
         }
         .next-match-teams span {
@@ -81,15 +100,14 @@ st.markdown("""
             font-family: 'Arial', sans-serif;
         }
         .next-match-vs {
-            color: #FFF;
             opacity: 0.7;
             margin: 0 10px;
             font-size: 16px;
         }
         .next-match-time {
             font-size: 14px;
-            font-family: 'Arial Black', sans-serif;
-            background: rgba(25px, 25px, 25px, 0.15);
+            font-family: 'Arial Black', sans-serif !important;
+            background: rgba(25, 25, 25, 0.15) !important;
             padding: 6px 14px;
             border-radius: 6px;
             display: inline-block;
@@ -97,8 +115,7 @@ st.markdown("""
 
         /* Smaller Side-by-Side Stat Blocks */
         .stat-banner-box {
-            background: #FFFFFF;
-            color: #333333 !important;
+            background: #FFFFFF !important;
             padding: 12px 20px;
             border-radius: 8px;
             border: 2px solid #EAEAEA;
@@ -115,13 +132,14 @@ st.markdown("""
             letter-spacing: 0.5px;
             font-family: 'Arial Black', sans-serif;
             font-weight: bold;
-            color: #FF6B00;
+            color: #FF6B00 !important;
         }
         .stat-banner-box span {
             font-size: 14px;
             font-weight: bold !important;
             font-family: 'Arial Black', sans-serif;
             text-align: right;
+            color: #333333 !important;
         }
 
         /* Responsive Table Canvas Controls */
@@ -140,8 +158,8 @@ st.markdown("""
             white-space: nowrap;
         }
         .custom-dashboard-table th {
-            background-color: #FAFAFA;
-            color: #333;
+            background-color: #FAFAFA !important;
+            color: #333333 !important;
             font-weight: bold;
             padding: 8px 6px;
             border-bottom: 2px solid #FF6B00;
@@ -150,12 +168,17 @@ st.markdown("""
             padding: 8px 6px;
             border-bottom: 1px solid #EAEAEA;
             vertical-align: middle;
-            background-color: #FFFFFF;
+            background-color: #FFFFFF !important;
+            color: #333333 !important;
+        }
+        /* Ensure table text markers are protected */
+        .custom-dashboard-table td b, .custom-dashboard-table td span {
+            color: #333333 !important;
         }
 
         /* Custom compact match list element */
         .fixture-row {
-            background-color: #FFFFFF;
+            background-color: #FFFFFF !important;
             padding: 8px 10px;
             border-radius: 4px;
             margin-bottom: 4px;
@@ -164,6 +187,9 @@ st.markdown("""
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        .fixture-row div, .fixture-row span, .fixture-row b {
+            color: #333333 !important;
         }
         .flag-img {
             vertical-align: middle;
@@ -174,8 +200,8 @@ st.markdown("""
             display: inline-block;
         }
         .group-header-text {
-            color: #FF6B00;
-            font-family: 'Arial Black', Gadget, sans-serif;
+            color: #FF6B00 !important;
+            font-family: 'Arial Black', Gadget, sans-serif !important;
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 8px;
@@ -283,7 +309,6 @@ if API_TOKEN != "placeholder":
             
             best_overperformer = max(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]))
             op_owner = SWEEPSTAKE_MAPPING.get(best_overperformer["name"], "Unassigned")
-            score_prefix = "+" if best_overperformer["overperformance"] > 0 else ""
             top_performer_text = f"{best_overperformer['name']} ({op_owner})"
         
         # Fetch Match Data
