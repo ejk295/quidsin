@@ -356,17 +356,32 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- NEW FULL-WIDTH NEXT MATCH BANNER ---
-st.markdown(f"""
-    <div class="next-match-banner">
-        <div class="next-match-title">⏳ Next Match</div>
-        <div class="next-match-teams">
-            {next_home}<span>{next_home_owner}</span> 
-            <span class="next-match-vs">v</span> 
-            {next_away}<span>{next_away_owner}</span>
-        </div>
-        <div class="next-match-time">🗓️ {next_date}</div>
-    </div>
-""", unsafe_allow_html=True)
+banner_html = (
+    '<div class="match-banner-container">'
+    '    <div class="banner-top-pane">'
+    '        <div class="next-match-title">⏳ Next Match</div>'
+    '    </div>'
+    '    '
+    '    <div class="matchup-split-screen">'
+    '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
+    '            <div class="team-panel-text">'
+    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
+    '            </div>'
+    '        </div>'
+    '        '
+    '        <div class="vs-marker-bubble">VS</div>'
+    '        '
+    '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
+    '            <div class="team-panel-text">'
+    '                <span>' + next_away_owner + '</span> ' + next_away + ' ' + next_away_flag + ''
+    '            </div>'
+    '        </div>'
+    '    </div>'
+    '    '
+    '    <div class="banner-bottom-time">🗓️ ' + next_date + '</div>'
+    '</div>'
+)
+st.markdown(banner_html, unsafe_allow_html=True)
 
 # --- TRIPLE STATS ROW ---
 stat_cols = st.columns(3)
