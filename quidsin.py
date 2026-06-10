@@ -58,96 +58,36 @@ st.markdown("""
             font-size: 16px;
         }
         
-        /* Mobile-responsive Flex Container for Next Match Banner */
-        .next-match-banner {
-            background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%) !important;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
+        /* --- NEW SPLIT-SCREEN BANNER CSS --- */
+        .match-banner-container {
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
             margin: 15px 0px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            overflow: hidden;
+            font-family: 'Figtree', sans-serif !important;
             text-align: center;
-            font-family: 'Figtree', sans-serif !important;
+            border: 2px solid #DDDDDD;
+            background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
         }
-        @media (min-width: 768px) {
-            .next-match-banner {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                text-align: left;
-            }
-        }
-        /* Ensure text inside next match banner stays white */
-        .next-match-banner, 
-        .next-match-title, 
-        .next-match-teams, 
-        .next-match-teams span, 
-        .next-match-vs, 
-        .next-match-time {
-            color: #FFFFFF !important;
-            font-family: 'Figtree', sans-serif !important;
-        }
+        .banner-top-pane { background-color: rgba(0,0,0,0.2); padding: 10px 20px; }
         .next-match-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 800 !important;
-            opacity: 0.9;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800 !important;
+            color: #FFFFFF !important; background: rgba(255, 255, 255, 0.2); padding: 4px 10px;
+            border-radius: 6px; display: inline-block;
         }
-        .next-match-teams {
-            font-size: 18px;
-            font-weight: 800 !important;
+        .matchup-split-screen { display: flex; position: relative; align-items: center; }
+        .team-panel { width: 50%; display: flex; align-items: center; padding: 20px; box-sizing: border-box; height: 90px; }
+        .home-panel { justify-content: flex-end; padding-right: 45px; border-right: 1px solid rgba(255,255,255,0.3); }
+        .away-panel { justify-content: flex-start; padding-left: 45px; }
+        .team-panel-text { color: #FFFFFF !important; font-size: 18px; font-weight: 900 !important; text-shadow: 0px 1px 2px rgba(0,0,0,0.3); }
+        .team-panel-text span { font-size: 12px; font-weight: 400 !important; display: block; opacity: 0.9; }
+        .vs-marker-bubble {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            z-index: 10; background-color: #FFFFFF; color: #FF6B00 !important;
+            font-size: 12px; font-weight: 900 !important; padding: 6px; border-radius: 50%;
+            border: 2px solid #FF6B00; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .next-match-teams span {
-            font-size: 13px;
-            font-weight: 400 !important;
-            opacity: 0.85;
-        }
-        .next-match-vs {
-            opacity: 0.7;
-            margin: 0 10px;
-            font-size: 16px;
-        }
-        .next-match-time {
-            font-size: 14px;
-            font-weight: 700 !important;
-            background: rgba(25, 25, 25, 0.15) !important;
-            padding: 6px 14px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-
-        /* Smaller Side-by-Side Stat Blocks */
-        .stat-banner-box {
-            background: #FFFFFF !important;
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: 2px solid #EAEAEA;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            height: auto;
-            min-height: 50px;
-            font-family: 'Figtree', sans-serif !important;
-        }
-        .stat-banner-box medium {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 800 !important;
-            color: #FF6B00 !important;
-            font-family: 'Figtree', sans-serif !important;
-        }
-        .stat-banner-box span {
-            font-size: 14px;
-            font-weight: 800 !important;
-            text-align: right;
-            color: #333333 !important;
-            font-family: 'Figtree', sans-serif !important;
-        }
+        .banner-bottom-time { background-color: rgba(0,0,0,0.2); padding: 8px; font-size: 13px; font-weight: 700 !important; color: #FFFFFF !important; }
 
         /* Responsive Table Canvas Controls */
         .table-responsive-wrapper {
