@@ -356,11 +356,11 @@ with stat_cols[0]:
     """, unsafe_allow_html=True)
 
 with stat_cols[1]:
-    fave_owner = SWEEPSTAKE_MAPPING.get("Spain", "Unassigned")
+    fave_owner = SWEEPSTAKE_MAPPING.get("France", "Unassigned")
     st.markdown(f"""
         <div class="stat-banner-box">
             <medium>⭐ Favourites</medium>
-            <span>Spain ({fave_owner})</span>
+            <span>France ({fave_owner})</span>
         </div>
     """, unsafe_allow_html=True)
 
