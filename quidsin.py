@@ -38,10 +38,6 @@ st.markdown("""
             font-weight: 800 !important;
         }
         
-        /* Centered Title Area */
-        .title-area {
-            text-align: center !important;
-        }
         .title-area h1 {
             margin: 0px !important;
             font-size: 28px;
@@ -115,30 +111,15 @@ st.markdown("""
             font-weight: 900 !important;
             text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
             display: flex;
-            flex-direction: column; /* Stack name and owner */
-            justify-content: center;
-        }
-        
-        .home-panel .team-panel-text {
-            align-items: flex-end; /* Align to the right for home team */
-        }
-        
-        .away-panel .team-panel-text {
-            align-items: flex-start; /* Align to the left for away team */
-        }
-
-        .team-name-row {
-            display: flex;
             align-items: center;
-            gap: 8px;
         }
 
-        .team-panel-text span.owner-name {
+        .team-panel-text span {
             font-size: 13px;
             font-weight: 400 !important;
             opacity: 0.9;
             color: #FFFFFF !important;
-            margin-top: 4px;
+            margin: 0 4px;
         }
 
         .vs-marker-bubble {
@@ -172,6 +153,7 @@ st.markdown("""
             border-radius: 3px;
             border: 1px solid rgba(255,255,255,0.4);
             display: inline-block;
+            margin: 0 10px;
             vertical-align: middle;
             box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
         }
@@ -202,20 +184,20 @@ st.markdown("""
             color: #333333 !important;
         }
 
-        /* --- IN-GROUP TEAM PLAYERS ROW --- */
+        /* --- IN-GROUP TEAM PLAYERS ROW (UPDATED) --- */
         .group-players-container {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
             margin-top: 8px !important; 
             margin-bottom: 0px !important;
-            justify-content: center;
+            justify-content: center; /* Centered */
         }
         .group-player-card {
             background: #FFFFFF;
             border: 1px solid #EAEAEA;
             border-radius: 8px;
-            width: 120px;
+            width: 120px; /* Wider */
             text-align: center;
             padding: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
@@ -228,7 +210,7 @@ st.markdown("""
             background: #F5F5F5;
         }
         .group-player-card-name {
-            font-size: 11px;
+            font-size: 11px; /* Slightly larger */
             font-weight: 800 !important;
             color: #333333 !important;
             margin-top: 3px;
@@ -237,7 +219,7 @@ st.markdown("""
             text-overflow: ellipsis;
         }
         .group-player-card-team {
-            font-size: 9px;
+            font-size: 9px; /* Slightly larger */
             font-weight: 600 !important;
             color: #ff7d23 !important;
             text-transform: uppercase;
@@ -387,6 +369,58 @@ TEAM_COLORS = {
     "Croatia": "#FF0000", "South Korea": "#111111"
 }
 
+# --- GROUP PLAYERS MAP ---
+GROUP_PLAYERS = {
+    "Spain": {"player_name": "Lamine Yamal", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lamine-yamal-spain-forward-profile-full.png"},
+    "France": {"player_name": "Kylian Mbappe", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kylian-mbappe-france-forward-profile-full.png"},
+    "England": {"player_name": "Bukayo Saka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bukayo-saka-england-forward-profile-full.png"},
+    "Brazil": {"player_name": "Vinícius Jr.", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/vinicius-junior-brazil-forward-profile-full.png"},
+    "Germany": {"player_name": "Kai Havertz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kai-havertz-germany-forward-profile-full.png"},
+    "Portugal": {"player_name": "Bruno Fernandes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bruno-fernandes-portugal-midfielder-profile-full.png"},
+    "Netherlands": {"player_name": "Frenkie de Jong", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/frenkie-de-jong-netherlands-midfielder-profile-full.png"},
+    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"},
+    "Ivory Coast": {"player_name": "Yan Diomande", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yan-diomande-ivory-coast-forward-profile-full.png"},
+    "Bosnia-Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
+    "Cape Verde Islands": {"player_name": "Ryan Mendes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ryan-mendes-cape-verde-midfielder-profile-full.png"},
+    "Curaçao": {"player_name": "Juninho Bacuna", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/juninho-bacuna-curacao-midfielder-profile-full.png"},
+    "Haiti": {"player_name": "Wilson Isidor", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/wilson-isidor-haiti-forward-profile-full.png"},
+    "Congo DR": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
+    "Ghana": {"player_name": "Antoine Semenyo", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/antoine-semenyo-ghana-forward-profile-full.png"},
+    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-algeria-forward-profile-full.png"},
+    "Australia": {"player_name": "Jackson Irvine", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jackson-irvine-australia-midfielder-profile-full.png"},
+    "Canada": {"player_name": "Alphonso Davies", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
+    "Czechia": {"player_name": "Patrik Schick", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/patrik-schick-czech-republic-forward-profile-full.png"},
+    "Austria": {"player_name": "Romano Schmid", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/romano-schmid-austria-midfielder-profile-full.png"},
+    "New Zealand": {"player_name": "Chris Wood", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/chris-wood-new-zealand-forward-profile-full.png"},
+    "Iraq": {"player_name": "Ali Al-Hamadi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ali-al-hamadi-iraq-forward-profile-full.png"},
+    "Jordan": {"player_name": "Ihsan Haddad", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ihsan-haddad-jordan-defender-profile-full.png"},
+    "Egypt": {"player_name": "Mohamed Salah", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mohamed-salah-egypt-forward-profile-full.png"},
+    "Ecuador": {"player_name": "Willian Pacho", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/willian-pacho-ecuador-defender-profile-full.png"},
+    "Saudi Arabia": {"player_name": "Salem Al-Dawsari", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/salem-al-dawsari-saudi-arabia-forward-profile-full.png"},
+    "Belgium": {"player_name": "Jeremy Doku", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jeremy-doku-belgium-forward-profile-full.png"},
+    "Qatar": {"player_name": "Hassan Al-Haydos", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/hassan-al-haydos-qatar-forward-profile-full.png"},
+    "Colombia": {"player_name": "Luis Suarez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luis-suarez-colombia-forward-profile-full.png"},
+    "Iran": {"player_name": "Alireza Beiranvand", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alireza-beiranvand-iran-goalkeeper-profile-full.png"},
+    "South Africa": {"player_name": "Mbekezeli Mbokazi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mbekezeli-mbokazi-south-africa-defender-profile-full.png"},
+    "Norway": {"player_name": "Erling Haaland", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/erling-haaland-norway-forward-profile-full.png"},
+    "Croatia": {"player_name": "Luka Vuskovic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luka-vuskovic-croatia-defender-profile-full.png"},
+    "Paraguay": {"player_name": "Diego Gomez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/diego-gomez-paraguay-midfielder-profile-full.png"},
+    "Panama": {"player_name": "Adalberto Carrasquilla", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/adalberto-carrasquilla-panama-midfielder-profile-full.png"},
+    "Japan": {"player_name": "Ritsu Doan", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ritsu-doan-japan-forward-profile-full.png"},
+    "Scotland": {"player_name": "Scott McTominay", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/scott-mctominay-scotland-midfielder-profile-full.png"},
+    "Tunisia": {"player_name": "Ellyes Skhiri", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ellyes-skhiri-tunisia-midfielder-profile-full.png"},
+    "Sweden": {"player_name": "Viktor Gyökeres", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/viktor-gyokeres-sweden-forward-profile-full.png"},
+    "Uzbekistan": {"player_name": "Eldor Shomurodov", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/eldor-shomurodov-uzbekistan-forward-profile-full.png"},
+    "Mexico": {"player_name": "Gilberto Mora", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/gilberto-mora-mexico-midfielder-profile-full.png"},
+    "South Korea": {"player_name": "Son Heung-min", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/son-heung-min-south-korea-forward-profile-full.png"},
+    "Morocco": {"player_name": "Yassine Bounou", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yassine-bounou-morocco-goalkeeper-profile-full.png"},
+    "Senegal": {"player_name": "Sadio Mane", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/sadio-mane-senegal-forward-profile-full.png"},
+    "Switzerland": {"player_name": "Johan Manzambi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/johan-manzambi-switzerland-midfielder-profile-full.png"},
+    "United States": {"player_name": "Christian Pulisic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/christian-pulisic-united-states-forward-profile-full.png"},
+    "Uruguay": {"player_name": "Federico Valverde", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/federico-valverde-uruguay-midfielder-profile-full.png"},
+    "Turkey": {"player_name": "Kenan Yildiz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kenan-yildiz-turkey-forward-profile-full.png"}
+}
+
 DEFAULT_LEFT_COLOR = "#ff7d23"
 DEFAULT_RIGHT_COLOR = "#ff7d23"
 
@@ -402,8 +436,8 @@ def format_to_uk_time(utc_str):
 # Fallbacks
 next_home = "Mexico"
 next_away = "South Africa"
-next_home_owner = "(TBC)"
-next_away_owner = "(TBC)"
+next_home_owner = " (TBC)"
+next_away_owner = " (TBC)"
 next_date = "11th June @ 20:00"
 next_home_flag = ""
 next_away_flag = ""
@@ -480,8 +514,8 @@ if API_TOKEN != "placeholder":
                 if away_team_obj.get("crest"):
                     next_away_flag = f'<img src="{away_team_obj.get("crest")}" class="banner-flag">'
                 
-                next_home_owner = f"({SWEEPSTAKE_MAPPING.get(next_home, 'Unassigned')})"
-                next_away_owner = f"({SWEEPSTAKE_MAPPING.get(next_away, 'Unassigned')})"
+                next_home_owner = f" ({SWEEPSTAKE_MAPPING.get(next_home, 'Unassigned')})"
+                next_away_owner = f" ({SWEEPSTAKE_MAPPING.get(next_away, 'Unassigned')})"
                 
                 dt_uk = format_to_uk_time(next_m.get("utcDate"))
                 if dt_uk:
@@ -509,8 +543,7 @@ banner_html = (
     '    <div class="matchup-split-screen">'
     '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
     '            <div class="team-panel-text">'
-    '                <div class="team-name-row">' + next_home_flag + ' <span>' + next_home + '</span></div>'
-    '                <span class="owner-name">' + next_home_owner + '</span>'
+    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
     '            </div>'
     '        </div>'
     '        '
@@ -518,8 +551,7 @@ banner_html = (
     '        '
     '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
     '            <div class="team-panel-text">'
-    '                <div class="team-name-row"><span>' + next_away + '</span> ' + next_away_flag + '</div>'
-    '                <span class="owner-name">' + next_away_owner + '</span>'
+    '                <span>' + next_away_owner + '</span> ' + next_away + ' ' + next_away_flag + ''
     '            </div>'
     '        </div>'
     '    </div>'
@@ -594,62 +626,124 @@ else:
                                 <td style="text-align:center;">{row.get("goalsFor")}</td>
                                 <td style="text-align:center;">{row.get("goalsAgainst")}</td>
                                 <td style="text-align:center;">{row.get("goalDifference")}</td>
-                                <td style="text-align:center; font-weight: bold; color: #ff7d23 !important;">{row.get("points")}</td>
+                                <td style="text-align:center;"><b>{row.get("points")}</b></td>
                             </tr>"""
-                        table_html += """
-                                </tbody>
-                            </table>
-                        </div>
-                        </div>
-                        """
+                            
+                        table_html += "</tbody></table></div>"
                         st.markdown(table_html, unsafe_allow_html=True)
+                        
+                        # Render Group Fixtures - wrapped in a tight flex/spacing div
+                        st.markdown("<div style='margin-bottom:6px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>📅 Group Fixtures & Results</span></div>", unsafe_allow_html=True)
+                        group_fixtures = [m for m in all_matches if m.get("homeTeam", {}).get("name") in teams_in_group or m.get("awayTeam", {}).get("name") in teams_in_group]
+                        
+                        if not group_fixtures:
+                            st.caption("No fixtures currently listed for this group.")
+                        else:
+                            group_fixtures.sort(key=lambda x: x.get("utcDate", ""))
+                            for match in group_fixtures[:6]:
+                                m_status = match.get("status")
+                                home_t, away_t = match.get("homeTeam", {}), match.get("awayTeam", {})
+                                h_name, a_name = home_t.get("name", "TBD"), away_t.get("name", "TBD")
+                                h_owner, a_owner = SWEEPSTAKE_MAPPING.get(h_name, "Unassigned"), SWEEPSTAKE_MAPPING.get(a_name, "Unassigned")
+                                
+                                dt_uk = format_to_uk_time(match.get("utcDate"))
+                                local_time_str = dt_uk.strftime("%d/%m %H:%M") if dt_uk else "TBD"
+                                h_flag = f'<img src="{home_t.get("crest", "")}" class="flag-img">' if home_t.get("crest") else ''
+                                a_flag = f'<img src="{away_t.get("crest", "")}" class="flag-img">' if away_t.get("crest") else ''
+                                
+                                if m_status == "FINISHED":
+                                    display_score = f"<b>{match.get('score', {}).get('fullTime', {}).get('home')} - {match.get('score', {}).get('fullTime', {}).get('away')}</b>"
+                                elif m_status in ["IN_PLAY", "PAUSED"]:
+                                    display_score = f"<span style='color:red; font-weight:700;'>🔴 {match.get('score', {}).get('fullTime', {}).get('home', 0)}-{match.get('score', {}).get('fullTime', {}).get('away', 0)}</span>"
+                                else:
+                                    display_score = f"<span style='color:#777; font-weight:500;'>{local_time_str}</span>"
+                                
+                                st.markdown(f"""
+                                    <div class="fixture-row">
+                                        <div style="text-align: left; width: 42%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            {h_flag} <span>{h_name}</span> <span style="font-size:9px; color:#777;">({h_owner})</span>
+                                        </div>
+                                        <div style="text-align: center; width: 16%; font-size:11px;">
+                                            {display_score}
+                                        </div>
+                                        <div style="text-align: right; width: 42%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <span style="font-size:9px; color:#777;">({a_owner})</span> <span>{a_name}</span> {a_flag}
+                                        </div>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                        
+                        # --- IN-GROUP PLAYERS SUB-SECTION ---
+                        import streamlit.components.v1 as components
+
+                        active_cards = []
+                        for team_name in teams_in_group:
+                            if team_name in GROUP_PLAYERS:
+                                p = GROUP_PLAYERS[team_name]
+                                # Changed to object-fit: contain to ensure full head/body is visible
+                                card = f"""
+                                <div style="background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 8px; width: 130px; height: 130px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); text-align: center; display: inline-block; vertical-align: top; margin: 4px; overflow: hidden;">
+                                    <img src="{p['img_url']}" style="width: 100%; height: 90px; object-fit: contain; object-position: top; border-radius: 4px;" loading="eager" referrerpolicy="no-referrer">
+                                    <div style="font-size: 10px; font-weight: 800; color: #333; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px;">{p['player_name']}</div>
+                                    <div style="font-size: 8px; font-weight: 600; color: #ff7d23; text-transform: uppercase; margin-top: 2px;">{team_name}</div>
+                                </div>
+                                """
+                                active_cards.append(card)
+
+                        if active_cards:
+                            st.markdown("<div style='text-align: center; margin-top: 10px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>🌟 Key players</span></div>", unsafe_allow_html=True)
+                            
+                            full_html = f"""
+                            <div style="display: flex; flex-wrap: wrap; justify-content: center; width: 100%; font-family: sans-serif;">
+                                {"".join(active_cards)}
+                            </div>
+                            """
+                            components.html(full_html, height=155, scrolling=False)
+                        
+                        st.markdown('</div>', unsafe_allow_html=True)
 
         # --- OVERPERFORMANCE LEADERBOARD ---
-        st.markdown("<hr style='margin:25px 0px; border-top: 2px solid #EAEAEA;'>", unsafe_allow_html=True)
-        st.markdown("### 🚀 Overperformance Leaderboard")
+        st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #ff7d23;'>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
         
-        # Sort by best overperformance (descending), then actual rank
-        overperformance_list = sorted(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]), reverse=True)
+        master_flat_leaderboard.sort(key=lambda x: (-x["overperformance"], x["actual_rank"]))
         
-        op_html = """
+        master_table_html = """
         <div class="table-responsive-wrapper">
-            <table class="custom-dashboard-table">
+            <table class="custom-dashboard-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th style="text-align:center;">Rank</th>
+                        <th style="width: 60px;">Pos</th>
                         <th>Team</th>
-                        <th>Owner</th>
-                        <th style="text-align:center;">Expected Rank</th>
-                        <th style="text-align:center;">Actual Rank</th>
-                        <th style="text-align:center;">Overperformance</th>
+                        <th style="text-align:center;">Rank</th>
+                        <th style="text-align:center;">Actual</th>
+                        <th style="text-align:center;">P</th>
+                        <th style="text-align:center;">GD</th>
+                        <th style="text-align:center;">Pts</th>
+                        <th style="text-align:right; padding-right:15px;">Score</th>
                     </tr>
                 </thead>
                 <tbody>
         """
-        for idx, t in enumerate(overperformance_list, start=1):
-            owner = SWEEPSTAKE_MAPPING.get(t["name"], "Unassigned")
-            flag_html = f'<img src="{t["crest"]}" class="flag-img">' if t.get("crest") else ""
+        for display_idx, team_row in enumerate(master_flat_leaderboard, start=1):
+            owner = SWEEPSTAKE_MAPPING.get(team_row["name"], "Unassigned")
+            flag_html = f'<img src="{team_row["crest"]}" class="flag-img">' if team_row["crest"] else ''
             
-            # Add poop emoji to exactly rank 48
-            rank_display = f"{idx} 💩" if idx == 48 else str(idx)
+            pos_str = f"🚀 {display_idx}" if display_idx == 1 else str(display_idx)
+            op_val = team_row["overperformance"]
+            op_formatted = f"+{op_val}" if op_val > 0 else str(op_val)
+            score_color = "#107C41" if op_val > 0 else ("#A80000" if op_val < 0 else "#333333")
             
-            op_color = "#009739" if t["overperformance"] > 0 else ("#D52B1E" if t["overperformance"] < 0 else "#333333")
+            master_table_html += f"""<tr>
+                <td><b>{pos_str}</b></td>
+                <td>{flag_html} <b>{team_row['name']}</b> <span style='font-size:11px; color:#666;'>({owner})</span></td>
+                <td style='text-align:center; color:#555;'>#{team_row['expected_rank']}</td>
+                <td style='text-align:center; color:#555;'>#{team_row['actual_rank']}</td>
+                <td style='text-align:center;'>{team_row['played']}</td>
+                <td style='text-align:center;'>{team_row['gd']}</td>
+                <td style='text-align:center;'><b>{team_row['pts']}</b></td>
+                <td style='text-align:right; padding-right:15px; font-weight:800; color:{score_color};'>{op_formatted}</td>
+            </tr>"""
             
-            op_html += f"""
-                <tr>
-                    <td style="text-align:center; font-weight:800;">{rank_display}</td>
-                    <td>{flag_html} <b>{t["name"]}</b></td>
-                    <td>{owner}</td>
-                    <td style="text-align:center;">{t["expected_rank"]}</td>
-                    <td style="text-align:center;">{t["actual_rank"]}</td>
-                    <td style="text-align:center; font-weight:bold; color:{op_color} !important;">
-                        {"+" if t["overperformance"] > 0 else ""}{t["overperformance"]}
-                    </td>
-                </tr>
-            """
-        op_html += """
-                </tbody>
-            </table>
-        </div>
-        """
-        st.markdown(op_html, unsafe_allow_html=True)
+        master_table_html += "</tbody></table></div>"
+        st.markdown(master_table_html, unsafe_allow_html=True)
