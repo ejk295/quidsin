@@ -154,8 +154,8 @@ HEADERS = {"X-Auth-Token": API_TOKEN}
 SWEEPSTAKE_MAPPING = {
     "Mexico": "Evon",
     "South Africa": "Iwan",
-    "Canada": "",
-    "Switzerland": "",
+    "Canada": "Holly",
+    "Switzerland": "Yannis",
     "Argentina": "Alba",
     "France": "Marc",
     "Brazil": "Andy",
