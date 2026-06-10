@@ -284,7 +284,7 @@ if API_TOKEN != "placeholder":
             best_overperformer = max(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]))
             op_owner = SWEEPSTAKE_MAPPING.get(best_overperformer["name"], "Unassigned")
             score_prefix = "+" if best_overperformer["overperformance"] > 0 else ""
-            top_performer_text = f"{best_overperformer['name']} ({op_owner}) [{score_prefix}{best_overperformer['overperformance']}]"
+            top_performer_text = f"{best_overperformer['name']} ({op_owner})"
         
         # Fetch Match Data
         matches_url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches"
@@ -339,8 +339,8 @@ stat_cols = st.columns(3)
 with stat_cols[0]:
     st.markdown('<div class="stat-banner-box"><medium>💰 Prize Pot</medium><span>£96</span></div>', unsafe_allow_html=True)
 with stat_cols[1]:
-    fave_owner = SWEEPSTAKE_MAPPING.get("Spain", "Unassigned")
-    st.markdown(f'<div class="stat-banner-box"><medium>⭐ Favourites</medium><span>Spain ({fave_owner})</span></div>', unsafe_allow_html=True)
+    fave_owner = SWEEPSTAKE_MAPPING.get("France", "Unassigned")
+    st.markdown(f'<div class="stat-banner-box"><medium>⭐ Favourites</medium><span>France ({fave_owner})</span></div>', unsafe_allow_html=True)
 with stat_cols[2]:
     st.markdown(f'<div class="stat-banner-box"><medium>🚀 Overperformer</medium><span>{top_performer_text}</span></div>', unsafe_allow_html=True)
 
@@ -370,7 +370,7 @@ else:
                             <table class="custom-dashboard-table">
                                 <thead>
                                     <tr>
-                                        <th>Team & Owner</th>
+                                        <th>Team</th>
                                         <th style="text-align:center;">P</th>
                                         <th style="text-align:center;">W</th>
                                         <th style="text-align:center;">D</th>
@@ -452,8 +452,8 @@ else:
 
         # --- OVERPERFORMANCE LEADERBOARD ---
         st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #FF6B00;'>", unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overall Sweepstake Overperformance Table</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by Overperformance: (Expected Baseline Seed Rank - Current Performance Position)</p>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
         
         master_flat_leaderboard.sort(key=lambda x: (-x["overperformance"], x["actual_rank"]))
         
@@ -463,9 +463,9 @@ else:
                 <thead>
                     <tr>
                         <th style="width: 60px;">Pos</th>
-                        <th>Team & Sweepstake Owner</th>
-                        <th style="text-align:center;">Expected Seed</th>
-                        <th style="text-align:center;">Actual Rank</th>
+                        <th>Team</th>
+                        <th style="text-align:center;">Rank</th>
+                        <th style="text-align:center;">Actual</th>
                         <th style="text-align:center;">P</th>
                         <th style="text-align:center;">GD</th>
                         <th style="text-align:center;">Pts</th>
