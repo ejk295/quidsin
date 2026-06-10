@@ -182,6 +182,22 @@ SWEEPSTAKE_MAPPING = {
     "Panama": "Lucy", "Ghana": "Sam", "Croatia": "Kurt", "South Korea": "Beau",
 }
 
+TEAM_COLORS = {
+    "Mexico": "#006847", "South Africa": "#007A4D", "Canada": "#FF0000", "Switzerland": "#D52B1E",
+    "Argentina": "#74ACDF", "France": "#002395", "Brazil": "#009739", "Spain": "#AA151B",
+    "Bosnia-Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
+    "Haiti": "#00209F", "Turkey": "#E30A17", "Paraguay": "#D52B1E", "Germany": "#222222",
+    "Curaçao": "#002B7F", "Ecuador": "#FFDD00", "Japan": "#00005C", "Belgium": "#E30A17",
+    "Egypt": "#C1272D", "Tunisia": "#E70013", "Netherlands": "#E05206", "Ivory Coast": "#E87722",
+    "Australia": "#00008B", "Cape Verde Islands": "#003893", "Cape Verde": "#003893", "Uruguay": "#0081C8", 
+    "Sweden": "#006AA7", "Saudi Arabia": "#006C35", "Scotland": "#005EB8", "United States": "#002868", 
+    "Senegal": "#00853F", "New Zealand": "#111111", "Iran": "#239E46", "Iraq": "#007A3D", 
+    "Norway": "#EF2B2D", "Algeria": "#006233", "Austria": "#ED2939", "Jordan": "#1A1A1A", 
+    "Congo DR": "#007FFF", "DR Congo": "#007FFF", "Portugal": "#FF0000", "Uzbekistan": "#0099B5", 
+    "Colombia": "#FCD116", "England": "#CE1124", "Panama": "#DA121A", "Ghana": "#DA121A", 
+    "Croatia": "#FF0000", "South Korea": "#111111"
+}
+
 # Baseline Expected Rankings Map
 EXPECTED_RANKINGS = {
     "France": 1, "Spain": 2, "Argentina": 3, "England": 4, "Portugal": 5, "Brazil": 6,
@@ -295,19 +311,39 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+# Lookup colors/crests
+home_color = TEAM_COLORS.get(next_home, "#FF6B00")
+away_color = TEAM_COLORS.get(next_away, "#FF6B00")
+
+# Fetch crests (you already have logic for this inside the loops, 
+# but we need them here for the banner)
+def get_crest(team_name):
+    for group in standings_list:
+        for row in group.get("table", []):
+            if row.get("team", {}).get("name") == team_name:
+                return row.get("team", {}).get("crest", "")
+    return ""
+
+h_crest = get_crest(next_home)
+a_crest = get_crest(next_away)
+
+# --- REPLACED SPLIT-SCREEN BANNER ---
 st.markdown(f"""
-    <div class="match-banner-container">
-        <div class="banner-top-pane"><div class="next-match-title">⏳ Next Match</div></div>
-        <div class="matchup-split-screen">
-            <div class="team-panel home-panel">
-                <div class="team-panel-text">{next_home} <span>{next_home_owner.replace('(','').replace(')','')}</span></div>
-            </div>
-            <div class="vs-marker-bubble">VS</div>
-            <div class="team-panel away-panel">
-                <div class="team-panel-text">{next_away} <span>{next_away_owner.replace('(','').replace(')','')}</span></div>
-            </div>
+    <div style="display: flex; height: 100px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); margin: 20px 0;">
+        <div style="flex: 1; background-color: {home_color}; color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 800;">
+            <img src="{h_crest}" style="width: 30px; margin-bottom: 4px;">
+            <div style="font-size: 14px;">{next_home}</div>
+            <div style="font-size: 10px; opacity: 0.8;">{next_home_owner.replace('(','').replace(')','')}</div>
         </div>
-        <div class="banner-bottom-time">🗓️ {next_date}</div>
+        <div style="background-color: #333; color: white; display: flex; align-items: center; padding: 0 15px; font-weight: 900; font-size: 12px;">VS</div>
+        <div style="flex: 1; background-color: {away_color}; color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 800;">
+            <img src="{a_crest}" style="width: 30px; margin-bottom: 4px;">
+            <div style="font-size: 14px;">{next_away}</div>
+            <div style="font-size: 10px; opacity: 0.8;">{next_away_owner.replace('(','').replace(')','')}</div>
+        </div>
+    </div>
+    <div style="text-align: center; font-weight: 700; color: #333; margin-top: -15px; margin-bottom: 20px;">
+        🗓️ {next_date}
     </div>
 """, unsafe_allow_html=True)
 
