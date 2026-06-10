@@ -526,12 +526,14 @@ if API_TOKEN != "placeholder":
         pass
 
 # --- HEADER ---
-st.markdown("""
-    <div class="title-area">
-        <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
-        <p>Live standings</p>
-    </div>
-""", unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.markdown("""
+        <div class="title-area" style="text-align: center;">
+            <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
+            <p>Live standings</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # --- DYNAMIC MATCHUP BANNER ---
 banner_html = (
