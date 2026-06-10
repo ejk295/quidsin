@@ -167,7 +167,7 @@ SWEEPSTAKE_MAPPING = {
     "Haiti": "Hatty",
     "Turkey": "Adrienne",
     "Paraguay": "Becca",
-    "Germany": "Germany",
+    "Germany": "Oliwia",
     "Curaçao": "Justin",
     "Ecuador": "Cat",
     "Japan": "Adem",
