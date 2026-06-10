@@ -6,9 +6,9 @@ from streamlit_autorefresh import st_autorefresh
 
 # 1. Page Configurations & Branding Styles
 st.set_page_config(
-page_title="Byway World Cup Sweepstake", 
-page_icon="⚽", 
-layout="wide"
+      page_title="Byway World Cup Sweepstake",
+      page_icon="⚽",
+      layout="wide"
 )
 
 # Run page auto-refresh every 30 seconds to keep live scores syncing
