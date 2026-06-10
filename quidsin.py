@@ -14,25 +14,30 @@ st.set_page_config(
 # Run page auto-refresh every 30 seconds to keep live scores syncing
 st_autorefresh(interval=30 * 1000, key="datarefresh")
 
-# Custom branding & layout safety styles with strict light-mode overrides
+# Custom branding & layout safety styles with strict light-mode overrides and Figtree font
 st.markdown("""
     <style>
-        /* Force global app body background and standard text to light mode */
+        /* Import Figtree from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+
+        /* Force global app body background, standard text, and Figtree font */
         .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #FAFAFA !important;
             color: #333333 !important;
+            font-family: 'Figtree', sans-serif !important;
         }
         
-        /* Force all standard text elements to stay dark charcoal */
-        p, span, div, label, small {
+        /* Force all standard text elements to stay dark charcoal and use Figtree */
+        p, span, div, label, small, td, th, b {
             color: #333333 !important;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Figtree', sans-serif !important;
         }
         
-        /* Keep headers fixed to brand orange */
+        /* Keep headers fixed to brand orange and use Figtree with heavy weight */
         h1, h2, h3 {
             color: #FF6B00 !important;
-            font-family: 'Arial Black', Gadget, sans-serif !important;
+            font-family: 'Figtree', sans-serif !important;
+            font-weight: 800 !important;
         }
         
         .header-container {
@@ -43,11 +48,12 @@ st.markdown("""
         .title-area h1 {
             margin: 0px !important;
             font-size: 28px;
+            font-weight: 900 !important;
         }
         .title-area p {
             margin: 4px 0px 0px 0px !important;
             color: #555555 !important;
-            font-weight: bold;
+            font-weight: 700 !important;
             font-size: 16px;
         }
         
@@ -62,6 +68,7 @@ st.markdown("""
             flex-direction: column;
             gap: 10px;
             text-align: center;
+            font-family: 'Figtree', sans-serif !important;
         }
         @media (min-width: 768px) {
             .next-match-banner {
@@ -79,25 +86,23 @@ st.markdown("""
         .next-match-vs, 
         .next-match-time {
             color: #FFFFFF !important;
+            font-family: 'Figtree', sans-serif !important;
         }
         .next-match-title {
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-family: 'Arial Black', sans-serif !important;
-            font-weight: bold;
+            font-weight: 800 !important;
             opacity: 0.9;
         }
         .next-match-teams {
             font-size: 18px;
-            font-family: 'Arial Black', sans-serif !important;
-            font-weight: bold;
+            font-weight: 800 !important;
         }
         .next-match-teams span {
             font-size: 13px;
-            font-weight: normal;
+            font-weight: 400 !important;
             opacity: 0.85;
-            font-family: 'Arial', sans-serif;
         }
         .next-match-vs {
             opacity: 0.7;
@@ -106,7 +111,7 @@ st.markdown("""
         }
         .next-match-time {
             font-size: 14px;
-            font-family: 'Arial Black', sans-serif !important;
+            font-weight: 700 !important;
             background: rgba(25, 25, 25, 0.15) !important;
             padding: 6px 14px;
             border-radius: 6px;
@@ -125,21 +130,22 @@ st.markdown("""
             margin-bottom: 10px;
             height: auto;
             min-height: 50px;
+            font-family: 'Figtree', sans-serif !important;
         }
         .stat-banner-box medium {
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-family: 'Arial Black', sans-serif;
-            font-weight: bold;
+            font-weight: 800 !important;
             color: #FF6B00 !important;
+            font-family: 'Figtree', sans-serif !important;
         }
         .stat-banner-box span {
             font-size: 14px;
-            font-weight: bold !important;
-            font-family: 'Arial Black', sans-serif;
+            font-weight: 800 !important;
             text-align: right;
             color: #333333 !important;
+            font-family: 'Figtree', sans-serif !important;
         }
 
         /* Responsive Table Canvas Controls */
@@ -156,11 +162,12 @@ st.markdown("""
             font-size: 13px;
             text-align: left;
             white-space: nowrap;
+            font-family: 'Figtree', sans-serif !important;
         }
         .custom-dashboard-table th {
             background-color: #FAFAFA !important;
             color: #333333 !important;
-            font-weight: bold;
+            font-weight: 700 !important;
             padding: 8px 6px;
             border-bottom: 2px solid #FF6B00;
         }
@@ -187,9 +194,11 @@ st.markdown("""
             display: flex;
             align-items: center;
             justify-content: space-between;
+            font-family: 'Figtree', sans-serif !important;
         }
         .fixture-row div, .fixture-row span, .fixture-row b {
             color: #333333 !important;
+            font-family: 'Figtree', sans-serif !important;
         }
         .flag-img {
             vertical-align: middle;
@@ -201,9 +210,9 @@ st.markdown("""
         }
         .group-header-text {
             color: #FF6B00 !important;
-            font-family: 'Arial Black', Gadget, sans-serif !important;
+            font-family: 'Figtree', sans-serif !important;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 800 !important;
             margin-bottom: 8px;
             display: inline-block;
         }
@@ -389,7 +398,7 @@ else:
                     with row_cols[j]:
                         st.markdown(f"<span class='group-header-text'>🔹 {group_name}</span>", unsafe_allow_html=True)
                         
-                        # --- MOBILE SAFENED GROUP TABLES (FIXED CONCATENATION LOOP) ---
+                        # --- MOBILE SAFENED GROUP TABLES ---
                         table_html = """
                         <div class="table-responsive-wrapper">
                             <table class="custom-dashboard-table">
@@ -430,11 +439,10 @@ else:
                             
                         table_html += "</tbody></table></div>"
                         
-                        # Executed cleanly as structural HTML layout
                         st.markdown(table_html, unsafe_allow_html=True)
                         
                         # --- CHRONOLOGICAL FIXTURES SUBSECTION ---
-                        st.write("<span style='font-size:12px; font-weight:bold; color:#FF6B00;'>📅 Group Fixtures & Results</span>", unsafe_allow_html=True)
+                        st.write("<span style='font-size:12px; font-weight:700; color:#FF6B00;'>📅 Group Fixtures & Results</span>", unsafe_allow_html=True)
                         
                         group_fixtures = [m for m in all_matches if m.get("homeTeam", {}).get("name") in teams_in_group or m.get("awayTeam", {}).get("name") in teams_in_group]
                         
@@ -456,7 +464,7 @@ else:
                                 if m_status == "FINISHED":
                                     display_score = f"<b>{match.get('score', {}).get('fullTime', {}).get('home')} - {match.get('score', {}).get('fullTime', {}).get('away')}</b>"
                                 elif m_status in ["IN_PLAY", "PAUSED"]:
-                                    display_score = f"<span style='color:red; font-weight:bold;'>🔴 {match.get('score', {}).get('fullTime', {}).get('home', 0)}-{match.get('score', {}).get('fullTime', {}).get('away', 0)}</span>"
+                                    display_score = f"<span style='color:red; font-weight:700;'>🔴 {match.get('score', {}).get('fullTime', {}).get('home', 0)}-{match.get('score', {}).get('fullTime', {}).get('away', 0)}</span>"
                                 else:
                                     display_score = f"<span style='color:#777; font-weight:500;'>{local_time_str}</span>"
                                 
