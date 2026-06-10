@@ -542,29 +542,26 @@ banner_html = (
     '        <div class="next-match-title">⏳ Next Match</div>'
     '    </div>'
     '    '
-    '<div class="matchup-split-screen">'
-    # HOME PANEL
-    '    <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
-    '        <div class="team-panel-text">'
-    '            <div style="display: flex; align-items: center;">' + next_home_flag + ' ' + next_home + '</div>'
-    '            <span>' + next_home_owner + '</span>'
+    '    <div class="matchup-split-screen">'
+    '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
+    '            <div class="team-panel-text">'
+    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
+    '            </div>'
+    '        </div>'
+    '        '
+    '        <div class="vs-marker-bubble">VS</div>'
+    '        '
+    '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
+    '            <div class="team-panel-text">'
+    '                <span>' + next_away_owner + '</span> ' + next_away + ' ' + next_away_flag + ''
+    '            </div>'
     '        </div>'
     '    </div>'
-    '    '
-    '    <div class="vs-marker-bubble">VS</div>'
-    '    '
-    # AWAY PANEL
-    '    <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
-    '        <div class="team-panel-text">'
-    '            <div style="display: flex; align-items: center;">' + next_away + ' ' + next_away_flag + '</div>'
-    '            <span>' + next_away_owner + '</span>'
-    '        </div>'
-    '    </div>'
-    '</div>'
     '    '
     '    <div class="banner-bottom-time">🗓️ ' + next_date + '</div>'
     '</div>'
 )
+st.markdown(banner_html, unsafe_allow_html=True)
 
 # --- STATS ROW ---
 stat_cols = st.columns(3)
