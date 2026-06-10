@@ -491,60 +491,37 @@ if API_TOKEN != "placeholder":
         matches_res = requests.get(matches_url, headers=HEADERS)
         all_matches = matches_res.json().get("matches", [])
         
-        # --- NEW LOGIC: Support Multiple Upcoming Matches ---
         if all_matches:
-            # Filter and sort upcoming matches
-            upcoming = sorted([m for m in all_matches if m.get("status") in ["TIMED", "SCHEDULED"]], 
-                              key=lambda x: x.get("utcDate", ""))
-            
-            if upcoming:
-                # Get the time of the very first game(s)
-                first_kickoff = upcoming[0].get("utcDate")
-                # Group all games happening at that exact same time
-                current_batch = [m for m in upcoming if m.get("utcDate") == first_kickoff]
+            upcoming_matches = [m for m in all_matches if m.get("status") in ["TIMED", "SCHEDULED"]]
+            if upcoming_matches:
+                upcoming_matches.sort(key=lambda x: x.get("utcDate", ""))
+                next_m = upcoming_matches[0]
                 
-                # Build banners for every game in that batch
-                banners_to_show = ""
-                for next_m in current_batch:
-                    home_team_obj = next_m.get("homeTeam", {})
-                    away_team_obj = next_m.get("awayTeam", {})
-                    
-                    # Logic to get colors/flags/owners for this specific match
-                    l_col = TEAM_COLORS.get(home_team_obj.get("name"), DEFAULT_LEFT_COLOR)
-                    r_col = TEAM_COLORS.get(away_team_obj.get("name"), DEFAULT_RIGHT_COLOR)
-                    
-                    h_flag = f'<img src="{home_team_obj.get("crest")}" class="banner-flag">' if home_team_obj.get("crest") else ""
-                    a_flag = f'<img src="{away_team_obj.get("crest")}" class="banner-flag">' if away_team_obj.get("crest") else ""
-                    
-                    h_owner = f" ({SWEEPSTAKE_MAPPING.get(home_team_obj.get('name'), 'Unassigned')})"
-                    a_owner = f" ({SWEEPSTAKE_MAPPING.get(away_team_obj.get('name'), 'Unassigned')})"
-                    
-                    banners_to_show += f'''
-                    <div class="match-banner-container">
-                        <div class="matchup-split-screen">
-                            <div class="team-panel home-panel" style="background-color: {l_col};">
-                                <div class="team-panel-text">
-                                    <div>{h_flag} {home_team_obj.get("name")}</div>
-                                    <span>{h_owner}</span>
-                                </div>
-                            </div>
-                            <div class="vs-marker-bubble">VS</div>
-                            <div class="team-panel away-panel" style="background-color: {r_col};">
-                                <div class="team-panel-text">
-                                    <div>{away_team_obj.get("name")} {a_flag}</div>
-                                    <span>{a_owner}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>'''
+                home_team_obj = next_m.get("homeTeam", {})
+                away_team_obj = next_m.get("awayTeam", {})
                 
-                # Format the time once
-                dt_uk = format_to_uk_time(first_kickoff)
-                next_date = dt_uk.strftime("%dth %B @ %H:%M") if dt_uk else "TBC"
+                next_home = home_team_obj.get("name", "TBD")
+                next_away = away_team_obj.get("name", "TBD")
                 
-                # Render the batch
-                st.markdown(f'<div class="next-match-title">⏳ Next Matches ({next_date})</div>', unsafe_allow_html=True)
-                st.markdown(banners_to_show, unsafe_allow_html=True)
+                banner_left_color = TEAM_COLORS.get(next_home, DEFAULT_LEFT_COLOR)
+                banner_right_color = TEAM_COLORS.get(next_away, DEFAULT_RIGHT_COLOR)
+                
+                if banner_left_color == banner_right_color:
+                    banner_right_color = "#222222" if banner_left_color != "#222222" else "#555555"
+
+                if home_team_obj.get("crest"):
+                    next_home_flag = f'<img src="{home_team_obj.get("crest")}" class="banner-flag">'
+                if away_team_obj.get("crest"):
+                    next_away_flag = f'<img src="{away_team_obj.get("crest")}" class="banner-flag">'
+                
+                next_home_owner = f" ({SWEEPSTAKE_MAPPING.get(next_home, 'Unassigned')})"
+                next_away_owner = f" ({SWEEPSTAKE_MAPPING.get(next_away, 'Unassigned')})"
+                
+                dt_uk = format_to_uk_time(next_m.get("utcDate"))
+                if dt_uk:
+                    day = dt_uk.day
+                    suffix = "th" if 4 <= day <= 20 or 24 <= day <= 30 else ["st", "nd", "rd"][day % 10 - 1]
+                    next_date = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
     except Exception:
         pass
 
