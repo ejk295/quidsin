@@ -553,7 +553,7 @@ banner_html = (
     '        '
     '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
     '            <div class="team-panel-text">'
-    '                ' + next_away_flag + ' ' + next_away + ' <span>' + next_away_owner + '</span>''
+    '                ' + next_away + ' ' + next_away_flag + ' <span>' + next_away_owner + '</span>'
     '            </div>'
     '        </div>'
     '    </div>'
