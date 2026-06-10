@@ -58,36 +58,96 @@ st.markdown("""
             font-size: 16px;
         }
         
-        /* --- NEW SPLIT-SCREEN BANNER CSS --- */
-        .match-banner-container {
-            border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+        /* Mobile-responsive Flex Container for Next Match Banner */
+        .next-match-banner {
+            background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%) !important;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
             margin: 15px 0px;
-            overflow: hidden;
-            font-family: 'Figtree', sans-serif !important;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             text-align: center;
-            border: 2px solid #DDDDDD;
-            background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+            font-family: 'Figtree', sans-serif !important;
         }
-        .banner-top-pane { background-color: rgba(0,0,0,0.2); padding: 10px 20px; }
+        @media (min-width: 768px) {
+            .next-match-banner {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+            }
+        }
+        /* Ensure text inside next match banner stays white */
+        .next-match-banner, 
+        .next-match-title, 
+        .next-match-teams, 
+        .next-match-teams span, 
+        .next-match-vs, 
+        .next-match-time {
+            color: #FFFFFF !important;
+            font-family: 'Figtree', sans-serif !important;
+        }
         .next-match-title {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800 !important;
-            color: #FFFFFF !important; background: rgba(255, 255, 255, 0.2); padding: 4px 10px;
-            border-radius: 6px; display: inline-block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800 !important;
+            opacity: 0.9;
         }
-        .matchup-split-screen { display: flex; position: relative; align-items: center; }
-        .team-panel { width: 50%; display: flex; align-items: center; padding: 20px; box-sizing: border-box; height: 90px; }
-        .home-panel { justify-content: flex-end; padding-right: 45px; border-right: 1px solid rgba(255,255,255,0.3); }
-        .away-panel { justify-content: flex-start; padding-left: 45px; }
-        .team-panel-text { color: #FFFFFF !important; font-size: 18px; font-weight: 900 !important; text-shadow: 0px 1px 2px rgba(0,0,0,0.3); }
-        .team-panel-text span { font-size: 12px; font-weight: 400 !important; display: block; opacity: 0.9; }
-        .vs-marker-bubble {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            z-index: 10; background-color: #FFFFFF; color: #FF6B00 !important;
-            font-size: 12px; font-weight: 900 !important; padding: 6px; border-radius: 50%;
-            border: 2px solid #FF6B00; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        .next-match-teams {
+            font-size: 18px;
+            font-weight: 800 !important;
         }
-        .banner-bottom-time { background-color: rgba(0,0,0,0.2); padding: 8px; font-size: 13px; font-weight: 700 !important; color: #FFFFFF !important; }
+        .next-match-teams span {
+            font-size: 13px;
+            font-weight: 400 !important;
+            opacity: 0.85;
+        }
+        .next-match-vs {
+            opacity: 0.7;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+        .next-match-time {
+            font-size: 14px;
+            font-weight: 700 !important;
+            background: rgba(25, 25, 25, 0.15) !important;
+            padding: 6px 14px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* Smaller Side-by-Side Stat Blocks */
+        .stat-banner-box {
+            background: #FFFFFF !important;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 2px solid #EAEAEA;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            height: auto;
+            min-height: 50px;
+            font-family: 'Figtree', sans-serif !important;
+        }
+        .stat-banner-box medium {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800 !important;
+            color: #FF6B00 !important;
+            font-family: 'Figtree', sans-serif !important;
+        }
+        .stat-banner-box span {
+            font-size: 14px;
+            font-weight: 800 !important;
+            text-align: right;
+            color: #333333 !important;
+            font-family: 'Figtree', sans-serif !important;
+        }
 
         /* Responsive Table Canvas Controls */
         .table-responsive-wrapper {
@@ -180,22 +240,6 @@ SWEEPSTAKE_MAPPING = {
     "Algeria": "Adrienne 2", "Austria": "Rich", "Jordan": "Maria", "Congo DR": "Izzy",
     "Portugal": "Lucy 2", "Uzbekistan": "Kat 2", "Colombia": "Neil 2", "England": "Marijke",
     "Panama": "Lucy", "Ghana": "Sam", "Croatia": "Kurt", "South Korea": "Beau",
-}
-
-TEAM_COLORS = {
-    "Mexico": "#006847", "South Africa": "#007A4D", "Canada": "#FF0000", "Switzerland": "#D52B1E",
-    "Argentina": "#74ACDF", "France": "#002395", "Brazil": "#009739", "Spain": "#AA151B",
-    "Bosnia-Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
-    "Haiti": "#00209F", "Turkey": "#E30A17", "Paraguay": "#D52B1E", "Germany": "#222222",
-    "Curaçao": "#002B7F", "Ecuador": "#FFDD00", "Japan": "#00005C", "Belgium": "#E30A17",
-    "Egypt": "#C1272D", "Tunisia": "#E70013", "Netherlands": "#E05206", "Ivory Coast": "#E87722",
-    "Australia": "#00008B", "Cape Verde Islands": "#003893", "Cape Verde": "#003893", "Uruguay": "#0081C8", 
-    "Sweden": "#006AA7", "Saudi Arabia": "#006C35", "Scotland": "#005EB8", "United States": "#002868", 
-    "Senegal": "#00853F", "New Zealand": "#111111", "Iran": "#239E46", "Iraq": "#007A3D", 
-    "Norway": "#EF2B2D", "Algeria": "#006233", "Austria": "#ED2939", "Jordan": "#1A1A1A", 
-    "Congo DR": "#007FFF", "DR Congo": "#007FFF", "Portugal": "#FF0000", "Uzbekistan": "#0099B5", 
-    "Colombia": "#FCD116", "England": "#CE1124", "Panama": "#DA121A", "Ghana": "#DA121A", 
-    "Croatia": "#FF0000", "South Korea": "#111111"
 }
 
 # Baseline Expected Rankings Map
@@ -303,14 +347,6 @@ if API_TOKEN != "placeholder":
     except Exception:
         next_home, next_away, next_date = "API Connection", "Error", ""
 
-# 1. Fetching crests correctly for the banner
-def get_crest(team_name):
-    for group in standings_list:
-        for row in group.get("table", []):
-            if row.get("team", {}).get("name") == team_name:
-                return row.get("team", {}).get("crest", "")
-    return ""
-
 # --- BRANDING HEADER TITLE ---
 st.markdown("""
     <div class="title-area">
@@ -319,59 +355,16 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# --- NEW STABLE BANNER ---
-st.markdown("<div style='margin-top: 20px; font-size: 11px; font-weight: 800; color: #666; text-transform: uppercase;'>⏳ Next Match</div>", unsafe_allow_html=True)
-
-# Create 3 columns: Home, VS, Away
-cols = st.columns([5, 1, 5])
-
-home_col_color = TEAM_COLORS.get(next_home, "#FF6B00")
-away_col_color = TEAM_COLORS.get(next_away, "#FF6B00")
-
-with cols[0]:
-    st.markdown(f"""
-        <div style="background-color: {home_col_color}; color: white; padding: 15px; border-radius: 10px 0 0 10px; text-align: center;">
-            <img src="{get_crest(next_home)}" style="width: 40px; margin-bottom: 5px;">
-            <div style="font-weight: 900; font-size: 18px;">{next_home}</div>
-            <div style="font-size: 12px; opacity: 0.8;">{next_home_owner.replace('(','').replace(')','')}</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-with cols[1]:
-    st.markdown("""
-        <div style="background-color: #333; color: white; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 12px;">
-            VS
-        </div>
-    """, unsafe_allow_html=True)
-
-with cols[2]:
-    st.markdown(f"""
-        <div style="background-color: {away_col_color}; color: white; padding: 15px; border-radius: 0 10px 10px 0; text-align: center;">
-            <img src="{get_crest(next_away)}" style="width: 40px; margin-bottom: 5px;">
-            <div style="font-weight: 900; font-size: 18px;">{next_away}</div>
-            <div style="font-size: 12px; opacity: 0.8;">{next_away_owner.replace('(','').replace(')','')}</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-st.markdown(f"<div style='text-align: center; margin-top: 10px; font-weight: 700; color: #333;'>🗓️ {next_date}</div>", unsafe_allow_html=True)
-
-# --- REPLACED SPLIT-SCREEN BANNER ---
+# --- NEW FULL-WIDTH NEXT MATCH BANNER ---
 st.markdown(f"""
-    <div style="display: flex; height: 100px; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); margin: 20px 0;">
-        <div style="flex: 1; background-color: {home_color}; color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 800;">
-            <img src="{h_crest}" style="width: 30px; margin-bottom: 4px;">
-            <div style="font-size: 14px;">{next_home}</div>
-            <div style="font-size: 10px; opacity: 0.8;">{next_home_owner.replace('(','').replace(')','')}</div>
+    <div class="next-match-banner">
+        <div class="next-match-title">⏳ Next Match</div>
+        <div class="next-match-teams">
+            {next_home}<span>{next_home_owner}</span> 
+            <span class="next-match-vs">v</span> 
+            {next_away}<span>{next_away_owner}</span>
         </div>
-        <div style="background-color: #333; color: white; display: flex; align-items: center; padding: 0 15px; font-weight: 900; font-size: 12px;">VS</div>
-        <div style="flex: 1; background-color: {away_color}; color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 800;">
-            <img src="{a_crest}" style="width: 30px; margin-bottom: 4px;">
-            <div style="font-size: 14px;">{next_away}</div>
-            <div style="font-size: 10px; opacity: 0.8;">{next_away_owner.replace('(','').replace(')','')}</div>
-        </div>
-    </div>
-    <div style="text-align: center; font-weight: 700; color: #333; margin-top: -15px; margin-bottom: 20px;">
-        🗓️ {next_date}
+        <div class="next-match-time">🗓️ {next_date}</div>
     </div>
 """, unsafe_allow_html=True)
 
