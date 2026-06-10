@@ -87,21 +87,21 @@ st.markdown("""
         .team-panel {
             width: 50%;
             display: flex;
-            align-items: center; /* Keeps the text block vertically centered in the panel */
+            align-items: center;
             padding: 20px;
             box-sizing: border-box;
             height: 100%;
-            min-height: 100px; /* Increased slightly for better fit */
+            min-height: 80px;
         }
 
         .home-panel {
-            justify-content: flex-end; /* Keeps home team to the right of its panel */
+            justify-content: flex-end;
             padding-right: 45px;
             border-right: 2px solid #FFFFFF;
         }
 
         .away-panel {
-            justify-content: flex-start; /* Keeps away team to the left of its panel */
+            justify-content: flex-start;
             padding-left: 45px;
         }
 
@@ -111,9 +111,7 @@ st.markdown("""
             font-weight: 900 !important;
             text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
             display: flex;
-            flex-direction: column; /* Stack Country and Owner */
-            align-items: center;    /* Center them within the text block */
-            text-align: center;
+            align-items: center;
         }
 
         .team-panel-text span {
@@ -121,8 +119,7 @@ st.markdown("""
             font-weight: 400 !important;
             opacity: 0.9;
             color: #FFFFFF !important;
-            margin-top: 4px;
-            display: block; /* Ensures it stays on its own line */
+            margin: 0 4px;
         }
 
         .vs-marker-bubble {
@@ -539,37 +536,32 @@ with col2:
     """, unsafe_allow_html=True)
 
 # --- DYNAMIC MATCHUP BANNER ---
-# We make sure the banner_html uses the structure that forces the owner below
-banner_html = f'''
-<div class="match-banner-container">
-    <div class="banner-top-pane">
-        <div class="next-match-title">⏳ Next Match</div>
-    </div>
-    
-    <div class="matchup-split-screen">
-        <div class="team-panel home-panel" style="background-color: {banner_left_color};">
-            <div class="team-panel-text">
-                <div>{next_home_flag} {next_home}</div>
-                <span>{next_home_owner}</span>
-            </div>
-        </div>
-        
-        <div class="vs-marker-bubble">VS</div>
-        
-        <div class="team-panel away-panel" style="background-color: {banner_right_color};">
-            <div class="team-panel-text">
-                <div>{next_away} {next_away_flag}</div>
-                <span>{next_away_owner}</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="banner-bottom-time">🗓️ {next_date}</div>
-</div>
-'''
-
-# THIS is the line that actually draws it on your page
-st.markdown(banner_html, unsafe_html=True)
+banner_html = (
+    '<div class="match-banner-container">'
+    '    <div class="banner-top-pane">'
+    '        <div class="next-match-title">⏳ Next Match</div>'
+    '    </div>'
+    '    '
+    '    <div class="matchup-split-screen">'
+    '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
+    '            <div class="team-panel-text">'
+    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
+    '            </div>'
+    '        </div>'
+    '        '
+    '        <div class="vs-marker-bubble">VS</div>'
+    '        '
+    '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
+    '            <div class="team-panel-text">'
+    '                <span>' + next_away_owner + '</span> ' + next_away + ' ' + next_away_flag + ''
+    '            </div>'
+    '        </div>'
+    '    </div>'
+    '    '
+    '    <div class="banner-bottom-time">🗓️ ' + next_date + '</div>'
+    '</div>'
+)
+st.markdown(banner_html, unsafe_allow_html=True)
 
 # --- STATS ROW ---
 stat_cols = st.columns(3)
