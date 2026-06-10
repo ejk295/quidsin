@@ -284,7 +284,7 @@ if API_TOKEN != "placeholder":
             
             # Format display modifier string showing movement score change
             score_prefix = "+" if best_overperformer["overperformance"] > 0 else ""
-            top_performer_text = f"{best_overperformer['name']} ({op_owner}) [{score_prefix}{best_overperformer['overperformance']}]"
+            top_performer_text = f"{best_overperformer['name']} ({op_owner})"
         
         # Fetch Match Data
         matches_url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches"
@@ -489,8 +489,8 @@ else:
 
         # --- SECTION DIVIDER FOR ADVANCED OVERPERFORMANCE LEADERBOARD ---
         st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #FF6B00;'>", unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overall Sweepstake Overperformance Table</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #666; font-size: 14px; margin-bottom: 25px;'>Ranked by Overperformance metric: (Expected Baseline Seed Rank - Current Performance Position)</p>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #666; font-size: 14px; margin-bottom: 25px;'>Ranked by overperformance metric: (Ranking - Current performance position)</p>", unsafe_allow_html=True)
         
         # Sort master list specifically by the overperformance gap score
         # Tiebreaker: actual performance ranking
@@ -505,8 +505,8 @@ else:
             h_cols[1].write("**Team**")
             h_cols[2].write("**Expected seed**")
             h_cols[3].write("**Actual rank**")
-            h_cols[4].write("**Played**")
-            h_cols[5].write("**Goal difference**")
+            h_cols[4].write("**P**")
+            h_cols[5].write("**GD**")
             h_cols[6].write("**Pts**")
             h_cols[7].write("") # Blank buffer 
             h_cols[8].write("**Score**")
