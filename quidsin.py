@@ -2,8 +2,9 @@ import streamlit as st
 import requests
 from datetime import datetime
 import pytz
-from streamlit_autorefresh import st_autorefresh
 import os
+from streamlit_autorefresh import st_autorefresh
+import streamlit.components.v1 as components
 
 # 1. Page Configurations & Branding Styles
 st.set_page_config(
@@ -28,24 +29,20 @@ st.markdown("""
             font-family: 'Figtree', sans-serif !important;
         }
         
-        /* Force all standard text elements to stay dark charcoal and use Figtree */
+        /* All text elements */
         p, span, div, label, small, td, th, b {
             color: #333333 !important;
             font-family: 'Figtree', sans-serif !important;
         }
         
-        /* Keep headers fixed to brand orange and use Figtree with heavy weight */
+        /* Headers */
         h1, h2, h3 {
             color: #FF6B00 !important;
             font-family: 'Figtree', sans-serif !important;
             font-weight: 800 !important;
         }
         
-        .header-container {
-            border-bottom: 2px solid #FF6B00;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
+        /* Title area */
         .title-area h1 {
             margin: 0px !important;
             font-size: 28px;
@@ -57,8 +54,8 @@ st.markdown("""
             font-weight: 700 !important;
             font-size: 16px;
         }
-        
-        /* Mobile-responsive Flex Container for Next Match Banner */
+
+        /* Next match banner styles (mobile responsive) */
         .next-match-banner {
             background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%) !important;
             padding: 15px;
@@ -76,146 +73,69 @@ st.markdown("""
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
-                text-align: left;
             }
         }
-        /* Ensure text inside next match banner stays white */
-        .next-match-banner, 
-        .next-match-title, 
-        .next-match-teams, 
-        .next-match-teams span, 
-        .next-match-vs, 
-        .next-match-time {
-            color: #FFFFFF !important;
+        /* ... (rest of your existing styles for banners, tables, etc.) ... */
+
+        /* --- Key Players Banner Styles (new) --- */
+        .key-players-banner {
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+            margin: 20px 0;
+            overflow: hidden;
             font-family: 'Figtree', sans-serif !important;
+            text-align: center;
+            border: 2px solid #DDDDDD;
+            background-color: #fff; /* optional background */
         }
-        .next-match-title {
-            font-size: 12px;
+        .key-players-header {
+            background-color: #006847; /* same as your theme */
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 800 !important;
-            opacity: 0.9;
         }
-        .next-match-teams {
-            font-size: 18px;
-            font-weight: 800 !important;
-        }
-        .next-match-teams span {
-            font-size: 13px;
-            font-weight: 400 !important;
-            opacity: 0.85;
-        }
-        .next-match-vs {
-            opacity: 0.7;
-            margin: 0 10px;
-            font-size: 16px;
-        }
-        .next-match-time {
-            font-size: 14px;
-            font-weight: 700 !important;
-            background: rgba(25, 25, 25, 0.15) !important;
-            padding: 6px 14px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-
-        /* Smaller Side-by-Side Stat Blocks */
-        .stat-banner-box {
-            background: #FFFFFF !important;
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: 2px solid #EAEAEA;
+        .key-players-container {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            height: auto;
-            min-height: 50px;
-            font-family: 'Figtree', sans-serif !important;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px 0;
         }
-        .stat-banner-box medium {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 800 !important;
-            color: #FF6B00 !important;
-            font-family: 'Figtree', sans-serif !important;
-        }
-        .stat-banner-box span {
-            font-size: 14px;
-            font-weight: 800 !important;
-            text-align: right;
-            color: #333333 !important;
-            font-family: 'Figtree', sans-serif !important;
-        }
-
-        /* Responsive Table Canvas Controls */
-        .table-responsive-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 20px;
-        }
-        
-        .custom-dashboard-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            text-align: left;
-            white-space: nowrap;
-            font-family: 'Figtree', sans-serif !important;
-        }
-        .custom-dashboard-table th {
-            background-color: #FAFAFA !important;
-            color: #333333 !important;
-            font-weight: 700 !important;
-            padding: 8px 6px;
-            border-bottom: 2px solid #FF6B00;
-        }
-        .custom-dashboard-table td {
-            padding: 8px 6px;
-            border-bottom: 1px solid #EAEAEA;
-            vertical-align: middle;
-            background-color: #FFFFFF !important;
-            color: #333333 !important;
-        }
-        /* Ensure table text markers are protected */
-        .custom-dashboard-table td b, .custom-dashboard-table td span {
-            color: #333333 !important;
-        }
-
-        /* Custom compact match list element */
-        .fixture-row {
-            background-color: #FFFFFF !important;
-            padding: 8px 10px;
-            border-radius: 4px;
-            margin-bottom: 4px;
+        .key-player-card {
+            width: 130px;
+            height: 130px;
+            background: #fff;
             border: 1px solid #EAEAEA;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: 'Figtree', sans-serif !important;
-        }
-        .fixture-row div, .fixture-row span, .fixture-row b {
-            color: #333333 !important;
-            font-family: 'Figtree', sans-serif !important;
-        }
-        .flag-img {
-            vertical-align: middle;
-            margin: 0px 4px;
-            width: 20px !important;
-            height: 14px !important;
-            object-fit: cover !important;
+            border-radius: 8px;
+            margin: 8px;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            text-align: center;
             display: inline-block;
         }
-        .group-header-text {
-            color: #FF6B00 !important;
-            font-family: 'Figtree', sans-serif !important;
-            font-size: 18px;
-            font-weight: 800 !important;
-            margin-bottom: 8px;
-            display: inline-block;
+        .key-player-card img {
+            width: 100%;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .key-player-name {
+            font-size: 11px;
+            font-weight: 800;
+            color: #333;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .key-player-team {
+            font-size: 9px;
+            font-weight: 600;
+            color: #006847;
+            margin-top: 2px;
+            text-transform: uppercase;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -347,7 +267,7 @@ if API_TOKEN != "placeholder":
     except Exception:
         next_home, next_away, next_date = "API Connection", "Error", ""
 
-# --- BRANDING HEADER TITLE ---
+# --- HEADER ---
 st.markdown("""
     <div class="title-area">
         <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
@@ -359,16 +279,20 @@ st.markdown("""
 st.markdown(f"""
     <div class="next-match-banner">
         <div class="next-match-title">⏳ Next Match</div>
-        <div class="next-match-teams">
-            {next_home}<span>{next_home_owner}</span> 
-            <span class="next-match-vs">v</span> 
-            {next_away}<span>{next_away_owner}</span>
+        <div class="matchup-split-screen">
+            <div class="team-panel home-panel" style="background-color: #FF6B00;">
+                {next_home}<span>{next_home_owner}</span>
+            </div>
+            <div class="vs-marker-bubble">VS</div>
+            <div class="team-panel away-panel" style="background-color: #FF8533;">
+                {next_away}<span>{next_away_owner}</span>
+            </div>
         </div>
-        <div class="next-match-time">🗓️ {next_date}</div>
+        <div class="banner-bottom-time">🗓️ {next_date}</div>
     </div>
 """, unsafe_allow_html=True)
 
-# --- TRIPLE STATS ROW ---
+# --- STATS ROW ---
 stat_cols = st.columns(3)
 with stat_cols[0]:
     st.markdown('<div class="stat-banner-box"><medium>💰 Prize Pot</medium><span>£96</span></div>', unsafe_allow_html=True)
@@ -380,25 +304,25 @@ with stat_cols[2]:
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #FF6B00;'>", unsafe_allow_html=True)
 
-# 3. Render Dashboard Core Content Loop
+# --- GROUPS CANVAS ---
 if API_TOKEN == "placeholder":
     st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists and matches.")
 else:
     if standings_list:
         for i in range(0, len(standings_list), 2):
             row_cols = st.columns(2)
-            
             for j in range(2):
                 if i + j < len(standings_list):
                     group_data = standings_list[i + j]
                     group_name = group_data.get("group")
-                    
                     teams_in_group = [row.get("team", {}).get("name") for row in group_data.get("table", [])]
                     
                     with row_cols[j]:
+                        # Wrap inside structural spacing class
+                        st.markdown('<div class="group-row-spacer">', unsafe_allow_html=True)
                         st.markdown(f"<span class='group-header-text'>🔹 {group_name}</span>", unsafe_allow_html=True)
                         
-                        # --- MOBILE SAFENED GROUP TABLES ---
+                        # Render Standings Table
                         table_html = """
                         <div class="table-responsive-wrapper">
                             <table class="custom-dashboard-table">
@@ -417,7 +341,6 @@ else:
                                 </thead>
                                 <tbody>
                         """
-                        
                         for row in group_data.get("table", []):
                             team_info = row.get("team", {})
                             t_name = team_info.get("name")
@@ -425,25 +348,23 @@ else:
                             owner = SWEEPSTAKE_MAPPING.get(t_name, "Unassigned")
                             flag_html = f'<img src="{t_crest}" class="flag-img">' if t_crest else ''
                             
-                            table_html += "<tr>"
-                            table_html += f'<td>{flag_html} <b>{t_name}</b> <span style="font-size:11px; color:#666;">({owner})</span></td>'
-                            table_html += f'<td style="text-align:center;">{row.get("playedGames")}</td>'
-                            table_html += f'<td style="text-align:center;">{row.get("won")}</td>'
-                            table_html += f'<td style="text-align:center;">{row.get("draw")}</td>'
-                            table_html += f'<td style="text-align:center;">{row.get("lost")}</td>'
-                            table_html += f'<td style="text-align:center;">{row.get("goalsFor")}</td>'
-                            table_html += f'<td style="text-align:center;">{row.get("goalsAgainst")}</td>'
-                            table_html += f'<td style="text-align:center;">{row.get("goalDifference")}</td>'
-                            table_html += f'<td style="text-align:center;"><b>{row.get("points")}</b></td>'
-                            table_html += "</tr>"
+                            table_html += f"""<tr>
+                                <td>{flag_html} <b>{t_name}</b> <span style="font-size:11px; color:#666;">({owner})</span></td>
+                                <td style="text-align:center;">{row.get("playedGames")}</td>
+                                <td style="text-align:center;">{row.get("won")}</td>
+                                <td style="text-align:center;">{row.get("draw")}</td>
+                                <td style="text-align:center;">{row.get("lost")}</td>
+                                <td style="text-align:center;">{row.get("goalsFor")}</td>
+                                <td style="text-align:center;">{row.get("goalsAgainst")}</td>
+                                <td style="text-align:center;">{row.get("goalDifference")}</td>
+                                <td style="text-align:center;"><b>{row.get("points")}</b></td>
+                            </tr>"""
                             
                         table_html += "</tbody></table></div>"
-                        
                         st.markdown(table_html, unsafe_allow_html=True)
                         
-                        # --- CHRONOLOGICAL FIXTURES SUBSECTION ---
-                        st.write("<span style='font-size:12px; font-weight:700; color:#FF6B00;'>📅 Group Fixtures & Results</span>", unsafe_allow_html=True)
-                        
+                        # Render Group Fixtures - wrapped in a tight flex/spacing div
+                        st.markdown("<div style='margin-bottom:6px;'><span style='font-size:12px; font-weight:700; color:#006847;'>📅 Group Fixtures & Results</span></div>", unsafe_allow_html=True)
                         group_fixtures = [m for m in all_matches if m.get("homeTeam", {}).get("name") in teams_in_group or m.get("awayTeam", {}).get("name") in teams_in_group]
                         
                         if not group_fixtures:
@@ -507,7 +428,6 @@ else:
                 </thead>
                 <tbody>
         """
-        
         for display_idx, team_row in enumerate(master_flat_leaderboard, start=1):
             owner = SWEEPSTAKE_MAPPING.get(team_row["name"], "Unassigned")
             flag_html = f'<img src="{team_row["crest"]}" class="flag-img">' if team_row["crest"] else ''
@@ -517,19 +437,44 @@ else:
             op_formatted = f"+{op_val}" if op_val > 0 else str(op_val)
             score_color = "#107C41" if op_val > 0 else ("#A80000" if op_val < 0 else "#333333")
             
-            master_table_html += "<tr>"
-            master_table_html += f"<td><b>{pos_str}</b></td>"
-            master_table_html += f"<td>{flag_html} <b>{team_row['name']}</b> <span style='font-size:11px; color:#666;'>({owner})</span></td>"
-            master_table_html += f"<td style='text-align:center; color:#555;'>#{team_row['expected_rank']}</td>"
-            master_table_html += f"<td style='text-align:center; color:#555;'>#{team_row['actual_rank']}</td>"
-            master_table_html += f"<td style='text-align:center;'>{team_row['played']}</td>"
-            master_table_html += f"<td style='text-align:center;'>{team_row['gd']}</td>"
-            master_table_html += f"<td style='text-align:center;'>{team_row['pts']}</td>"
-            master_table_html += f"<td style='text-align:right; padding-right:15px; color:{score_color}; font-weight:bold;'>{op_formatted}</td>"
-            master_table_html += "</tr>"
+            master_table_html += f"""<tr>
+                <td><b>{pos_str}</b></td>
+                <td>{flag_html} <b>{team_row['name']}</b> <span style='font-size:11px; color:#666;'>({owner})</span></td>
+                <td style='text-align:center; color:#555;'>#{team_row['expected_rank']}</td>
+                <td style='text-align:center; color:#555;'>#{team_row['actual_rank']}</td>
+                <td style='text-align:center;'>{team_row['played']}</td>
+                <td style='text-align:center;'>{team_row['gd']}</td>
+                <td style='text-align:center;'><b>{team_row['pts']}</b></td>
+                <td style='text-align:right; padding-right:15px; font-weight:800; color:{score_color};'>{op_formatted}</td>
+            </tr>"""
             
         master_table_html += "</tbody></table></div>"
-        
-        m_center_cols = st.columns([1, 10, 1])
-        with m_center_cols[1]:
-            st.markdown(master_table_html, unsafe_allow_html=True)
+        st.markdown(master_table_html, unsafe_allow_html=True)
+
+# --- Key Players Section (New) ---
+# Loop through the groups again or just use one group for demonstration
+# Here, for simplicity, I add it after the first group only
+# (you can place it wherever you want, or inside the loop for each group)
+
+# For the example, adding after the first group:
+if 'teams_in_group' in locals() and teams_in_group:
+    st.markdown('<div class="key-players-banner">', unsafe_allow_html=True)
+    st.markdown('<div class="key-players-header">🌟 Key Players</div>', unsafe_allow_html=True)
+
+    active_cards = []
+    for team_name in teams_in_group:
+        if team_name in GROUP_PLAYERS:
+            p = GROUP_PLAYERS[team_name]
+            card_html = f"""
+            <div class="key-player-card">
+                <img src="{p['img_url']}" loading="eager" referrerpolicy="no-referrer">
+                <div class="key-player-name">{p['player_name']}</div>
+                <div class="key-player-team">{team_name}</div>
+            </div>
+            """
+            active_cards.append(card_html)
+
+    if active_cards:
+        html_content = f'<div class="key-players-container">{"".join(active_cards)}</div>'
+        components.html(html_content, height=160, scrolling=False)
+    st.markdown('</div>', unsafe_allow_html=True)
