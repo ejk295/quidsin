@@ -96,9 +96,10 @@ st.markdown("""
             align-items: center;
             justify-content: space-between;
             margin-bottom: 15px;
+            height: 60px;
         }
         .stat-banner-box medium {
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-family: 'Arial Black', sans-serif;
@@ -106,9 +107,10 @@ st.markdown("""
             color: #FF6B00;
         }
         .stat-banner-box span {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold !important;
             font-family: 'Arial Black', sans-serif;
+            text-align: right;
         }
 
         /* Custom compact match list element */
@@ -174,14 +176,14 @@ SWEEPSTAKE_MAPPING = {
     "Belgium": "Mart",
     "Egypt": "Chris",
     "Tunisia": "Jess 2",
-    "Netherlands": "",
+    "Netherlands": "Unassigned",
     "Ivory Coast": "Suzie",
     "Australia": "Amy",
     "Cape Verde Islands": "Justin 2",
     "Uruguay": "Paul 2",
     "Sweden": "Kat",
     "Saudi Arabia": "Aurelie",
-    "Scotland": "",
+    "Scotland": "Unassigned",
     "United States": "Neil",
     "Senegal": "Sara",
     "New Zealand": "James",
@@ -221,6 +223,8 @@ next_date = ""
 
 all_matches = []
 standings_list = []
+master_flat_leaderboard = []
+top_performer_text = "N/A"
 
 if API_TOKEN != "placeholder":
     try:
@@ -228,6 +232,33 @@ if API_TOKEN != "placeholder":
         standings_url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings"
         standings_res = requests.get(standings_url, headers=HEADERS)
         standings_list = standings_res.json().get("standings", [])
+        
+        # Build Master Flat Leaderboard across all groups combined
+        for group in standings_list:
+            for row in group.get("table", []):
+                t_info = row.get("team", {})
+                t_name = t_info.get("name", "Unknown")
+                master_flat_leaderboard.append({
+                    "name": t_name,
+                    "crest": t_info.get("crest", ""),
+                    "played": row.get("playedGames", 0),
+                    "won": row.get("won", 0),
+                    "drawn": row.get("draw", 0),
+                    "lost": row.get("lost", 0),
+                    "gf": row.get("goalsFor", 0),
+                    "ga": row.get("goalsAgainst", 0),
+                    "gd": row.get("goalDifference", 0),
+                    "pts": row.get("points", 0)
+                })
+        
+        # Sorting Criteria Logic: Pts DESC, Won DESC, GD DESC, GF DESC, Alphabetical ASC
+        if master_flat_leaderboard:
+            master_flat_leaderboard.sort(
+                key=lambda x: (-x["pts"], -x["won"], -x["gd"], -x["gf"], x["name"])
+            )
+            top_team = master_flat_leaderboard[0]
+            top_owner = SWEEPSTAKE_MAPPING.get(top_team["name"], "Unassigned")
+            top_performer_text = f"{top_team['name']} ({top_owner})"
         
         # Fetch Match Data
         matches_url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches"
@@ -287,8 +318,8 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# --- SECONDARY STATS ROW (PRIZE POT & FAVORITES) ---
-stat_cols = st.columns(2)
+# --- TRIPLE STATS ROW (PRIZE POT, FAVORITES & OVERPERFORMER) ---
+stat_cols = st.columns(3)
 
 with stat_cols[0]:
     st.markdown("""
@@ -304,6 +335,14 @@ with stat_cols[1]:
         <div class="stat-banner-box">
             <medium>⭐ Favourites</medium>
             <span>Spain ({fave_owner})</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+with stat_cols[2]:
+    st.markdown(f"""
+        <div class="stat-banner-box">
+            <medium>🚀 Overperformer</medium>
+            <span>{top_performer_text}</span>
         </div>
     """, unsafe_allow_html=True)
 
@@ -421,3 +460,46 @@ else:
                                     </div>
                                 """, unsafe_allow_html=True)
                         st.write("<br>", unsafe_allow_html=True)
+
+        # --- SECTION DIVIDER FOR COMBINED LEADERBOARD ---
+        st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #FF6B00;'>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; margin-bottom: 25px;'>📊 Overall Tournament Leaderboard</h2>", unsafe_allow_html=True)
+        
+        # Centering table inside a clean layout column block
+        m_center_cols = st.columns([1, 10, 1])
+        with m_center_cols[1]:
+            # Leaderboard Headers
+            h_cols = st.columns([0.6, 3.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 1.0])
+            h_cols[0].write("**Pos**")
+            h_cols[1].write("**Team & Sweepstake Owner**")
+            h_cols[2].write("**P**")
+            h_cols[3].write("**W**")
+            h_cols[4].write("**D**")
+            h_cols[5].write("**L**")
+            h_cols[6].write("**GF**")
+            h_cols[7].write("**GA**")
+            h_cols[8].write("**GD**")
+            h_cols[9].write("**Pts**")
+            st.markdown("<hr style='margin:4px 0px; border-top: 2px solid #FF6B00;'>", unsafe_allow_html=True)
+            
+            # Populate Ranked Rows
+            for position, team_row in enumerate(master_flat_leaderboard, start=1):
+                owner = SWEEPSTAKE_MAPPING.get(team_row["name"], "Unassigned")
+                flag_html = f'<img src="{team_row["crest"]}" class="flag-img">' if team_row["crest"] else ''
+                
+                r_cols = st.columns([0.6, 3.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 1.0])
+                
+                # Make top positions pop out slightly
+                pos_str = f"🏆 {position}" if position == 1 else str(position)
+                
+                r_cols[0].write(f"**{pos_str}**")
+                r_cols[1].markdown(f"{flag_html} **{team_row['name']}** <span style='font-size:12px; color:#666;'>({owner})</span>", unsafe_allow_html=True)
+                r_cols[2].write(str(team_row["played"]))
+                r_cols[3].write(str(team_row["won"]))
+                r_cols[4].write(str(team_row["drawn"]))
+                r_cols[5].write(str(team_row["lost"]))
+                r_cols[6].write(str(team_row["gf"]))
+                r_cols[7].write(str(team_row["ga"]))
+                r_cols[8].write(str(team_row["gd"]))
+                r_cols[9].write(f"**{team_row['pts']}**")
+                st.markdown("<hr style='margin:2px 0px; border-top: 1px solid #EAEAEA;'>", unsafe_allow_html=True)
