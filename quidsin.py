@@ -182,7 +182,7 @@ SWEEPSTAKE_MAPPING = {
     "Sweden": "Kat",
     "Saudi Arabia": "Aurelie",
     "Scotland": "",
-    "USA": "Neil",
+    "United States": "Neil",
     "Senegal": "Sara",
     "New Zealand": "James",
     "Iran": "Elaine",
