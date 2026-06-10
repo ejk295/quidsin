@@ -144,7 +144,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 2. Configuration & API Settings
-API_TOKEN = "d84823d6473145448613cfccfc718256"  
+import os
+API_TOKEN = os.environ.get("FOOTBALL_API_TOKEN", "placeholder")
 COMPETITION_CODE = "WC"
 BASE_URL = "https://api.football-data.org/v4"
 HEADERS = {"X-Auth-Token": API_TOKEN}
