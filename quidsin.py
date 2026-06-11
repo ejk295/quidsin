@@ -474,10 +474,11 @@ def format_to_uk_time(utc_str):
         return None
 
 def get_live_score(match):
-    """Safely extracts valid integers, avoiding API mid-state 'None' or null updates."""
+    """Safely extracts valid integers, prioritizing final scores over shifting live states."""
     score_obj = match.get("score", {})
     
-    # Priority checklist for checking scores across API update windows
+    # Prioritize fullTime first! If a match is finished or archiving, 
+    # this stops it from dropping back to a temporary 0-0 or None.
     for target_key in ["fullTime", "regularTime", "halfTime"]:
         s = score_obj.get(target_key, {})
         if s and s.get("home") is not None and s.get("away") is not None:
