@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # Run page auto-refresh every 3 minutes to keep live scores syncing
-st_autorefresh(interval=300 * 1000, key="datarefresh")
+st_autorefresh(interval=180 * 1000, key="datarefresh")
 
 # Custom branding & layout safety styles with strict light-mode overrides and Figtree font
 st.markdown("""
@@ -217,7 +217,7 @@ st.markdown("""
             color: #333333 !important;
         }
 
-        /* --- IN-GROUP TEAM PLAYERS ROW (UPDATED) --- */
+        /* --- IN-GROUP TEAM PLAYERS ROW --- */
         .group-players-container {
             display: flex;
             flex-wrap: wrap;
@@ -410,7 +410,6 @@ TEAM_COLORS = {
     "Croatia": "#FF0000", "South Korea": "#111111"
 }
 
-# --- GROUP PLAYERS MAP ---
 GROUP_PLAYERS = {
     "Spain": {"player_name": "Lamine Yamal", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lamine-yamal-spain-forward-profile-full.png"},
     "France": {"player_name": "Kylian Mbappe", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kylian-mbappe-france-forward-profile-full.png"},
@@ -475,26 +474,18 @@ def format_to_uk_time(utc_str):
         return None
 
 def get_live_score(match):
-    """Extract the best available score from a match object (handles mid-game where fullTime is null)."""
+    """Safely extracts valid integers, avoiding API mid-state 'None' or null updates."""
     score_obj = match.get("score", {})
-    match_status = match.get("status")
     
-    # If match is finished, fullTime should have the real score
-    if match_status == "FINISHED":
-        s = score_obj.get("fullTime", {})
+    # Priority checklist for checking scores across API update windows
+    for target_key in ["fullTime", "regularTime", "halfTime"]:
+        s = score_obj.get(target_key, {})
         if s and s.get("home") is not None and s.get("away") is not None:
-            return s.get("home", 0), s.get("away", 0)
-    
-    # For live/paused matches, try regularTime first (current score), then fullTime/halfTime
-    for key in ["regularTime", "fullTime", "halfTime"]:
-        s = score_obj.get(key, {})
-        if s and s.get("home") is not None and s.get("away") is not None:
-            return s.get("home", 0), s.get("away", 0)
-    
+            return int(s.get("home")), int(s.get("away"))
+            
     return 0, 0
 
 def build_match_banner(match, is_live=False):
-    """Return the HTML string for a single match banner (next-match or in-play style)."""
     home_team_obj = match.get("homeTeam", {})
     away_team_obj = match.get("awayTeam", {})
 
@@ -549,10 +540,9 @@ def build_match_banner(match, is_live=False):
     </div>
     """
 
-# ── Data fetching ─────────────────────────────────────────────────────────
-@st.cache_data(ttl=300)  # Cache for 60 seconds to respect API rate limits (10 calls/min across 2 sites = 5 calls/min per site = 1 call per 12 seconds)
+# ── Data Fetching (Protected TTL Cache to safeguard 10 req/min limits) ─────
+@st.cache_data(ttl=120)  
 def fetch_football_data():
-    """Fetch live data from API."""
     all_matches = []
     standings_list = []
     
@@ -560,12 +550,10 @@ def fetch_football_data():
         return all_matches, standings_list
 
     try:
-        # Fetch Standings
         s_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings", headers=HEADERS, timeout=10)
         if s_res.status_code == 200:
             standings_list = s_res.json().get("standings", [])
             
-        # Fetch Matches
         m_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches", headers=HEADERS, timeout=10)
         if m_res.status_code == 200:
             all_matches = m_res.json().get("matches", [])
@@ -575,10 +563,10 @@ def fetch_football_data():
         
     return all_matches, standings_list
 
-# Fetch the data
+# Fetch the data safely
 all_matches, standings_list = fetch_football_data()
 
-# Process Leaderboard
+# Process Leaderboard Data safely
 master_flat_leaderboard = []
 top_performer_text = "N/A"
 
@@ -606,8 +594,10 @@ if master_flat_leaderboard:
     op_owner = SWEEPSTAKE_MAPPING.get(best["name"], "Unassigned")
     top_performer_text = f"{best['name']} ({op_owner})"
 
-# ── Derived match lists ──────────────────────────────────────────────────────
+# ── Dynamic Match Filtering & Layout Deduplication ────────────────────────
 live_matches = [m for m in all_matches if m.get("status") in ["IN_PLAY", "PAUSED"]]
+
+# Explicitly exclude matches that are finished to prevent CDN propagation flickers
 upcoming_matches = sorted(
     [m for m in all_matches if m.get("status") in ["TIMED", "SCHEDULED"]],
     key=lambda x: x.get("utcDate", "")
@@ -626,17 +616,17 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# ── IN-PLAY BANNERS (only shown when matches are live) ───────────────────────
+# ── RENDERING THE HERO BANNERS DETERMINISTICALLY ──────────────────────────
+# Both blocks can run together now, preventing visual flickering between states
 if live_matches:
     for live_match in live_matches:
         st.markdown(build_match_banner(live_match, is_live=True), unsafe_allow_html=True)
 
-# ── NEXT MATCH BANNERS (one per simultaneous kick-off) ───────────────────────
 if next_kickoff_matches:
     for next_match in next_kickoff_matches:
         st.markdown(build_match_banner(next_match, is_live=False), unsafe_allow_html=True)
-elif not live_matches:
-    # Only show this if there are no upcoming matches AND no live matches
+
+if not live_matches and not next_kickoff_matches:
     st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
 # ── STATS ROW ──────────────────────────────────────────────────────────
@@ -760,7 +750,7 @@ else:
                                     </div>
                                 """, unsafe_allow_html=True)
 
-                        # Key players
+                        # Key players component layout
                         import streamlit.components.v1 as components
 
                         active_cards = []
