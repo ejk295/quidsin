@@ -12,8 +12,8 @@ st.set_page_config(
     layout="wide"
 )
 
-# Run page auto-refresh every 30 seconds to keep live scores syncing
-st_autorefresh(interval=90 * 1000, key="datarefresh")
+# Run page auto-refresh every 3 minutes to keep live scores syncing
+st_autorefresh(interval=300 * 1000, key="datarefresh")
 
 # Custom branding & layout safety styles with strict light-mode overrides and Figtree font
 st.markdown("""
@@ -50,11 +50,11 @@ st.markdown("""
             font-size: 16px;
         }
 
-        /* --- NEXT MATCH BANNER LAYOUT (DYNAMIC COLOURS) --- */
+        /* --- MATCH BANNER LAYOUT (DYNAMIC COLOURS) --- */
         .match-banner-container {
             border-radius: 12px;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
-            margin: 15px 0px;
+            margin: 8px 0px;
             overflow: hidden;
             font-family: 'Figtree', sans-serif !important;
             text-align: center;
@@ -76,6 +76,12 @@ st.markdown("""
             padding: 6px 12px;
             border-radius: 6px;
             display: inline-block;
+        }
+
+        /* In-play banner top pane */
+        .inplay-top-pane {
+            background-color: #8B0000;
+            padding: 10px 20px;
         }
 
         .matchup-split-screen {
@@ -138,8 +144,35 @@ st.markdown("""
             box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
 
+        /* Score bubble for in-play matches */
+        .score-bubble {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            background-color: #8B0000;
+            color: #FFFFFF !important;
+            font-size: 18px;
+            font-weight: 900 !important;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            white-space: nowrap;
+        }
+
         .banner-bottom-time {
             background-color: #111111;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 700 !important;
+            color: #FFFFFF !important;
+        }
+
+        /* In-play bottom bar */
+        .inplay-bottom-bar {
+            background-color: #8B0000;
             padding: 10px 20px;
             font-size: 13px;
             font-weight: 700 !important;
@@ -191,13 +224,13 @@ st.markdown("""
             gap: 5px;
             margin-top: 8px !important; 
             margin-bottom: 0px !important;
-            justify-content: center; /* Centered */
+            justify-content: center;
         }
         .group-player-card {
             background: #FFFFFF;
             border: 1px solid #EAEAEA;
             border-radius: 8px;
-            width: 120px; /* Wider */
+            width: 120px;
             text-align: center;
             padding: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
@@ -210,7 +243,7 @@ st.markdown("""
             background: #F5F5F5;
         }
         .group-player-card-name {
-            font-size: 11px; /* Slightly larger */
+            font-size: 11px;
             font-weight: 800 !important;
             color: #333333 !important;
             margin-top: 3px;
@@ -219,19 +252,17 @@ st.markdown("""
             text-overflow: ellipsis;
         }
         .group-player-card-team {
-            font-size: 9px; /* Slightly larger */
+            font-size: 9px;
             font-weight: 600 !important;
             color: #ff7d23 !important;
             text-transform: uppercase;
             margin-top: 1px;
         }
 
-        /* Clean Separator Block for Group Rows Grid layout */
         .group-row-spacer {
             margin-bottom: 15px !important;
         }
 
-        /* Responsive Table Canvas Controls */
         .table-responsive-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -270,6 +301,10 @@ st.markdown("""
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        .fixture-row-live {
+            background-color: #FFF5F5 !important;
+            border: 1px solid #FFCCCC !important;
         }
         .flag-img {
             vertical-align: middle;
@@ -313,6 +348,12 @@ st.markdown("""
             .vs-marker-bubble {
                 top: auto;
                 bottom: -14px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .score-bubble {
+                top: auto;
+                bottom: -18px;
                 left: 50%;
                 transform: translateX(-50%);
             }
@@ -433,140 +474,175 @@ def format_to_uk_time(utc_str):
     except Exception:
         return None
 
-# Fallbacks
-next_home = "Mexico"
-next_away = "South Africa"
-next_home_owner = " (TBC)"
-next_away_owner = " (TBC)"
-next_date = "11th June @ 20:00"
-next_home_flag = ""
-next_away_flag = ""
+def get_live_score(match):
+    """Extract the best available score from a match object (handles mid-game where fullTime is null)."""
+    score_obj = match.get("score", {})
+    match_status = match.get("status")
+    
+    # If match is finished, fullTime should have the real score
+    if match_status == "FINISHED":
+        s = score_obj.get("fullTime", {})
+        if s and s.get("home") is not None and s.get("away") is not None:
+            return s.get("home", 0), s.get("away", 0)
+    
+    # For live/paused matches, try regularTime first (current score), then fullTime/halfTime
+    for key in ["regularTime", "fullTime", "halfTime"]:
+        s = score_obj.get(key, {})
+        if s and s.get("home") is not None and s.get("away") is not None:
+            return s.get("home", 0), s.get("away", 0)
+    
+    return 0, 0
 
-all_matches = []
-standings_list = []
+def build_match_banner(match, is_live=False):
+    """Return the HTML string for a single match banner (next-match or in-play style)."""
+    home_team_obj = match.get("homeTeam", {})
+    away_team_obj = match.get("awayTeam", {})
+
+    h_name = home_team_obj.get("name", "TBD")
+    a_name = away_team_obj.get("name", "TBD")
+
+    left_color = TEAM_COLORS.get(h_name, DEFAULT_LEFT_COLOR)
+    right_color = TEAM_COLORS.get(a_name, DEFAULT_RIGHT_COLOR)
+    if left_color == right_color:
+        right_color = "#222222" if left_color != "#222222" else "#555555"
+
+    h_flag = f'<img src="{home_team_obj["crest"]}" class="banner-flag">' if home_team_obj.get("crest") else ""
+    a_flag = f'<img src="{away_team_obj["crest"]}" class="banner-flag">' if away_team_obj.get("crest") else ""
+
+    h_owner = f" ({SWEEPSTAKE_MAPPING.get(h_name, 'Unassigned')})"
+    a_owner = f" ({SWEEPSTAKE_MAPPING.get(a_name, 'Unassigned')})"
+
+    if is_live:
+        h_score, a_score = get_live_score(match)
+        top_pane = '<div class="inplay-top-pane"><div class="next-match-title">🔴 Live Now</div></div>'
+        centre_bubble = f'<div class="score-bubble">{h_score} – {a_score}</div>'
+        bottom_bar = '<div class="inplay-bottom-bar">⚽ Match in progress</div>'
+    else:
+        dt_uk = format_to_uk_time(match.get("utcDate"))
+        if dt_uk:
+            day = dt_uk.day
+            suffix = "th" if 4 <= day <= 20 or 24 <= day <= 30 else ["st", "nd", "rd"][day % 10 - 1]
+            date_str = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
+        else:
+            date_str = "TBD"
+        top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next Match</div></div>'
+        centre_bubble = '<div class="vs-marker-bubble">VS</div>'
+        bottom_bar = f'<div class="banner-bottom-time">🗓️ {date_str}</div>'
+
+    return f"""
+    <div class="match-banner-container">
+        {top_pane}
+        <div class="matchup-split-screen">
+            <div class="team-panel home-panel" style="background-color: {left_color};">
+                <div class="team-panel-text">
+                    {h_flag} {h_name} <span>{h_owner}</span>
+                </div>
+            </div>
+            {centre_bubble}
+            <div class="team-panel away-panel" style="background-color: {right_color};">
+                <div class="team-panel-text">
+                    <span>{a_owner}</span> {a_name} {a_flag}
+                </div>
+            </div>
+        </div>
+        {bottom_bar}
+    </div>
+    """
+
+# ── Data fetching ─────────────────────────────────────────────────────────
+@st.cache_data(ttl=300)  # Cache for 60 seconds to respect API rate limits (10 calls/min across 2 sites = 5 calls/min per site = 1 call per 12 seconds)
+def fetch_football_data():
+    """Fetch live data from API."""
+    all_matches = []
+    standings_list = []
+    
+    if API_TOKEN == "placeholder":
+        return all_matches, standings_list
+
+    try:
+        # Fetch Standings
+        s_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings", headers=HEADERS, timeout=10)
+        if s_res.status_code == 200:
+            standings_list = s_res.json().get("standings", [])
+            
+        # Fetch Matches
+        m_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches", headers=HEADERS, timeout=10)
+        if m_res.status_code == 200:
+            all_matches = m_res.json().get("matches", [])
+            
+    except Exception as e:
+        st.error(f"Error connecting to API: {e}")
+        
+    return all_matches, standings_list
+
+# Fetch the data
+all_matches, standings_list = fetch_football_data()
+
+# Process Leaderboard
 master_flat_leaderboard = []
 top_performer_text = "N/A"
 
-banner_left_color = DEFAULT_LEFT_COLOR
-banner_right_color = DEFAULT_RIGHT_COLOR
+for group in standings_list:
+    for row in group.get("table", []):
+        t_info = row.get("team", {})
+        master_flat_leaderboard.append({
+            "name": t_info.get("name", "Unknown"),
+            "played": row.get("playedGames", 0),
+            "won": row.get("won", 0),
+            "gd": row.get("goalDifference", 0),
+            "gf": row.get("goalsFor", 0),
+            "pts": row.get("points", 0),
+            "crest": t_info.get("crest", "")
+        })
 
-if API_TOKEN != "placeholder":
-    try:
-        # Fetch Standings
-        standings_url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings"
-        standings_res = requests.get(standings_url, headers=HEADERS)
-        standings_list = standings_res.json().get("standings", [])
-        
-        for group in standings_list:
-            for row in group.get("table", []):
-                t_info = row.get("team", {})
-                master_flat_leaderboard.append({
-                    "name": t_info.get("name", "Unknown"),
-                    "crest": t_info.get("crest", ""),
-                    "played": row.get("playedGames", 0),
-                    "won": row.get("won", 0),
-                    "drawn": row.get("draw", 0),
-                    "lost": row.get("lost", 0),
-                    "gf": row.get("goalsFor", 0),
-                    "ga": row.get("goalsAgainst", 0),
-                    "gd": row.get("goalDifference", 0),
-                    "pts": row.get("points", 0)
-                })
-        
-        if master_flat_leaderboard:
-            master_flat_leaderboard.sort(key=lambda x: (-x["pts"], -x["won"], -x["gd"], -x["gf"], x["name"]))
-            for idx, team_item in enumerate(master_flat_leaderboard, start=1):
-                name = team_item["name"]
-                expected_rank = EXPECTED_RANKINGS.get(name, 25)
-                team_item["actual_rank"] = idx
-                team_item["expected_rank"] = expected_rank
-                team_item["overperformance"] = expected_rank - idx
-            
-            best_overperformer = max(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]))
-            op_owner = SWEEPSTAKE_MAPPING.get(best_overperformer["name"], "Unassigned")
-            top_performer_text = f"{best_overperformer['name']} ({op_owner})"
-        
-        # Fetch Matches
-        matches_url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches"
-        matches_res = requests.get(matches_url, headers=HEADERS)
-        all_matches = matches_res.json().get("matches", [])
-        
-        if all_matches:
-            upcoming_matches = [m for m in all_matches if m.get("status") in ["TIMED", "SCHEDULED"]]
-            if upcoming_matches:
-                upcoming_matches.sort(key=lambda x: x.get("utcDate", ""))
-                next_m = upcoming_matches[0]
-                
-                home_team_obj = next_m.get("homeTeam", {})
-                away_team_obj = next_m.get("awayTeam", {})
-                
-                next_home = home_team_obj.get("name", "TBD")
-                next_away = away_team_obj.get("name", "TBD")
-                
-                banner_left_color = TEAM_COLORS.get(next_home, DEFAULT_LEFT_COLOR)
-                banner_right_color = TEAM_COLORS.get(next_away, DEFAULT_RIGHT_COLOR)
-                
-                if banner_left_color == banner_right_color:
-                    banner_right_color = "#222222" if banner_left_color != "#222222" else "#555555"
+if master_flat_leaderboard:
+    master_flat_leaderboard.sort(key=lambda x: (-x["pts"], -x["won"], -x["gd"], -x["gf"], x["name"]))
+    for idx, team_item in enumerate(master_flat_leaderboard, start=1):
+        team_item["actual_rank"] = idx
+        team_item["expected_rank"] = EXPECTED_RANKINGS.get(team_item["name"], 25)
+        team_item["overperformance"] = team_item["expected_rank"] - idx
 
-                if home_team_obj.get("crest"):
-                    next_home_flag = f'<img src="{home_team_obj.get("crest")}" class="banner-flag">'
-                if away_team_obj.get("crest"):
-                    next_away_flag = f'<img src="{away_team_obj.get("crest")}" class="banner-flag">'
-                
-                next_home_owner = f" ({SWEEPSTAKE_MAPPING.get(next_home, 'Unassigned')})"
-                next_away_owner = f" ({SWEEPSTAKE_MAPPING.get(next_away, 'Unassigned')})"
-                
-                dt_uk = format_to_uk_time(next_m.get("utcDate"))
-                if dt_uk:
-                    day = dt_uk.day
-                    suffix = "th" if 4 <= day <= 20 or 24 <= day <= 30 else ["st", "nd", "rd"][day % 10 - 1]
-                    next_date = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
-    except Exception:
-        pass
+    best = max(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]))
+    op_owner = SWEEPSTAKE_MAPPING.get(best["name"], "Unassigned")
+    top_performer_text = f"{best['name']} ({op_owner})"
 
-# --- HEADER ---
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    st.markdown("""
-        <div class="title-area" style="text-align: center;">
-            <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE 🏆</h1>
-            <p>Live standings</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-# --- DYNAMIC MATCHUP BANNER ---
-banner_html = (
-    '<div class="match-banner-container">'
-    '    <div class="banner-top-pane">'
-    '        <div class="next-match-title">⏳ Next Match</div>'
-    '    </div>'
-    '    '
-    '    <div class="matchup-split-screen">'
-    '        <div class="team-panel home-panel" style="background-color: ' + banner_left_color + ';">'
-    '            <div class="team-panel-text">'
-    '                ' + next_home_flag + ' ' + next_home + ' <span>' + next_home_owner + '</span>'
-    '            </div>'
-    '        </div>'
-    '        '
-    '        <div class="vs-marker-bubble">VS</div>'
-    '        '
-    '        <div class="team-panel away-panel" style="background-color: ' + banner_right_color + ';">'
-    '            <div class="team-panel-text">'
-    '                <span>' + next_away_owner + '</span> ' + next_away + ' ' + next_away_flag + ''
-    '            </div>'
-    '        </div>'
-    '    </div>'
-    '    '
-    '    <div class="banner-bottom-time">🗓️ ' + next_date + '</div>'
-    '</div>'
+# ── Derived match lists ──────────────────────────────────────────────────────
+live_matches = [m for m in all_matches if m.get("status") in ["IN_PLAY", "PAUSED"]]
+upcoming_matches = sorted(
+    [m for m in all_matches if m.get("status") in ["TIMED", "SCHEDULED"]],
+    key=lambda x: x.get("utcDate", "")
 )
-st.markdown(banner_html, unsafe_allow_html=True)
 
-# --- STATS ROW ---
+next_kickoff_matches = []
+if upcoming_matches:
+    first_kickoff = upcoming_matches[0].get("utcDate", "")
+    next_kickoff_matches = [m for m in upcoming_matches if m.get("utcDate", "") == first_kickoff]
+
+# ── HEADER ─────────────────────────────────────────────────────────────
+st.markdown("""
+    <div class="title-area">
+        <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
+        <p>Live standings</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# ── IN-PLAY BANNERS (only shown when matches are live) ───────────────────────
+if live_matches:
+    for live_match in live_matches:
+        st.markdown(build_match_banner(live_match, is_live=True), unsafe_allow_html=True)
+
+# ── NEXT MATCH BANNERS (one per simultaneous kick-off) ───────────────────────
+if next_kickoff_matches:
+    for next_match in next_kickoff_matches:
+        st.markdown(build_match_banner(next_match, is_live=False), unsafe_allow_html=True)
+elif not live_matches:
+    # Only show this if there are no upcoming matches AND no live matches
+    st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
+
+# ── STATS ROW ──────────────────────────────────────────────────────────
 stat_cols = st.columns(3)
 with stat_cols[0]:
-    st.markdown('<div class="stat-banner-box"><medium>💰 Prize Pot</medium><span>£96</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="stat-banner-box"><medium>💰 Prize Pot</medium><span>£30</span></div>', unsafe_allow_html=True)
 with stat_cols[1]:
     fave_owner = SWEEPSTAKE_MAPPING.get("France", "Unassigned")
     st.markdown(f'<div class="stat-banner-box"><medium>⭐ Favourites</medium><span>France ({fave_owner})</span></div>', unsafe_allow_html=True)
@@ -575,7 +651,7 @@ with stat_cols[2]:
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
-# --- GROUPS CANVAS ---
+# ── GROUPS CANVAS ─────────────────────────────────────────────────────────
 if API_TOKEN == "placeholder":
     st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists and matches.")
 else:
@@ -587,13 +663,12 @@ else:
                     group_data = standings_list[i + j]
                     group_name = group_data.get("group")
                     teams_in_group = [row.get("team", {}).get("name") for row in group_data.get("table", [])]
-                    
+
                     with row_cols[j]:
-                        # Wrap inside structural spacing class
                         st.markdown('<div class="group-row-spacer">', unsafe_allow_html=True)
                         st.markdown(f"<span class='group-header-text'>🔹 {group_name}</span>", unsafe_allow_html=True)
-                        
-                        # Render Standings Table
+
+                        # Standings table
                         table_html = """
                         <div class="table-responsive-wrapper">
                             <table class="custom-dashboard-table">
@@ -618,7 +693,6 @@ else:
                             t_crest = team_info.get("crest", "")
                             owner = SWEEPSTAKE_MAPPING.get(t_name, "Unassigned")
                             flag_html = f'<img src="{t_crest}" class="flag-img">' if t_crest else ''
-                            
                             table_html += f"""<tr>
                                 <td>{flag_html} <b>{t_name}</b> <span style="font-size:11px; color:#666;">({owner})</span></td>
                                 <td style="text-align:center;">{row.get("playedGames")}</td>
@@ -630,38 +704,50 @@ else:
                                 <td style="text-align:center;">{row.get("goalDifference")}</td>
                                 <td style="text-align:center;"><b>{row.get("points")}</b></td>
                             </tr>"""
-                            
                         table_html += "</tbody></table></div>"
                         st.markdown(table_html, unsafe_allow_html=True)
-                        
-                        # Render Group Fixtures - wrapped in a tight flex/spacing div
-                        st.markdown("<div style='margin-bottom:6px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>📅 Group Fixtures & Results</span></div>", unsafe_allow_html=True)
-                        group_fixtures = [m for m in all_matches if m.get("homeTeam", {}).get("name") in teams_in_group or m.get("awayTeam", {}).get("name") in teams_in_group]
-                        
+
+                        # Fixtures & Results
+                        st.markdown("<div style='margin-bottom:6px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>📅 Group fixtures & results</span></div>", unsafe_allow_html=True)
+                        group_fixtures = [
+                            m for m in all_matches
+                            if m.get("homeTeam", {}).get("name") in teams_in_group
+                            or m.get("awayTeam", {}).get("name") in teams_in_group
+                        ]
+
                         if not group_fixtures:
                             st.caption("No fixtures currently listed for this group.")
                         else:
                             group_fixtures.sort(key=lambda x: x.get("utcDate", ""))
                             for match in group_fixtures[:6]:
                                 m_status = match.get("status")
-                                home_t, away_t = match.get("homeTeam", {}), match.get("awayTeam", {})
-                                h_name, a_name = home_t.get("name", "TBD"), away_t.get("name", "TBD")
-                                h_owner, a_owner = SWEEPSTAKE_MAPPING.get(h_name, "Unassigned"), SWEEPSTAKE_MAPPING.get(a_name, "Unassigned")
-                                
+                                home_t = match.get("homeTeam", {})
+                                away_t = match.get("awayTeam", {})
+                                h_name = home_t.get("name", "TBD")
+                                a_name = away_t.get("name", "TBD")
+                                h_owner = SWEEPSTAKE_MAPPING.get(h_name, "Unassigned")
+                                a_owner = SWEEPSTAKE_MAPPING.get(a_name, "Unassigned")
+
                                 dt_uk = format_to_uk_time(match.get("utcDate"))
                                 local_time_str = dt_uk.strftime("%d/%m %H:%M") if dt_uk else "TBD"
-                                h_flag = f'<img src="{home_t.get("crest", "")}" class="flag-img">' if home_t.get("crest") else ''
-                                a_flag = f'<img src="{away_t.get("crest", "")}" class="flag-img">' if away_t.get("crest") else ''
-                                
+
+                                h_flag = f'<img src="{home_t["crest"]}" class="flag-img">' if home_t.get("crest") else ''
+                                a_flag = f'<img src="{away_t["crest"]}" class="flag-img">' if away_t.get("crest") else ''
+
                                 if m_status == "FINISHED":
-                                    display_score = f"<b>{match.get('score', {}).get('fullTime', {}).get('home')} - {match.get('score', {}).get('fullTime', {}).get('away')}</b>"
+                                    h_s, a_s = get_live_score(match)
+                                    display_score = f"<b>{h_s} - {a_s}</b>"
+                                    row_class = "fixture-row"
                                 elif m_status in ["IN_PLAY", "PAUSED"]:
-                                    display_score = f"<span style='color:red; font-weight:700;'>🔴 {match.get('score', {}).get('fullTime', {}).get('home', 0)}-{match.get('score', {}).get('fullTime', {}).get('away', 0)}</span>"
+                                    h_s, a_s = get_live_score(match)
+                                    display_score = f"<span style='color:#CC0000; font-weight:800;'>LIVE🔴 {h_s}-{a_s}</span>"
+                                    row_class = "fixture-row fixture-row-live"
                                 else:
                                     display_score = f"<span style='color:#777; font-weight:500;'>{local_time_str}</span>"
-                                
+                                    row_class = "fixture-row"
+
                                 st.markdown(f"""
-                                    <div class="fixture-row">
+                                    <div class="{row_class}">
                                         <div style="text-align: left; width: 42%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             {h_flag} <span>{h_name}</span> <span style="font-size:9px; color:#777;">({h_owner})</span>
                                         </div>
@@ -673,17 +759,16 @@ else:
                                         </div>
                                     </div>
                                 """, unsafe_allow_html=True)
-                        
-                        # --- IN-GROUP PLAYERS SUB-SECTION ---
+
+                        # Key players
                         import streamlit.components.v1 as components
 
                         active_cards = []
                         for team_name in teams_in_group:
                             if team_name in GROUP_PLAYERS:
                                 p = GROUP_PLAYERS[team_name]
-                                # Changed to object-fit: contain to ensure full head/body is visible
                                 card = f"""
-                                <div style="background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 8px; width: 130px; height: 130px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); text-align: center; display: inline-block; vertical-align: top; margin: 4px; overflow: hidden;">
+                                <div style="background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 8px; width: 130px; height: 130px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); text-align: center;">
                                     <img src="{p['img_url']}" style="width: 100%; height: 90px; object-fit: contain; object-position: top; border-radius: 4px;" loading="eager" referrerpolicy="no-referrer">
                                     <div style="font-size: 10px; font-weight: 800; color: #333; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px;">{p['player_name']}</div>
                                     <div style="font-size: 8px; font-weight: 600; color: #ff7d23; text-transform: uppercase; margin-top: 2px;">{team_name}</div>
@@ -693,23 +778,22 @@ else:
 
                         if active_cards:
                             st.markdown("<div style='text-align: center; margin-top: 10px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>🌟 Key players</span></div>", unsafe_allow_html=True)
-                            
                             full_html = f"""
                             <div style="display: flex; flex-wrap: wrap; justify-content: center; width: 100%; font-family: sans-serif;">
                                 {"".join(active_cards)}
                             </div>
                             """
                             components.html(full_html, height=155, scrolling=False)
-                        
+
                         st.markdown('</div>', unsafe_allow_html=True)
 
-        # --- OVERPERFORMANCE LEADERBOARD ---
+        # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
         st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #ff7d23;'>", unsafe_allow_html=True)
         st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
-        
+
         master_flat_leaderboard.sort(key=lambda x: (-x["overperformance"], x["actual_rank"]))
-        
+
         master_table_html = """
         <div class="table-responsive-wrapper">
             <table class="custom-dashboard-table" style="width:100%;">
@@ -730,17 +814,11 @@ else:
         for display_idx, team_row in enumerate(master_flat_leaderboard, start=1):
             owner = SWEEPSTAKE_MAPPING.get(team_row["name"], "Unassigned")
             flag_html = f'<img src="{team_row["crest"]}" class="flag-img">' if team_row["crest"] else ''
-            
-            if display_idx == 1:
-                pos_str = f"🚀 {display_idx}"
-            elif display_idx == 48:
-                pos_str = f"💩 {display_idx}"
-            else:
-                pos_str = str(display_idx)
+            pos_str = f"🚀 {display_idx}" if display_idx == 1 else (f"💩 {display_idx}" if display_idx == 48 else str(display_idx))
             op_val = team_row["overperformance"]
             op_formatted = f"+{op_val}" if op_val > 0 else str(op_val)
             score_color = "#107C41" if op_val > 0 else ("#A80000" if op_val < 0 else "#333333")
-            
+
             master_table_html += f"""<tr>
                 <td><b>{pos_str}</b></td>
                 <td>{flag_html} <b>{team_row['name']}</b> <span style='font-size:11px; color:#666;'>({owner})</span></td>
@@ -751,6 +829,6 @@ else:
                 <td style='text-align:center;'><b>{team_row['pts']}</b></td>
                 <td style='text-align:right; padding-right:15px; font-weight:800; color:{score_color};'>{op_formatted}</td>
             </tr>"""
-            
+
         master_table_html += "</tbody></table></div>"
         st.markdown(master_table_html, unsafe_allow_html=True)
