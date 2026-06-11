@@ -506,7 +506,7 @@ def build_match_banner(match, is_live=False):
             date_str = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
         else:
             date_str = "TBD"
-        top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next match</div></div>'
+        top_pane = '<div class="banner-top-pane"><div class="next-match-title">🔜 Next match</div></div>'
         centre_bubble = '<div class="vs-marker-bubble">VS</div>'
         bottom_bar = f'<div class="banner-bottom-time">🗓️ {date_str}</div>'
 
