@@ -2,6 +2,7 @@ import os
 import requests
 from datetime import datetime
 import pytz
+import pandas as pd
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
@@ -29,7 +30,7 @@ st.markdown("""
         }
         
         p, span, div, label, small, td, th, b {
-            color: #333333 !important;
+            color: #333333;
             font-family: 'Figtree', sans-serif !important;
         }
         
@@ -51,20 +52,32 @@ st.markdown("""
             font-size: 16px;
         }
 
-        /* --- MATCH BANNER LAYOUT (DYNAMIC COLOURS) --- */
+        /* --- MATCH BANNER LAYOUT --- */
+        .match-banner-wrapper {
+            width: 100%;
+            margin: 12px 0px;
+        }
+
         .match-banner-container {
+            width: 100%;
             border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
-            margin: 8px 0px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
             overflow: hidden;
             font-family: 'Figtree', sans-serif !important;
             text-align: center;
-            border: 2px solid #DDDDDD;
+            border: 1px solid #DDDDDD;
+            background-color: #FFFFFF;
+        }
+
+        /* Special variant container for the small sidebar result widget */
+        .compact-sidebar-card {
+            max-width: 460px !important;
+            margin-left: auto;
         }
 
         .banner-top-pane {
             background-color: #ff7d23;
-            padding: 10px 20px;
+            padding: 8px 15px;
         }
 
         .next-match-title {
@@ -74,122 +87,185 @@ st.markdown("""
             font-weight: 800 !important;
             color: #FFFFFF !important;
             background: rgba(255, 255, 255, 0.15);
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
             display: inline-block;
         }
 
-        /* In-play banner top pane */
+        /* In-play/Result banner top panes */
         .inplay-top-pane {
             background-color: #8B0000;
-            padding: 10px 20px;
+            padding: 8px 15px;
+        }
+        
+        .result-top-pane {
+            background-color: #444444;
+            padding: 6px 12px;
         }
 
         .matchup-split-screen {
             display: flex;
             position: relative;
             align-items: center;
+            height: 75px;
+            width: 100%;
         }
 
         .team-panel {
             width: 50%;
             display: flex;
             align-items: center;
-            padding: 20px;
+            padding: 10px 25px;
             box-sizing: border-box;
             height: 100%;
-            min-height: 80px;
+            overflow: hidden;
+        }
+        
+        .team-panel-compact {
+            padding: 6px 12px !important;
         }
 
         .home-panel {
             justify-content: flex-end;
-            padding-right: 45px;
-            border-right: 2px solid #FFFFFF;
+            padding-right: 50px;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .home-panel-compact {
+            padding-right: 35px !important;
         }
 
         .away-panel {
             justify-content: flex-start;
-            padding-left: 45px;
+            padding-left: 50px;
+        }
+        
+        .away-panel-compact {
+            padding-left: 35px !important;
         }
 
         .team-panel-text {
             color: #FFFFFF !important;
-            font-size: 20px;
-            font-weight: 900 !important;
-            text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
+            font-size: 16px;
+            font-weight: 800 !important;
+            text-shadow: 0px 1px 3px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
+            white-space: nowrap;
+        }
+        
+        .team-panel-text-compact {
+            font-size: 13px !important;
         }
 
         .team-panel-text span {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 400 !important;
-            opacity: 0.9;
+            opacity: 0.95;
             color: #FFFFFF !important;
+            margin: 0 6px;
+        }
+        
+        .team-panel-text-compact span {
+            font-size: 10px !important;
             margin: 0 4px;
         }
 
-        .vs-marker-bubble {
+        .vs-marker-bubble, .score-bubble {
             position: absolute;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
-            background-color: #111111;
-            color: #FFFFFF !important;
-            font-size: 13px;
-            font-weight: 900 !important;
-            padding: 6px 10px;
-            border-radius: 50%;
             border: 2px solid #FFFFFF;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            white-space: nowrap;
         }
 
-        /* Score bubble for in-play matches */
+        .vs-marker-bubble {
+            background-color: #111111;
+            color: #FFFFFF !important;
+            font-size: 12px;
+            font-weight: 900 !important;
+            padding: 5px 9px;
+            border-radius: 50%;
+        }
+
         .score-bubble {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
             background-color: #8B0000;
             color: #FFFFFF !important;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900 !important;
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 2px solid #FFFFFF;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-            white-space: nowrap;
+            padding: 6px 14px;
+            border-radius: 6px;
+        }
+        
+        .score-bubble-compact {
+            background-color: #444444 !important;
+            font-size: 13px !important;
+            padding: 4px 10px !important;
         }
 
         .banner-bottom-time {
             background-color: #ff7d23;
-            padding: 10px 20px;
-            font-size: 13px;
+            padding: 8px 15px;
+            font-size: 12px;
             font-weight: 700 !important;
             color: #FFFFFF !important;
         }
 
-        /* In-play bottom bar */
         .inplay-bottom-bar {
             background-color: #8B0000;
-            padding: 10px 20px;
-            font-size: 13px;
+            padding: 8px 15px;
+            font-size: 12px;
             font-weight: 700 !important;
             color: #FFFFFF !important;
         }
         
+        .result-bottom-bar {
+            background-color: #444444 !important;
+            padding: 10px 15px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            border-top: 1px solid #EEEEEE !important;
+        }
+        
+        .highlights-btn {
+            background-color: #444444 !important;
+            color: #FFFFFF !important;
+            font-weight: 800 !important;
+            font-size: 11px !important;
+            text-transform: uppercase;
+            text-decoration: none !important;
+            padding: 6px 16px;
+            border-radius: 5px;
+            display: inline-flex !important;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(255,0,0,0.2);
+        }
+
+        .highlights-btn:hover {
+            background-color: #CC0000 !important;
+            color: #FFFFFF !important;
+        }
+        
         .banner-flag {
-            width: 32px !important;
-            height: 22px !important;
+            width: 28px !important;
+            height: 19px !important;
             object-fit: cover !important;
-            border-radius: 3px;
-            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
             display: inline-block;
-            margin: 0 10px;
+            margin: 0 8px;
             vertical-align: middle;
-            box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .banner-flag-compact {
+            width: 22px !important;
+            height: 14px !important;
+            margin: 0 5px !important;
         }
 
         .stat-banner-box {
@@ -201,8 +277,6 @@ st.markdown("""
             align-items: center;
             justify-content: space-between;
             margin-bottom: 10px;
-            height: auto;
-            min-height: 50px;
         }
         .stat-banner-box medium {
             font-size: 11px;
@@ -281,42 +355,6 @@ st.markdown("""
             margin-top: 0px !important;
             display: inline-block;
         }
-
-        @media (max-width: 800px) {
-            .match-banner-container {
-                flex-direction: column;
-            }
-            .matchup-split-screen {
-                flex-direction: column;
-                width: 100%;
-            }
-            .team-panel {
-                width: 100% !important;
-                justify-content: center !important;
-                padding: 15px !important;
-                font-size: 16px;
-            }
-            .home-panel {
-                border-right: none !important;
-                border-bottom: 2px solid #FFFFFF;
-                padding-right: 20px !important;
-            }
-            .away-panel {
-                padding-left: 20px !important;
-            }
-            .vs-marker-bubble {
-                top: auto;
-                bottom: -14px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-            .score-bubble {
-                top: auto;
-                bottom: -18px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -377,7 +415,7 @@ GROUP_PLAYERS = {
     "Germany": {"player_name": "Kai Havertz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kai-havertz-germany-forward-profile-full.png"},
     "Portugal": {"player_name": "Bruno Fernandes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bruno-fernandes-portugal-midfielder-profile-full.png"},
     "Netherlands": {"player_name": "Frenkie de Jong", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/frenkie-de-jong-netherlands-midfielder-profile-full.png"},
-    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"},
+    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-mesi-argentina-forward-profile-full.png"},
     "Ivory Coast": {"player_name": "Yan Diomande", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yan-diomande-ivory-coast-forward-profile-full.png"},
     "Bosnia-Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
     "Cape Verde Islands": {"player_name": "Ryan Mendes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ryan-mendes-cape-verde-midfielder-profile-full.png"},
@@ -423,7 +461,7 @@ GROUP_PLAYERS = {
 DEFAULT_LEFT_COLOR = "#ff7d23"
 DEFAULT_RIGHT_COLOR = "#ff7d23"
 
-# 3. Cache Country Flag URLs using exactly 1 standalone initial API request
+# 3. Cache Country Flags
 @st.cache_data(ttl=86400)
 def get_cached_team_crests():
     crests = {}
@@ -439,7 +477,6 @@ def get_cached_team_crests():
                 crest_url = t.get("crest")
                 if name and crest_url:
                     crests[name] = crest_url
-                    # Account for alternative spellings / inconsistencies in payload strings
                     if name == "DR Congo": crests["Congo DR"] = crest_url
                     if name == "Congo DR": crests["DR Congo"] = crest_url
                     if name == "Cape Verde": crests["Cape Verde Islands"] = crest_url
@@ -447,11 +484,9 @@ def get_cached_team_crests():
         pass
     return crests
 
-# Fetch the global crest asset dictionary once at launch
 CACHED_CRESTS = get_cached_team_crests()
 
 def get_flag_html(team_name, extra_class="flag-img"):
-    """Securely returns an HTML image element for team flags based on API data instead of emoji text fallbacks."""
     crest_url = CACHED_CRESTS.get(team_name)
     if crest_url:
         return f'<img src="{crest_url}" class="{extra_class}" alt="{team_name}">'
@@ -467,7 +502,6 @@ def format_to_uk_time(utc_str):
         return None
 
 def get_live_score(match):
-    """Safely extracts valid integers, prioritizing final scores over shifting live states."""
     score_obj = match.get("score", {})
     for target_key in ["fullTime", "regularTime", "halfTime"]:
         s = score_obj.get(target_key, {})
@@ -475,7 +509,40 @@ def get_live_score(match):
             return int(s.get("home")), int(s.get("away"))
     return 0, 0
 
-def build_match_banner(match, is_live=False):
+# ── FIXED: RE-ENGINEERED GOOGLE SHEET LIVE PARSER ──
+@st.cache_data(ttl=60)
+def get_spreadsheet_url_fallback(h_name, a_name):
+    """
+    Fetches the live published Google Sheet over the web, cleanly parses 
+    the 'Fixtures' dataset via columns C & D, and falls back to FIFA video library.
+    """
+    try:
+        # Converts standard pubhtml link to a live web-accessible raw CSV file download
+        csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeLButP4o4374i0KJP_YdOnTW1wN-Wzgqabuulvd1cMVmIuCfFTEM3CjJ4FmFIbBW6FLNDfaB9Hg4w/pub?gid=0&single=true&output=csv"
+        
+        # Load live data into dataframes safely via network request
+        df = pd.read_csv(csv_url, header=None)
+        
+        if not df.empty and len(df.columns) >= 8:
+            # Clean up team strings to assure spaces don't disrupt match
+            target_home = str(h_name).strip().lower()
+            target_away = str(a_name).strip().lower()
+
+            for _, row in df.iterrows():
+                row_home = str(row[2]).strip().lower()  # Column C (0-indexed position 2)
+                row_away = str(row[3]).strip().lower()  # Column D (0-indexed position 3)
+
+                if row_home == target_home and row_away == target_away:
+                    found_url = str(row[7]).strip()     # Column H (0-indexed position 7)
+                    if found_url and found_url.lower().startswith("http"):
+                        return found_url
+    except Exception:
+        pass # Gracefully handle failures or connectivity timeouts down below
+
+    return "https://www.youtube.com/@fifa/videos"
+
+# ── UPDATED MATCH BANNER BUILDER ──
+def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
     home_team_obj = match.get("homeTeam", {})
     away_team_obj = match.get("awayTeam", {})
 
@@ -487,17 +554,34 @@ def build_match_banner(match, is_live=False):
     if left_color == right_color:
         right_color = "#222222" if left_color != "#222222" else "#555555"
 
-    h_flag = get_flag_html(h_name, extra_class="banner-flag")
-    a_flag = get_flag_html(a_name, extra_class="banner-flag")
+    flag_class = "banner-flag banner-flag-compact" if is_result else "banner-flag"
+    h_flag = get_flag_html(h_name, extra_class=flag_class)
+    a_flag = get_flag_html(a_name, extra_class=flag_class)
 
     h_owner = f" ({SWEEPSTAKE_MAPPING.get(h_name, 'Unassigned')})"
     a_owner = f" ({SWEEPSTAKE_MAPPING.get(a_name, 'Unassigned')})"
+
+    panel_text_class = "team-panel-text team-panel-text-compact" if is_result else "team-panel-text"
+    home_panel_class = "team-panel home-panel team-panel-compact home-panel-compact" if is_result else "team-panel home-panel"
+    away_panel_class = "team-panel away-panel team-panel-compact away-panel-compact" if is_result else "team-panel away-panel"
+    span_class = "team-panel-text-compact" if is_result else ""
+
+    container_class = "match-banner-container compact-sidebar-card" if is_result else "match-banner-container"
 
     if is_live:
         h_score, a_score = get_live_score(match)
         top_pane = '<div class="inplay-top-pane"><div class="next-match-title">🔴 Live now</div></div>'
         centre_bubble = f'<div class="score-bubble">{h_score} – {a_score}</div>'
         bottom_bar = '<div class="inplay-bottom-bar">⚽ Match in progress</div>'
+    elif is_result:
+        h_score, a_score = get_live_score(match)
+        
+        # Pull the exact highlights URL out of Google Sheets live tracking
+        highlights_url = get_spreadsheet_url_fallback(h_name, a_name)
+        
+        top_pane = '<div class="result-top-pane"><div class="next-match-title" style="background: rgba(0,0,0,0.2);">✅ Latest Result</div></div>'
+        centre_bubble = f'<div class="score-bubble score-bubble-compact">{h_score} – {a_score}</div>'
+        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn">📺 Watch Highlights</a></div>'
     else:
         dt_uk = format_to_uk_time(match.get("utcDate"))
         if dt_uk:
@@ -506,54 +590,50 @@ def build_match_banner(match, is_live=False):
             date_str = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
         else:
             date_str = "TBD"
-        top_pane = '<div class="banner-top-pane"><div class="next-match-title">🔜 Next match</div></div>'
+        top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next match</div></div>'
         centre_bubble = '<div class="vs-marker-bubble">VS</div>'
         bottom_bar = f'<div class="banner-bottom-time">🗓️ {date_str}</div>'
 
     return f"""
-    <div class="match-banner-container">
-        {top_pane}
-        <div class="matchup-split-screen">
-            <div class="team-panel home-panel" style="background-color: {left_color};">
-                <div class="team-panel-text">
-                    {h_flag} {h_name} <span>{h_owner}</span>
+    <div class="match-banner-wrapper">
+        <div class="{container_class}">
+            {top_pane}
+            <div class="matchup-split-screen">
+                <div class="{home_panel_class}" style="background-color: {left_color};">
+                    <div class="{panel_text_class}">
+                        {h_flag} {h_name} <span class="{span_class}">{h_owner}</span>
+                    </div>
+                </div>
+                {centre_bubble}
+                <div class="{away_panel_class}" style="background-color: {right_color};">
+                    <div class="{panel_text_class}">
+                        <span class="{span_class}">{a_owner}</span> {a_name} {a_flag}
+                    </div>
                 </div>
             </div>
-            {centre_bubble}
-            <div class="team-panel away-panel" style="background-color: {right_color};">
-                <div class="team-panel-text">
-                    <span>{a_owner}</span> {a_name} {a_flag}
-                </div>
-            </div>
+            {bottom_bar}
         </div>
-        {bottom_bar}
     </div>
     """
-
-# ── Data Fetching (Protected TTL Cache to safeguard 10 req/min limits) ─────
+    
+# ── Data Fetching ──────────────────────────────────────────────────────────
 @st.cache_data(ttl=120)  
 def fetch_football_data():
     all_matches = []
     standings_list = []
-    
     if API_TOKEN == "placeholder":
         return all_matches, standings_list
-
     try:
         s_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings", headers=HEADERS, timeout=10)
         if s_res.status_code == 200:
             standings_list = s_res.json().get("standings", [])
-            
         m_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches", headers=HEADERS, timeout=10)
         if m_res.status_code == 200:
             all_matches = m_res.json().get("matches", [])
-            
     except Exception as e:
         st.error(f"Error connecting to API: {e}")
-        
     return all_matches, standings_list
 
-# Fetch the data safely
 all_matches, standings_list = fetch_football_data()
 
 # Process Leaderboard Data safely
@@ -587,7 +667,6 @@ if master_flat_leaderboard:
 # ── Dynamic Match Filtering & Layout Deduplication ────────────────────────
 live_matches = [m for m in all_matches if m.get("status") in ["IN_PLAY", "PAUSED"]]
 
-# Filter upcoming scheduled fixtures sorted chronologically
 upcoming_matches = sorted(
     [m for m in all_matches if m.get("status") in ["TIMED", "SCHEDULED"]],
     key=lambda x: x.get("utcDate", "")
@@ -598,15 +677,38 @@ if upcoming_matches:
     first_kickoff = upcoming_matches[0].get("utcDate", "")
     next_kickoff_matches = [m for m in upcoming_matches if m.get("utcDate", "") == first_kickoff]
 
-# ── HEADER ─────────────────────────────────────────────────────────────
-st.markdown("""
-    <div class="title-area">
-        <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
-        <p>Live standings</p>
-    </div>
-""", unsafe_allow_html=True)
+finished_matches = sorted(
+    [m for m in all_matches if m.get("status") == "FINISHED"],
+    key=lambda x: x.get("utcDate", ""),
+    reverse=True
+)
 
-# ── RENDERING THE HERO BANNERS DETERMINISTICALLY ──────────────────────────
+# ── HEADER & LATEST RESULT TOP SPLIT-ROW ──────────────────────────────────
+header_cols = st.columns([0.55, 0.45], gap="medium")
+
+with header_cols[0]:
+    st.markdown("""
+        <div class="title-area" style="padding-top: 15px;">
+            <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
+            <p>Live standings</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+with header_cols[1]:
+    if finished_matches:
+        latest_match = finished_matches[0]
+        chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
+        try:
+            match_index = chronological_matches.index(latest_match) + 2
+        except ValueError:
+            match_index = 2
+            
+        result_banner_html = build_match_banner(latest_match, is_live=False, is_result=True, match_idx=match_index)
+        st.markdown(result_banner_html, unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+
+# ── RENDERING THE MAIN HERO BANNERS DETERMINISTICALLY ─────────────────────
 if live_matches:
     for live_match in live_matches:
         st.markdown(build_match_banner(live_match, is_live=True), unsafe_allow_html=True)
@@ -626,14 +728,13 @@ with stat_cols[1]:
     fave_owner = SWEEPSTAKE_MAPPING.get("France", "Unassigned")
     st.markdown(f'<div class="stat-banner-box"><medium>⭐ Favourites</medium><span>France ({fave_owner})</span></div>', unsafe_allow_html=True)
 with stat_cols[2]:
-    # Rocket emoji maintained
     st.markdown(f'<div class="stat-banner-box"><medium>🚀 Overperformer</medium><span>{top_performer_text}</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
 # ── GROUPS CANVAS ─────────────────────────────────────────────────────────
 if API_TOKEN == "placeholder":
-    st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists and matches.")
+    st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists.")
 else:
     if standings_list:
         for i in range(0, len(standings_list), 2):
@@ -648,7 +749,6 @@ else:
                         st.markdown('<div class="group-row-spacer">', unsafe_allow_html=True)
                         st.markdown(f"<span class='group-header-text'>🔹 {group_name}</span>", unsafe_allow_html=True)
 
-                        # Standings table
                         table_html = """
                         <div class="table-responsive-wrapper">
                             <table class="custom-dashboard-table">
@@ -686,7 +786,6 @@ else:
                         table_html += "</tbody></table></div>"
                         st.markdown(table_html, unsafe_allow_html=True)
 
-                        # Fixtures & Results
                         st.markdown("<div style='margin-bottom:6px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>📅 Group fixtures & results</span></div>", unsafe_allow_html=True)
                         group_fixtures = [
                             m for m in all_matches
@@ -739,7 +838,6 @@ else:
                                     </div>
                                 """, unsafe_allow_html=True)
 
-                        # Key players component layout with layout fixes for card spacing
                         active_cards = []
                         for team_name in teams_in_group:
                             if team_name in GROUP_PLAYERS:
@@ -755,7 +853,6 @@ else:
 
                         if active_cards:
                             st.markdown("<div style='text-align: center; margin-top: 10px;'><span style='font-size:12px; font-weight:700; color:#ff7d23;'>🔑 Key players</span></div>", unsafe_allow_html=True)
-                            # Added row-gap and column-gap (gap: 12px) to prevent structural crowding
                             full_html = f"""
                             <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; width: 100%; font-family: sans-serif; padding: 5px 0;">
                                 {"".join(active_cards)}
@@ -793,7 +890,6 @@ else:
             owner = SWEEPSTAKE_MAPPING.get(team_row["name"], "Unassigned")
             flag_html = get_flag_html(team_row["name"])
             
-            # Leader (Rocket) and Wooden Spoon (Poop) emojis securely preserved
             if display_idx == 1:
                 pos_str = "1 🚀"
             elif display_idx == 48:
