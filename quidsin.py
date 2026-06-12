@@ -7,7 +7,7 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
 
-# 1. Page Configurations & Branding Styles
+# 1. Page Configurations & MASTER Layout Credentials
 st.set_page_config(
     page_title="Byway World Cup Sweepstake", 
     page_icon="⚽", 
@@ -16,6 +16,11 @@ st.set_page_config(
 
 # Run page auto-refresh every 3 minutes to keep live scores syncing
 st_autorefresh(interval=180 * 1000, key="datarefresh")
+
+API_TOKEN = st.secrets.get("FOOTBALL_API_TOKEN", os.environ.get("FOOTBALL_API_TOKEN", "placeholder"))
+COMPETITION_CODE = "WC"
+BASE_URL = "https://api.football-data.org/v4"
+HEADERS = {"X-Auth-Token": API_TOKEN}
 
 # Global baseline dashboard system architecture style tokens
 GLOBAL_STYLE_TOKENS = """
@@ -331,12 +336,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. Configuration & MASTER API Settings
-API_TOKEN = st.secrets.get("FOOTBALL_API_TOKEN", os.environ.get("FOOTBALL_API_TOKEN", "placeholder"))
-COMPETITION_CODE = "WC"
-BASE_URL = "https://api.football-data.org/v4"
-HEADERS = {"X-Auth-Token": API_TOKEN}
-
 SWEEPSTAKE_MAPPING = {
     "Mexico": "Evon", "South Africa": "Iwan", "Canada": "Holly", "Switzerland": "Yannis",
     "Argentina": "Alba", "France": "Marc", "Brazil": "Andy", "Spain": "Ciaran",
@@ -375,7 +374,7 @@ EXPECTED_RANKINGS = {
     "Algeria": 25, "Egypt": 26, "Canada": 27, "Norway": 28, "Panama": 29, "Ivory Coast": 30,
     "Sweden": 31, "Paraguay": 32, "Czechia": 33, "Scotland": 34, "Tunisia": 35, "Congo DR": 36, 
     "DR Congo": 36, "Uzbekistan": 37, "Qatar": 38, "Iraq": 39, "South Africa": 40, "Saudi Arabia": 41,
-    "Jordan": 42, "Bosnia-Herzegovina": 43, "Bosnia and Herzegovina": 43, "Cape Verde Islands": 44, "Cape Verde": 44, "Ghana": 45, 
+    "Jordan": 42, "Bosnia-Herzegovina": 43, "Cape Verde Islands": 44, "Cape Verde": 44, "Ghana": 45, 
     "Curaçao": 46, "Haiti": 47, "New Zealand": 48
 }
 
@@ -448,38 +447,7 @@ GROUP_PLAYERS = {
     "Turkey": {"player_name": "Kenan Yildiz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kenan-yildiz-turkey-forward-profile-full.png"}
 }
 
-CACHED_CRESTS = get_cached_team_crests()
-
-def get_banner_flag_html(team_name):
-    crest_url = CACHED_CRESTS.get(team_name)
-    if crest_url:
-        return f'<img src="{crest_url}" class="banner-flag" alt="{team_name}">'
-    return ''
-
-def get_group_flag_html(team_name):
-    crest_url = CACHED_CRESTS.get(team_name)
-    if crest_url:
-        return f'<img src="{crest_url}" class="flag-img" alt="{team_name}">'
-    return ''
-
-def format_to_uk_time(utc_str):
-    try:
-        dt = datetime.strptime(utc_str, "%Y-%m-%dT%H:%M:%SZ")
-        dt_utc = pytz.utc.localize(dt)
-        uk_tz = pytz.timezone("Europe/London")
-        return dt_utc.astimezone(uk_tz)
-    except Exception:
-        return None
-
-def get_live_score(match):
-    score_obj = match.get("score", {})
-    for target_key in ["fullTime", "regularTime", "halfTime"]:
-        s = score_obj.get(target_key, {})
-        if s and s.get("home") is not None and s.get("away") is not None:
-            return int(s.get("home")), int(s.get("away"))
-    return 0, 0
-
-# ── MASTER SHEET INGESTION ENGINE ──
+# --- ATTAIN MASTER INGESTION LOGIC FOR FLAGS ENGINE ---
 @st.cache_data(ttl=15)
 def fetch_spreadsheet_overrides_master():
     override_dict = {}
@@ -601,8 +569,8 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
         </div>
     </div>
     """
-    
-# ── Data Fetching Layers ──
+
+# ── Data Fetching Pipeline ──
 @st.cache_data(ttl=120)  
 def fetch_football_data():
     all_matches = []
@@ -650,6 +618,7 @@ if master_flat_leaderboard:
     op_owner = SWEEPSTAKE_MAPPING.get(best["name"], "Unassigned")
     top_performer_text = f"{best['name']} ({op_owner})"
 
+# ── ROUTING CLASSIFICATIONS OVER spreadsheet MASTER PARSER ENTRIES ──
 live_matches = []
 upcoming_matches = []
 finished_matches = []
@@ -728,7 +697,6 @@ with hero_cols[1]:
     else:
         st.info("⚽ No results logged yet for this tournament state.")
 
-# Additional matching lists layer cleanly underneath
 if len(live_matches) > 1:
     for idx, live_match in enumerate(live_matches[1:]):
         components.html(build_match_banner(live_match, is_live=True, match_idx=300+idx), height=160, scrolling=False)
