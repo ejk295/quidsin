@@ -481,7 +481,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             <div class="score-bubble" style="display: none;">{h_score} – {a_score}</div>
         </div>
         """
-        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn">📺 SPOILER FREE HIGHLIGHTS 📺</a></div>'
+        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
     else:
         dt_uk = format_to_uk_time(match.get("utcDate"))
         if dt_uk:
