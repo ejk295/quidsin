@@ -7,7 +7,7 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
 
-# 1. Page Configurations & MASTER Layout Credentials
+# 1. Page Configurations & MASTER Settings
 st.set_page_config(
     page_title="Byway World Cup Sweepstake", 
     page_icon="⚽", 
@@ -21,6 +21,9 @@ API_TOKEN = st.secrets.get("FOOTBALL_API_TOKEN", os.environ.get("FOOTBALL_API_TO
 COMPETITION_CODE = "WC"
 BASE_URL = "https://api.football-data.org/v4"
 HEADERS = {"X-Auth-Token": API_TOKEN}
+
+DEFAULT_LEFT_COLOR = "#ff7d23"
+DEFAULT_RIGHT_COLOR = "#ff7d23"
 
 # Global baseline dashboard system architecture style tokens
 GLOBAL_STYLE_TOKENS = """
@@ -381,7 +384,7 @@ EXPECTED_RANKINGS = {
 TEAM_COLORS = {
     "Mexico": "#006847", "South Africa": "#007A4D", "Canada": "#FF0000", "Switzerland": "#D52B1E",
     "Argentina": "#74ACDF", "France": "#002395", "Brazil": "#009739", "Spain": "#AA151B",
-    "Bosnia-Herzegovina": "#002F6C", "Bosnia and Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
+    "Bosnia-Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
     "Haiti": "#00209F", "Turkey": "#E30A17", "Paraguay": "#D52B1E", "Germany": "#222222",
     "Curaçao": "#002B7F", "Ecuador": "#FFDD00", "Japan": "#00005C", "Belgium": "#E30A17",
     "Egypt": "#C1272D", "Tunisia": "#E70013", "Netherlands": "#E05206", "Ivory Coast": "#E87722",
@@ -447,7 +450,41 @@ GROUP_PLAYERS = {
     "Turkey": {"player_name": "Kenan Yildiz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kenan-yildiz-turkey-forward-profile-full.png"}
 }
 
-# --- ATTAIN MASTER INGESTION LOGIC FOR FLAGS ENGINE ---
+CACHED_CRESTS = get_cached_team_crests()
+
+def get_banner_flag_html(team_name):
+    crest_url = CACHED_CRESTS.get(team_name)
+    if crest_url:
+        return f'<img src="{crest_url}" class="banner-flag" alt="{team_name}">'
+    return ''
+
+def get_group_flag_html(team_name):
+    crest_url = CACHED_CRESTS.get(team_name)
+    if crest_url:
+        return f'<img src="{crest_url}" class="flag-img" alt="{team_name}">'
+    return ''
+
+def get_flag_html(team_name, extra_class="flag-img"):
+    return get_group_flag_html(team_name)
+
+def format_to_uk_time(utc_str):
+    try:
+        dt = datetime.strptime(utc_str, "%Y-%m-%dT%H:%M:%SZ")
+        dt_utc = pytz.utc.localize(dt)
+        uk_tz = pytz.timezone("Europe/London")
+        return dt_utc.astimezone(uk_tz)
+    except Exception:
+        return None
+
+def get_live_score(match):
+    score_obj = match.get("score", {})
+    for target_key in ["fullTime", "regularTime", "halfTime"]:
+        s = score_obj.get(target_key, {})
+        if s and s.get("home") is not None and s.get("away") is not None:
+            return int(s.get("home")), int(s.get("away"))
+    return 0, 0
+
+# ── MASTER SHEET INGESTION ENGINE ──
 @st.cache_data(ttl=15)
 def fetch_spreadsheet_overrides_master():
     override_dict = {}
@@ -569,8 +606,8 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
         </div>
     </div>
     """
-
-# ── Data Fetching Pipeline ──
+    
+# ── Data Fetching pipeline ──
 @st.cache_data(ttl=120)  
 def fetch_football_data():
     all_matches = []
@@ -578,9 +615,9 @@ def fetch_football_data():
     if API_TOKEN == "placeholder":
         return all_matches, standings_list
     try:
-        s_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings", headers=HEADERS, timeout=10)
-        if s_res.status_code == 200:
-            standings_list = s_res.json().get("standings", [])
+        st_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings", headers=HEADERS, timeout=10)
+        if st_res.status_code == 200:
+            standings_list = st_res.json().get("standings", [])
         m_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches", headers=HEADERS, timeout=10)
         if m_res.status_code == 200:
             all_matches = m_res.json().get("matches", [])
@@ -624,20 +661,23 @@ upcoming_matches = []
 finished_matches = []
 
 for m in all_matches:
-    h_name = m.get("homeTeam", {}).get("name")
-    a_name = m.get("awayTeam", {}).get("name")
-    
-    if h_name and a_name:
-        lookup_key = f"{h_name.lower()}_v_{a_name.lower()}"
-        if lookup_key in SPREADSHEET_OVERRIDES:
-            sheet_status = SPREADSHEET_OVERRIDES[lookup_key]["status"]
-            if "live" in sheet_status:
-                live_matches.append(m)
-            elif "finished" in sheet_status or "completed" in sheet_status:
-                finished_matches.append(m)
-            else:
-                upcoming_matches.append(m)
-            continue
+    home_team_node = m.get("homeTeam")
+    away_team_node = m.get("awayTeam")
+    if home_team_node and away_team_node:
+        h_name = home_team_node.get("name")
+        a_name = away_team_node.get("name")
+        
+        if h_name and a_name:
+            lookup_key = f"{h_name.lower()}_v_{a_name.lower()}"
+            if lookup_key in SPREADSHEET_OVERRIDES:
+                sheet_status = SPREADSHEET_OVERRIDES[lookup_key]["status"]
+                if "live" in sheet_status:
+                    live_matches.append(m)
+                elif "finished" in sheet_status or "completed" in sheet_status:
+                    finished_matches.append(m)
+                else:
+                    upcoming_matches.append(m)
+                continue
 
     api_status = m.get("status")
     if api_status in ["IN_PLAY", "PAUSED"]:
