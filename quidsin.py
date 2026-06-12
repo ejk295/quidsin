@@ -375,14 +375,14 @@ EXPECTED_RANKINGS = {
     "Algeria": 25, "Egypt": 26, "Canada": 27, "Norway": 28, "Panama": 29, "Ivory Coast": 30,
     "Sweden": 31, "Paraguay": 32, "Czechia": 33, "Scotland": 34, "Tunisia": 35, "Congo DR": 36, 
     "DR Congo": 36, "Uzbekistan": 37, "Qatar": 38, "Iraq": 39, "South Africa": 40, "Saudi Arabia": 41,
-    "Jordan": 42, "Bosnia-Herzegovina": 43, "Bosnia and Herzegovina": 43, "Cape Verde Islands": 44, "Cape Verde": 44, "Ghana": 45, 
+    "Jordan": 42, "Bosnia-Herzegovina": 43, "Cape Verde Islands": 44, "Cape Verde": 44, "Ghana": 45, 
     "Curaçao": 46, "Haiti": 47, "New Zealand": 48
 }
 
 TEAM_COLORS = {
     "Mexico": "#006847", "South Africa": "#007A4D", "Canada": "#FF0000", "Switzerland": "#D52B1E",
     "Argentina": "#74ACDF", "France": "#002395", "Brazil": "#009739", "Spain": "#AA151B",
-    "Bosnia-Herzegovina": "#002F6C", "Bosnia and Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
+    "Bosnia-Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
     "Haiti": "#00209F", "Turkey": "#E30A17", "Paraguay": "#D52B1E", "Germany": "#222222",
     "Curaçao": "#002B7F", "Ecuador": "#FFDD00", "Japan": "#00005C", "Belgium": "#E30A17",
     "Egypt": "#C1272D", "Tunisia": "#E70013", "Netherlands": "#E05206", "Ivory Coast": "#E87722",
@@ -406,12 +406,10 @@ GROUP_PLAYERS = {
     "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"},
     "Ivory Coast": {"player_name": "Yan Diomande", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yan-diomande-ivory-coast-forward-profile-full.png"},
     "Bosnia-Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
-    "Bosnia and Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
     "Cape Verde Islands": {"player_name": "Ryan Mendes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ryan-mendes-cape-verde-midfielder-profile-full.png"},
     "Curaçao": {"player_name": "Juninho Bacuna", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/juninho-bacuna-curacao-midfielder-profile-full.png"},
     "Haiti": {"player_name": "Wilson Isidor", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/wilson-isidor-haiti-forward-profile-full.png"},
     "Congo DR": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
-    "DR Congo": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
     "Ghana": {"player_name": "Antoine Semenyo", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/antoine-semenyo-ghana-forward-profile-full.png"},
     "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-algeria-forward-profile-full.png"},
     "Australia": {"player_name": "Jackson Irvine", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jackson-irvine-australia-midfielder-profile-full.png"},
@@ -427,7 +425,7 @@ GROUP_PLAYERS = {
     "Belgium": {"player_name": "Jeremy Doku", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jeremy-doku-belgium-forward-profile-full.png"},
     "Qatar": {"player_name": "Hassan Al-Haydos", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/hassan-al-haydos-qatar-forward-profile-full.png"},
     "Colombia": {"player_name": "Luis Suarez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luis-suarez-colombia-forward-profile-full.png"},
-    "Iran": {"player_name": "Alireza Beiranvand", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
+    "Iran": {"player_name": "Alireza Beiranvand", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alireza-beiranvand-iran-goalkeeper-profile-full.png"},
     "South Africa": {"player_name": "Mbekezeli Mbokazi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mbekezeli-mbokazi-south-africa-defender-profile-full.png"},
     "Norway": {"player_name": "Erling Haaland", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/erling-haaland-norway-forward-profile-full.png"},
     "Croatia": {"player_name": "Luka Vuskovic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luka-vuskovic-croatia-defender-profile-full.png"},
@@ -448,35 +446,9 @@ GROUP_PLAYERS = {
     "Turkey": {"player_name": "Kenan Yildiz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kenan-yildiz-turkey-forward-profile-full.png"}
 }
 
-DEFAULT_LEFT_COLOR = "#ff7d23"
-DEFAULT_RIGHT_COLOR = "#ff7d23"
-
-# 3. Cache Country Flags
-@st.cache_data(ttl=86400)
-def get_cached_team_crests():
-    crests = {}
-    if API_TOKEN == "placeholder":
-        return crests
-    try:
-        url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/teams"
-        res = requests.get(url, headers=HEADERS, timeout=10)
-        if res.status_code == 200:
-            teams_data = res.json().get("teams", [])
-            for t in teams_data:
-                name = t.get("name")
-                crest_url = t.get("crest")
-                if name and crest_url:
-                    crests[name] = crest_url
-                    if name == "DR Congo": crests["Congo DR"] = crest_url
-                    if name == "Congo DR": crests["DR Congo"] = crest_url
-                    if name == "Cape Verde": crests["Cape Verde Islands"] = crest_url
-                    if name == "Bosnia and Herzegovina": crests["Bosnia-Herzegovina"] = crest_url
-    except Exception:
-        pass
-    return crests
-
 CACHED_CRESTS = get_cached_team_crests()
 
+# Distinct width limit locks to avoid visual bleeding into table grids
 def get_banner_flag_html(team_name):
     crest_url = CACHED_CRESTS.get(team_name)
     if crest_url:
@@ -506,7 +478,7 @@ def get_live_score(match):
             return int(s.get("home")), int(s.get("away"))
     return 0, 0
 
-# ── MASTER SPREADSHEET INGESTION ENGINE ──
+# ── MASTER SHEET INGESTION ENGINE ──
 @st.cache_data(ttl=15)
 def fetch_spreadsheet_overrides_master():
     override_dict = {}
@@ -541,7 +513,7 @@ def fetch_spreadsheet_overrides_master():
 
 SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
 
-# ── MATCH BANNER COMPONENT GENERATOR ──
+# ── DESIGN HERO BANNER GENERATOR WITH MOBILE 3-LETTER ABBREVIATION RULES ──
 def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
     home_team_obj = match.get("homeTeam", {})
     away_team_obj = match.get("awayTeam", {})
@@ -629,7 +601,24 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
     </div>
     """
     
-# ── Data Ingestion & State Pipeline Routing Engine ──
+# ── Data Fetching pipeline ──
+@st.cache_data(ttl=120)  
+def fetch_football_data():
+    all_matches = []
+    standings_list = []
+    if API_TOKEN == "placeholder":
+        return all_matches, standings_list
+    try:
+        s_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/standings", headers=HEADERS, timeout=10)
+        if s_res.status_code == 200:
+            standings_list = s_res.json().get("standings", [])
+        m_res = requests.get(f"{BASE_URL}/competitions/{COMPETITION_CODE}/matches", headers=HEADERS, timeout=10)
+        if m_res.status_code == 200:
+            all_matches = m_res.json().get("matches", [])
+    except Exception as e:
+        st.error(f"Error connecting to API: {e}")
+    return all_matches, standings_list
+
 all_matches, standings_list = fetch_football_data()
 
 # Process Leaderboard Data safely
@@ -660,6 +649,7 @@ if master_flat_leaderboard:
     op_owner = SWEEPSTAKE_MAPPING.get(best["name"], "Unassigned")
     top_performer_text = f"{best['name']} ({op_owner})"
 
+# ── ROUTING CLASSIFICATIONS OVER spreadsheet MASTER PARSER ENTRIES ──
 live_matches = []
 upcoming_matches = []
 finished_matches = []
