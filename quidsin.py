@@ -437,11 +437,11 @@ st.markdown("""
         .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #FAFAFA !important;
         }
-        h1, h2, h3 {
-            color: #ff7d23 !important;
-            font-family: 'Figtree', sans-serif !important;
-            font-weight: 800 !important;
-        }
+    h1, h2, h3, h1 span, h2 span, h3 span, h1 p, h2 p, h3 p {
+    color: #ff7d23 !important; /* <--- This will now strictly apply your custom color */
+    font-family: 'Figtree', sans-serif !important;
+    font-weight: 800 !important;
+    }
         .title-area h1 { margin: 0px !important; font-size: 28px; font-weight: 900 !important; }
         .title-area p { margin: 4px 0px 0px 0px !important; color: #555555 !important; font-weight: 700 !important; font-size: 16px; }
         .stat-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
