@@ -193,7 +193,7 @@ GLOBAL_STYLE_TOKENS = """
     }
 
     .banner-top-pane {
-        background-color: #ff7d23;
+        background-color: #444444;
         padding: 8px 15px;
     }
 
