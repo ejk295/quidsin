@@ -25,6 +25,137 @@ HEADERS = {"X-Auth-Token": API_TOKEN}
 DEFAULT_LEFT_COLOR = "#ff7d23"
 DEFAULT_RIGHT_COLOR = "#ff7d23"
 
+# 2. Master Structural Dictionaries & Environment Mappings
+SWEEPSTAKE_MAPPING = {
+    "Mexico": "Evon", "South Africa": "Iwan", "Canada": "Holly", "Switzerland": "Yannis",
+    "Argentina": "Alba", "France": "Marc", "Brazil": "Andy", "Spain": "Ciaran",
+    "Bosnia and Herzegovina": "Izzy", "Bosnia-Herzegovina": "Izzy", "Czechia": "Pablo", "Qatar": "Jess", "Morocco": "Bartek",
+    "Haiti": "Hatty", "Turkey": "Adrienne", "Paraguay": "Becca", "Germany": "Oliwia",
+    "Curaçao": "Justin", "Ecuador": "Cat", "Japan": "Adem", "Belgium": "Mart",
+    "Egypt": "Chris", "Tunisia": "Jess 2", "Netherlands": "Louis", "Ivory Coast": "Suzie",
+    "Australia": "Amy", "Cape Verde Islands": "Justin 2", "Cape Verde": "Justin 2", "Uruguay": "Paul 2", "Sweden": "Kat",
+    "Saudi Arabia": "Aurelie", "Scotland": "Elaine 2", "United States": "Neil", "Senegal": "Sara",
+    "New Zealand": "James", "Iran": "Elaine", "Iraq": "Paul", "Norway": "Claire",
+    "Algeria": "Adrienne 2", "Austria": "Rich", "Jordan": "Maria", "Congo DR": "Ellis", "DR Congo": "Ellis",
+    "Portugal": "Lucy 2", "Uzbekistan": "Kat 2", "Colombia": "Neil 2", "England": "Marijke",
+    "Panama": "Lucy", "Ghana": "Sam", "Croatia": "Kurt", "South Korea": "Beau",
+}
+
+COUNTRY_ABBREVIATIONS = {
+    "Mexico": "MEX", "South Africa": "RSA", "Canada": "CAN", "Switzerland": "SUI",
+    "Argentina": "ARG", "France": "FRA", "Brazil": "BRA", "Spain": "ESP",
+    "Bosnia and Herzegovina": "BIH", "Bosnia-Herzegovina": "BIH", "Czechia": "CZE", "Qatar": "QAT", "Morocco": "MAR",
+    "Haiti": "HAI", "Turkey": "TUR", "Paraguay": "PAR", "Germany": "GER",
+    "Curaçao": "CUW", "Ecuador": "ECU", "Japan": "JPN", "Belgium": "BEL",
+    "Egypt": "EGY", "Tunisia": "TUN", "Netherlands": "NED", "Ivory Coast": "CIV",
+    "Australia": "AUS", "Cape Verde Islands": "CPV", "Cape Verde": "CPV", "Uruguay": "URU", "Sweden": "SWE",
+    "Saudi Arabia": "KSA", "Scotland": "SCO", "United States": "USA", "Senegal": "SEN",
+    "New Zealand": "NZL", "Iran": "IRN", "Iraq": "IRQ", "Norway": "NOR",
+    "Algeria": "ALG", "Austria": "AUT", "Jordan": "JOR", "Congo DR": "COD", "DR Congo": "COD",
+    "Portugal": "POR", "Uzbekistan": "UZB", "Colombia": "COL", "England": "ENG",
+    "Panama": "PAN", "Ghana": "GHA", "Croatia": "CRO", "South Korea": "KOR"
+}
+
+EXPECTED_RANKINGS = {
+    "France": 1, "Spain": 2, "Argentina": 3, "England": 4, "Portugal": 5, "Brazil": 6,
+    "Netherlands": 7, "Morocco": 8, "Belgium": 9, "Germany": 10, "Croatia": 11, "Colombia": 12,
+    "Senegal": 13, "Mexico": 14, "United States": 15, "Uruguay": 16, "Japan": 17, "Switzerland": 18,
+    "Iran": 19, "Turkey": 20, "Ecuador": 21, "Austria": 22, "South Korea": 23, "Australia": 24,
+    "Algeria": 25, "Egypt": 26, "Canada": 27, "Norway": 28, "Panama": 29, "Ivory Coast": 30,
+    "Sweden": 31, "Paraguay": 32, "Czechia": 33, "Scotland": 34, "Tunisia": 35, "Congo DR": 36, 
+    "DR Congo": 36, "Uzbekistan": 37, "Qatar": 38, "Iraq": 39, "South Africa": 40, "Saudi Arabia": 41,
+    "Jordan": 42, "Bosnia-Herzegovina": 43, "Bosnia and Herzegovina": 43, "Cape Verde Islands": 44, "Cape Verde": 44, "Ghana": 45, 
+    "Curaçao": 46, "Haiti": 47, "New Zealand": 48
+}
+
+TEAM_COLORS = {
+    "Mexico": "#006847", "South Africa": "#007A4D", "Canada": "#FF0000", "Switzerland": "#D52B1E",
+    "Argentina": "#74ACDF", "France": "#002395", "Brazil": "#009739", "Spain": "#AA151B",
+    "Bosnia-Herzegovina": "#002F6C", "Bosnia and Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
+    "Haiti": "#00209F", "Turkey": "#E30A17", "Paraguay": "#D52B1E", "Germany": "#222222",
+    "Curaçao": "#002B7F", "Ecuador": "#FFDD00", "Japan": "#00005C", "Belgium": "#E30A17",
+    "Egypt": "#C1272D", "Tunisia": "#E70013", "Netherlands": "#E05206", "Ivory Coast": "#E87722",
+    "Australia": "#00008B", "Cape Verde Islands": "#003893", "Cape Verde": "#003893", "Uruguay": "#0081C8", 
+    "Sweden": "#006AA7", "Saudi Arabia": "#006C35", "Scotland": "#005EB8", "United States": "#002868", 
+    "Senegal": "#00853F", "New Zealand": "#111111", "Iran": "#239E46", "Iraq": "#007A3D", 
+    "Norway": "#EF2B2D", "Algeria": "#006233", "Austria": "#ED2939", "Jordan": "#1A1A1A", 
+    "Congo DR": "#007FFF", "DR Congo": "#007FFF", "Portugal": "#FF0000", "Uzbekistan": "#0099B5", 
+    "Colombia": "#FCD116", "England": "#CE1124", "Panama": "#DA121A", "Ghana": "#DA121A", 
+    "Croatia": "#FF0000", "South Korea": "#111111"
+}
+
+GROUP_PLAYERS = {
+    "Spain": {"player_name": "Lamine Yamal", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lamine-yamal-spain-forward-profile-full.png"},
+    "France": {"player_name": "Kylian Mbappe", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kylian-mbappe-france-forward-profile-full.png"},
+    "England": {"player_name": "Bukayo Saka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bukayo-saka-england-forward-profile-full.png"},
+    "Brazil": {"player_name": "Vinícius Jr.", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/vinicius-junior-brazil-forward-profile-full.png"},
+    "Germany": {"player_name": "Kai Havertz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kai-havertz-germany-forward-profile-full.png"},
+    "Portugal": {"player_name": "Bruno Fernandes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bruno-fernandes-portugal-midfielder-profile-full.png"},
+    "Netherlands": {"player_name": "Frenkie de Jong", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/frenkie-de-jong-netherlands-midfielder-profile-full.png"},
+    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"},
+    "Ivory Coast": {"player_name": "Yan Diomande", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yan-diomande-ivory-coast-forward-profile-full.png"},
+    "Bosnia-Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
+    "Bosnia and Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
+    "Cape Verde Islands": {"player_name": "Ryan Mendes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ryan-mendes-cape-verde-midfielder-profile-full.png"},
+    "Curaçao": {"player_name": "Juninho Bacuna", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/juninho-bacuna-curacao-midfielder-profile-full.png"},
+    "Haiti": {"player_name": "Wilson Isidor", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/wilson-isidor-haiti-forward-profile-full.png"},
+    "Congo DR": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
+    "DR Congo": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
+    "Ghana": {"player_name": "Antoine Semenyo", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/antoine-semenyo-ghana-forward-profile-full.png"},
+    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-algeria-forward-profile-full.png"},
+    "Australia": {"player_name": "Jackson Irvine", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jackson-irvine-australia-midfielder-profile-full.png"},
+    "Canada": {"player_name": "Alphonso Davies", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
+    "Czechia": {"player_name": "Patrik Schick", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/patrik-schick-czech-republic-forward-profile-full.png"},
+    "Austria": {"player_name": "Romano Schmid", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/romano-schmid-austria-midfielder-profile-full.png"},
+    "New Zealand": {"player_name": "Chris Wood", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/chris-wood-new-zealand-forward-profile-full.png"},
+    "Iraq": {"player_name": "Ali Al-Hamadi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ali-al-hamadi-iraq-forward-profile-full.png"},
+    "Jordan": {"player_name": "Ihsan Haddad", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ihsan-haddad-jordan-defender-profile-full.png"},
+    "Egypt": {"player_name": "Mohamed Salah", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mohamed-salah-egypt-forward-profile-full.png"},
+    "Ecuador": {"player_name": "Willian Pacho", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/willian-pacho-ecuador-defender-profile-full.png"},
+    "Saudi Arabia": {"player_name": "Salem Al-Dawsari", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/salem-al-dawsari-saudi-arabia-forward-profile-full.png"},
+    "Belgium": {"player_name": "Jeremy Doku", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jeremy-doku-belgium-forward-profile-full.png"},
+    "Qatar": {"player_name": "Hassan Al-Haydos", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/hassan-al-haydos-qatar-forward-profile-full.png"},
+    "Colombia": {"player_name": "Luis Suarez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luis-suarez-colombia-forward-profile-full.png"},
+    "Iran": {"player_name": "Alireza Beiranvand", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
+    "South Africa": {"player_name": "Mbekezeli Mbokazi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mbekezeli-mbokazi-south-africa-defender-profile-full.png"},
+    "Norway": {"player_name": "Erling Haaland", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/erling-haaland-norway-forward-profile-full.png"},
+    "Croatia": {"player_name": "Luka Vuskovic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luka-vuskovic-croatia-defender-profile-full.png"},
+    "Paraguay": {"player_name": "Diego Gomez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/diego-gomez-paraguay-midfielder-profile-full.png"},
+    "Panama": {"player_name": "Adalberto Carrasquilla", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/adalberto-carrasquilla-panama-midfielder-profile-full.png"},
+    "Japan": {"player_name": "Ritsu Doan", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ritsu-doan-japan-forward-profile-full.png"},
+    "Scotland": {"player_name": "Scott McTominay", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/scott-mctominay-scotland-midfielder-profile-full.png"},
+    "Tunisia": {"player_name": "Ellyes Skhiri", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ellyes-skhiri-tunisia-midfielder-profile-full.png"},
+    "Sweden": {"player_name": "Viktor Gyökeres", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/viktor-gyokeres-sweden-forward-profile-full.png"},
+    "Uzbekistan": {"player_name": "Eldor Shomurodov", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/eldor-shomurodov-uzbekistan-forward-profile-full.png"},
+    "Mexico": {"player_name": "Gilberto Mora", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/gilberto-mora-mexico-midfielder-profile-full.png"},
+    "South Korea": {"player_name": "Son Heung-min", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/son-heung-min-south-korea-forward-profile-full.png"},
+    "Morocco": {"player_name": "Yassine Bounou", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yassine-bounou-morocco-goalkeeper-profile-full.png"},
+    "Senegal": {"player_name": "Sadio Mane", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/sadio-mane-senegal-forward-profile-full.png"},
+    "Switzerland": {"player_name": "Johan Manzambi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/johan-manzambi-switzerland-midfielder-profile-full.png"},
+    "United States": {"player_name": "Christian Pulisic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/christian-pulisic-united-states-forward-profile-full.png"},
+    "Uruguay": {"player_name": "Federico Valverde", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/federico-valverde-uruguay-midfielder-profile-full.png"},
+    "Turkey": {"player_name": "Kenan Yildiz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kenan-yildiz-turkey-forward-profile-full.png"}
+}
+
+BROADCAST_BRANDS = {
+    "bbc one": {
+        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/BBC_One_logo_2021.svg/1920px-BBC_One_logo_2021.svg.png",
+        "live_url": "https://www.bbc.co.uk/iplayer/live/bbcone"
+    },
+    "bbc two": {
+        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/BBC_Two_logo_2021.svg/1920px-BBC_Two_logo_2021.svg.png",
+        "live_url": "https://www.bbc.co.uk/iplayer/live/bbctwo"
+    },
+    "itv1": {
+        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/ITV1_Logo_2022.svg/250px-ITV1_Logo_2022.svg.png",
+        "live_url": "https://www.itv.com/watch?channel=itv"
+    },
+    "itv4": {
+        "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/5/57/ITV4_logo_%282022%29.svg/1280px-ITV4_logo_%282022%29.svg.png",
+        "live_url": "https://www.itv.com/watch?channel=itv4"
+    }
+}
+
 # Global baseline dashboard system architecture style tokens
 GLOBAL_STYLE_TOKENS = """
 <style>
@@ -199,7 +330,7 @@ GLOBAL_STYLE_TOKENS = """
     }
 
     .banner-bottom-time {
-        background-color: #ff7d23;
+        background-color: #444444; /* Standard unlit dark baseline background */
         padding: 8px 15px;
         font-size: 12px;
         font-weight: 700 !important;
@@ -222,9 +353,7 @@ GLOBAL_STYLE_TOKENS = """
         color: #FFFFFF !important;
     }
     
-    .highlights-btn {
-        background-color: #444444 !important;
-        color: #FFFFFF !important;
+    .highlights-btn, .watch-live-btn {
         font-weight: 800 !important;
         font-size: 11px !important;
         text-transform: uppercase;
@@ -233,13 +362,17 @@ GLOBAL_STYLE_TOKENS = """
         border-radius: 2px;
         display: inline-flex !important;
         align-items: center;
-        gap: 2px;
-        box-shadow: 0 1px 2px rgba(255,0,0,0.2);
+        gap: 4px;
+        color: #FFFFFF !important;
     }
 
-    .highlights-btn:hover {
+    /* Matching exact hover red layout execution parameters */
+    .highlights-btn, .watch-live-btn {
+        background-color: #444444 !important;
+    }
+
+    .highlights-btn:hover, .watch-live-btn:hover {
         background-color: #CC0000 !important;
-        color: #FFFFFF !important;
     }
     
     .banner-flag {
@@ -339,118 +472,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-SWEEPSTAKE_MAPPING = {
-    "Mexico": "Evon", "South Africa": "Iwan", "Canada": "Holly", "Switzerland": "Yannis",
-    "Argentina": "Alba", "France": "Marc", "Brazil": "Andy", "Spain": "Ciaran",
-    "Bosnia and Herzegovina": "Izzy", "Bosnia-Herzegovina": "Izzy", "Czechia": "Pablo", "Qatar": "Jess", "Morocco": "Bartek",
-    "Haiti": "Hatty", "Turkey": "Adrienne", "Paraguay": "Becca", "Germany": "Oliwia",
-    "Curaçao": "Justin", "Ecuador": "Cat", "Japan": "Adem", "Belgium": "Mart",
-    "Egypt": "Chris", "Tunisia": "Jess 2", "Netherlands": "Louis", "Ivory Coast": "Suzie",
-    "Australia": "Amy", "Cape Verde Islands": "Justin 2", "Cape Verde": "Justin 2", "Uruguay": "Paul 2", "Sweden": "Kat",
-    "Saudi Arabia": "Aurelie", "Scotland": "Elaine 2", "United States": "Neil", "Senegal": "Sara",
-    "New Zealand": "James", "Iran": "Elaine", "Iraq": "Paul", "Norway": "Claire",
-    "Algeria": "Adrienne 2", "Austria": "Rich", "Jordan": "Maria", "Congo DR": "Ellis", "DR Congo": "Ellis",
-    "Portugal": "Lucy 2", "Uzbekistan": "Kat 2", "Colombia": "Neil 2", "England": "Marijke",
-    "Panama": "Lucy", "Ghana": "Sam", "Croatia": "Kurt", "South Korea": "Beau",
-}
-
-COUNTRY_ABBREVIATIONS = {
-    "Mexico": "MEX", "South Africa": "RSA", "Canada": "CAN", "Switzerland": "SUI",
-    "Argentina": "ARG", "France": "FRA", "Brazil": "BRA", "Spain": "ESP",
-    "Bosnia and Herzegovina": "BIH", "Bosnia-Herzegovina": "BIH", "Czechia": "CZE", "Qatar": "QAT", "Morocco": "MAR",
-    "Haiti": "HAI", "Turkey": "TUR", "Paraguay": "PAR", "Germany": "GER",
-    "Curaçao": "CUW", "Ecuador": "ECU", "Japan": "JPN", "Belgium": "BEL",
-    "Egypt": "EGY", "Tunisia": "TUN", "Netherlands": "NED", "Ivory Coast": "CIV",
-    "Australia": "AUS", "Cape Verde Islands": "CPV", "Cape Verde": "CPV", "Uruguay": "URU", "Sweden": "SWE",
-    "Saudi Arabia": "KSA", "Scotland": "SCO", "United States": "USA", "Senegal": "SEN",
-    "New Zealand": "NZL", "Iran": "IRN", "Iraq": "IRQ", "Norway": "NOR",
-    "Algeria": "ALG", "Austria": "AUT", "Jordan": "JOR", "Congo DR": "COD", "DR Congo": "COD",
-    "Portugal": "POR", "Uzbekistan": "UZB", "Colombia": "COL", "England": "ENG",
-    "Panama": "PAN", "Ghana": "GHA", "Croatia": "CRO", "South Korea": "KOR"
-}
-
-EXPECTED_RANKINGS = {
-    "France": 1, "Spain": 2, "Argentina": 3, "England": 4, "Portugal": 5, "Brazil": 6,
-    "Netherlands": 7, "Morocco": 8, "Belgium": 9, "Germany": 10, "Croatia": 11, "Colombia": 12,
-    "Senegal": 13, "Mexico": 14, "United States": 15, "Uruguay": 16, "Japan": 17, "Switzerland": 18,
-    "Iran": 19, "Turkey": 20, "Ecuador": 21, "Austria": 22, "South Korea": 23, "Australia": 24,
-    "Algeria": 25, "Egypt": 26, "Canada": 27, "Norway": 28, "Panama": 29, "Ivory Coast": 30,
-    "Sweden": 31, "Paraguay": 32, "Czechia": 33, "Scotland": 34, "Tunisia": 35, "Congo DR": 36, 
-    "DR Congo": 36, "Uzbekistan": 37, "Qatar": 38, "Iraq": 39, "South Africa": 40, "Saudi Arabia": 41,
-    "Jordan": 42, "Bosnia-Herzegovina": 43, "Cape Verde Islands": 44, "Cape Verde": 44, "Ghana": 45, 
-    "Curaçao": 46, "Haiti": 47, "New Zealand": 48
-}
-
-TEAM_COLORS = {
-    "Mexico": "#006847", "South Africa": "#007A4D", "Canada": "#FF0000", "Switzerland": "#D52B1E",
-    "Argentina": "#74ACDF", "France": "#002395", "Brazil": "#009739", "Spain": "#AA151B",
-    "Bosnia-Herzegovina": "#002F6C", "Bosnia and Herzegovina": "#002F6C", "Czechia": "#11457E", "Qatar": "#8A1538", "Morocco": "#C1272D",
-    "Haiti": "#00209F", "Turkey": "#E30A17", "Paraguay": "#D52B1E", "Germany": "#222222",
-    "Curaçao": "#002B7F", "Ecuador": "#FFDD00", "Japan": "#00005C", "Belgium": "#E30A17",
-    "Egypt": "#C1272D", "Tunisia": "#E70013", "Netherlands": "#E05206", "Ivory Coast": "#E87722",
-    "Australia": "#00008B", "Cape Verde Islands": "#003893", "Cape Verde": "#003893", "Uruguay": "#0081C8", 
-    "Sweden": "#006AA7", "Saudi Arabia": "#006C35", "Scotland": "#005EB8", "United States": "#002868", 
-    "Senegal": "#00853F", "New Zealand": "#111111", "Iran": "#239E46", "Iraq": "#007A3D", 
-    "Norway": "#EF2B2D", "Algeria": "#006233", "Austria": "#ED2939", "Jordan": "#1A1A1A", 
-    "Congo DR": "#007FFF", "DR Congo": "#007FFF", "Portugal": "#FF0000", "Uzbekistan": "#0099B5", 
-    "Colombia": "#FCD116", "England": "#CE1124", "Panama": "#DA121A", "Ghana": "#DA121A", 
-    "Croatia": "#FF0000", "South Korea": "#111111"
-}
-
-GROUP_PLAYERS = {
-    "Spain": {"player_name": "Lamine Yamal", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lamine-yamal-spain-forward-profile-full.png"},
-    "France": {"player_name": "Kylian Mbappe", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kylian-mbappe-france-forward-profile-full.png"},
-    "England": {"player_name": "Bukayo Saka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bukayo-saka-england-forward-profile-full.png"},
-    "Brazil": {"player_name": "Vinícius Jr.", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/vinicius-junior-brazil-forward-profile-full.png"},
-    "Germany": {"player_name": "Kai Havertz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kai-havertz-germany-forward-profile-full.png"},
-    "Portugal": {"player_name": "Bruno Fernandes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bruno-fernandes-portugal-midfielder-profile-full.png"},
-    "Netherlands": {"player_name": "Frenkie de Jong", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/frenkie-de-jong-netherlands-midfielder-profile-full.png"},
-    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"},
-    "Ivory Coast": {"player_name": "Yan Diomande", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yan-diomande-ivory-coast-forward-profile-full.png"},
-    "Bosnia-Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
-    "Bosnia and Herzegovina": {"player_name": "Esmir Bajraktarevic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/esmir-bajraktarevic-bosnia-and-herzegovina-forward-profile-full.png"},
-    "Cape Verde Islands": {"player_name": "Ryan Mendes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ryan-mendes-cape-verde-midfielder-profile-full.png"},
-    "Curaçao": {"player_name": "Juninho Bacuna", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/juninho-bacuna-curacao-midfielder-profile-full.png"},
-    "Haiti": {"player_name": "Wilson Isidor", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/wilson-isidor-haiti-forward-profile-full.png"},
-    "Congo DR": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
-    "DR Congo": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
-    "Ghana": {"player_name": "Antoine Semenyo", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/antoine-semenyo-ghana-forward-profile-full.png"},
-    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-algeria-forward-profile-full.png"},
-    "Australia": {"player_name": "Jackson Irvine", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jackson-irvine-australia-midfielder-profile-full.png"},
-    "Canada": {"player_name": "Alphonso Davies", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
-    "Czechia": {"player_name": "Patrik Schick", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/patrik-schick-czech-republic-forward-profile-full.png"},
-    "Austria": {"player_name": "Romano Schmid", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/romano-schmid-austria-midfielder-profile-full.png"},
-    "New Zealand": {"player_name": "Chris Wood", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/chris-wood-new-zealand-forward-profile-full.png"},
-    "Iraq": {"player_name": "Ali Al-Hamadi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ali-al-hamadi-iraq-forward-profile-full.png"},
-    "Jordan": {"player_name": "Ihsan Haddad", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ihsan-haddad-jordan-defender-profile-full.png"},
-    "Egypt": {"player_name": "Mohamed Salah", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mohamed-salah-egypt-forward-profile-full.png"},
-    "Ecuador": {"player_name": "Willian Pacho", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/willian-pacho-ecuador-defender-profile-full.png"},
-    "Saudi Arabia": {"player_name": "Salem Al-Dawsari", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/salem-al-dawsari-saudi-arabia-forward-profile-full.png"},
-    "Belgium": {"player_name": "Jeremy Doku", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jeremy-doku-belgium-forward-profile-full.png"},
-    "Qatar": {"player_name": "Hassan Al-Haydos", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/hassan-al-haydos-qatar-forward-profile-full.png"},
-    "Colombia": {"player_name": "Luis Suarez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luis-suarez-colombia-forward-profile-full.png"},
-    "Iran": {"player_name": "Alireza Beiranvand", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
-    "South Africa": {"player_name": "Mbekezeli Mbokazi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/mbekezeli-mbokazi-south-africa-defender-profile-full.png"},
-    "Norway": {"player_name": "Erling Haaland", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/erling-haaland-norway-forward-profile-full.png"},
-    "Croatia": {"player_name": "Luka Vuskovic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/luka-vuskovic-croatia-defender-profile-full.png"},
-    "Paraguay": {"player_name": "Diego Gomez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/diego-gomez-paraguay-midfielder-profile-full.png"},
-    "Panama": {"player_name": "Adalberto Carrasquilla", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/adalberto-carrasquilla-panama-midfielder-profile-full.png"},
-    "Japan": {"player_name": "Ritsu Doan", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ritsu-doan-japan-forward-profile-full.png"},
-    "Scotland": {"player_name": "Scott McTominay", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/scott-mctominay-scotland-midfielder-profile-full.png"},
-    "Tunisia": {"player_name": "Ellyes Skhiri", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/ellyes-skhiri-tunisia-midfielder-profile-full.png"},
-    "Sweden": {"player_name": "Viktor Gyökeres", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/viktor-gyokeres-sweden-forward-profile-full.png"},
-    "Uzbekistan": {"player_name": "Eldor Shomurodov", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/eldor-shomurodov-uzbekistan-forward-profile-full.png"},
-    "Mexico": {"player_name": "Gilberto Mora", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/gilberto-mora-mexico-midfielder-profile-full.png"},
-    "South Korea": {"player_name": "Son Heung-min", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/son-heung-min-south-korea-forward-profile-full.png"},
-    "Morocco": {"player_name": "Yassine Bounou", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yassine-bounou-morocco-goalkeeper-profile-full.png"},
-    "Senegal": {"player_name": "Sadio Mane", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/sadio-mane-senegal-forward-profile-full.png"},
-    "Switzerland": {"player_name": "Johan Manzambi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/johan-manzambi-switzerland-midfielder-profile-full.png"},
-    "United States": {"player_name": "Christian Pulisic", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/christian-pulisic-united-states-forward-profile-full.png"},
-    "Uruguay": {"player_name": "Federico Valverde", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/federico-valverde-uruguay-midfielder-profile-full.png"},
-    "Turkey": {"player_name": "Kenan Yildiz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kenan-yildiz-turkey-forward-profile-full.png"}
-}
-
-# 3. Master Functions Core Declarations (Prevents top-down NameError compilation regressions)
+# 3. Core Helper Utility Functions
 @st.cache_data(ttl=86400)
 def get_cached_team_crests():
     crests = {}
@@ -488,9 +510,6 @@ def get_group_flag_html(team_name):
         return f'<img src="{crest_url}" class="flag-img" alt="{team_name}">'
     return ''
 
-def get_flag_html(team_name, extra_class="flag-img"):
-    return get_group_flag_html(team_name)
-
 def format_to_uk_time(utc_str):
     try:
         dt = datetime.strptime(utc_str, "%Y-%m-%dT%H:%M:%SZ")
@@ -508,7 +527,7 @@ def get_live_score(match):
             return int(s.get("home")), int(s.get("away"))
     return 0, 0
 
-# ── MASTER SHEET INGESTION ENGINE ──
+# ── MASTER SPREADSHEET SCHEDULE OVERRIDES ENGINE ──
 @st.cache_data(ttl=15)
 def fetch_spreadsheet_overrides_master():
     override_dict = {}
@@ -526,6 +545,9 @@ def fetch_spreadsheet_overrides_master():
                     h_score = str(row[5]).strip() if pd.notna(row[5]) else "0"
                     a_score = str(row[6]).strip() if pd.notna(row[6]) else "0"
                     h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else ""
+                    
+                    # Parse Column I (Index 8) safely for TV Network parameters
+                    tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
 
                     if home_t and away_t:
                         lookup_key = f"{home_t.lower()}_v_{away_t.lower()}"
@@ -533,7 +555,8 @@ def fetch_spreadsheet_overrides_master():
                             "status": status_str,
                             "homeScore": h_score,
                             "awayScore": a_score,
-                            "highlightsUrl": h_link if h_link.lower().startswith("http") else "https://www.youtube.com/@fifa/videos"
+                            "highlightsUrl": h_link if h_link.lower().startswith("http") else "https://www.youtube.com/@fifa/videos",
+                            "tvNetwork": tv_network
                         }
                 except Exception:
                     pass
@@ -567,6 +590,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
 
     h_score, a_score = get_live_score(match)
     highlights_url = "https://www.youtube.com/@fifa/videos"
+    tv_channel_text = ""
     
     if h_name and a_name:
         lookup_key = f"{h_name.lower()}_v_{a_name.lower()}"
@@ -575,6 +599,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             h_score = sheet_row.get("homeScore", h_score)
             a_score = sheet_row.get("awayScore", a_score)
             highlights_url = sheet_row.get("highlightsUrl", highlights_url)
+            tv_channel_text = sheet_row.get("tvNetwork", "")
 
     if is_live:
         top_pane = '<div class="inplay-top-pane"><div class="next-match-title">🔴 Live now</div></div>'
@@ -598,9 +623,26 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             date_str = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
         else:
             date_str = "TBD"
+            
         top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next match</div></div>'
         centre_bubble = '<div class="vs-marker-bubble">VS</div>'
-        bottom_bar = f'<div class="banner-bottom-time">🗓️ {date_str}</div>'
+        
+        normalized_channel = tv_channel_text.lower().strip()
+        if normalized_channel in BROADCAST_BRANDS:
+            brand_node = BROADCAST_BRANDS[normalized_channel]
+            bottom_bar = f"""
+            <div class="banner-bottom-time" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
+                <span style="color: #FFFFFF !important;">🗓️ {date_str}</span>
+                <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn">
+                    WATCH LIVE
+                    <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
+                </a>
+            </div>
+            """
+        else:
+            channel_suffix = f" | 📺 {tv_channel_text}" if tv_channel_text else ""
+            bottom_bar = f'<div class="banner-bottom-time" style="color: #FFFFFF !important;">🗓️ {date_str}{channel_suffix}</div>'
 
     return f"""
     {GLOBAL_STYLE_TOKENS}
@@ -710,7 +752,7 @@ for m in all_matches:
     else:
         upcoming_matches.append(m)
 
-upcoming_matches = sorted(upcoming_matches, key=lambda x: x.get("utcDate", ""))
+upcoming_matches = sorted(upcoming_matches, key=lambda x: x.get("utcDate", ""), reverse=False)
 next_kickoff_matches = []
 if upcoming_matches:
     first_kickoff = upcoming_matches[0].get("utcDate", "")
@@ -776,7 +818,7 @@ with stat_cols[1]:
     fave_owner = SWEEPSTAKE_MAPPING.get("France", "Unassigned")
     st.markdown(f'<div class="stat-banner-box"><medium>⭐ Favourites</medium><span>France ({fave_owner})</span></div>', unsafe_allow_html=True)
 with stat_cols[2]:
-    st.markdown(f'<div class="stat-banner-box"><medium>🚀 Overperformer</medium><span>{top_performer_text}</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="stat-banner-box"><medium>🚀 Overperformer</medium><span>' + top_performer_text + '</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
