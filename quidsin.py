@@ -437,11 +437,11 @@ st.markdown("""
         .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #FAFAFA !important;
         }
-        h1, h2, h3, h1 span, h2 span, h3 span, h1 p, h2 p, h3 p {
-            color: #ff7d23 !important; /* <--- This will now strictly apply your custom color */
-            font-family: 'Figtree', sans-serif !important;
-            font-weight: 800 !important;
-        }
+    h1, h2, h3, h1 span, h2 span, h3 span, h1 p, h2 p, h3 p {
+    color: #ff7d23 !important; /* <--- This will now strictly apply your custom color */
+    font-family: 'Figtree', sans-serif !important;
+    font-weight: 800 !important;
+    }
         .title-area h1 { margin: 0px !important; font-size: 28px; font-weight: 900 !important; }
         .title-area p { margin: 4px 0px 0px 0px !important; color: #555555 !important; font-weight: 700 !important; font-size: 16px; }
         .stat-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -545,8 +545,6 @@ def fetch_spreadsheet_overrides_master():
                     h_score = str(row[5]).strip() if pd.notna(row[5]) else "0"
                     a_score = str(row[6]).strip() if pd.notna(row[6]) else "0"
                     h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else ""
-                    
-                    # Parse Column I (Index 8) safely for TV Network parameters
                     tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
 
                     if home_t and away_t:
@@ -566,7 +564,7 @@ def fetch_spreadsheet_overrides_master():
 
 SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
 
-# ── HIGH-PERFORMANCE MEMORY LEAK-FREE IFRAME HERO BANNER GENERATOR ──
+# ── DESIGN HERO BANNER GENERATOR WITH MOBILE 3-LETTER ABBREVIATION RULES ──
 def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
     home_team_obj = match.get("homeTeam", {})
     away_team_obj = match.get("awayTeam", {})
@@ -624,7 +622,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             bottom_bar = f'<div class="inplay-bottom-bar" style="color: #FFFFFF !important;">⚽ Match in progress{channel_suffix}</div>'
             
     elif is_result:
-        top_pane = '<div class="result-top-pane"><div class="next-match-title" style="background: rgba(0,0,0,0.2);">✅ Latest result</div></div>'
+        top_pane = '<div class="result-top-pane"><div class="next-match-title" style="background: rgba(0,0,0,0.2);">%s Result</div>' % ("&#x2705;" if match_idx % 2 == 0 else "✅")
         centre_bubble = f"""
         <div class="score-reveal-wrapper">
             <input type="checkbox" id="reveal-toggle-{match_idx}" class="reveal-toggle-input">
@@ -729,7 +727,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
     </div>
     """
 
-# ── Data Fetching pipeline ──
+# ── Data Ingestion Pipeline Routing Engine ──
 @st.cache_data(ttl=120)  
 def fetch_football_data():
     all_matches = []
