@@ -601,10 +601,28 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             highlights_url = sheet_row.get("highlightsUrl", highlights_url)
             tv_channel_text = sheet_row.get("tvNetwork", "")
 
+    normalized_channel = tv_channel_text.lower().strip()
+
     if is_live:
         top_pane = '<div class="inplay-top-pane"><div class="next-match-title">🔴 Live now</div></div>'
         centre_bubble = f'<div class="score-bubble">{h_score} – {a_score}</div>'
-        bottom_bar = '<div class="inplay-bottom-bar">⚽ Match in progress</div>'
+        
+        if normalized_channel in BROADCAST_BRANDS:
+            brand_node = BROADCAST_BRANDS[normalized_channel]
+            bottom_bar = f"""
+            <div class="inplay-bottom-bar" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
+                <span style="color: #FFFFFF !important;">⚽ Match in progress</span>
+                <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn">
+                    WATCH LIVE
+                    <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
+                </a>
+            </div>
+            """
+        else:
+            channel_suffix = f" | 📺 {tv_channel_text}" if tv_channel_text else ""
+            bottom_bar = f'<div class="inplay-bottom-bar">⚽ Match in progress{channel_suffix}</div>'
+            
     elif is_result:
         top_pane = '<div class="result-top-pane"><div class="next-match-title" style="background: rgba(0,0,0,0.2);">✅ Latest result</div></div>'
         centre_bubble = f"""
@@ -627,7 +645,6 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
         top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next match</div></div>'
         centre_bubble = '<div class="vs-marker-bubble">VS</div>'
         
-        normalized_channel = tv_channel_text.lower().strip()
         if normalized_channel in BROADCAST_BRANDS:
             brand_node = BROADCAST_BRANDS[normalized_channel]
             bottom_bar = f"""
@@ -673,7 +690,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
     </div>
     """
     
-# ── Data Fetching pipeline ──
+# ── Data Ingestion Pipeline Routing Engine ──
 @st.cache_data(ttl=120)  
 def fetch_football_data():
     all_matches = []
@@ -967,7 +984,7 @@ else:
                         st.markdown('</div>', unsafe_allow_html=True)
 
         # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
-        st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #ff7d23;'>", unsafe_allow_html=True)
+        st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
         st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
 
