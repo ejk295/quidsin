@@ -102,7 +102,7 @@ GROUP_PLAYERS = {
     "Congo DR": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
     "DR Congo": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
     "Ghana": {"player_name": "Antoine Semenyo", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/antoine-semenyo-ghana-forward-profile-full.png"},
-    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-alria-forward-profile-full.png"},
+    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-algeria-forward-profile-full.png"},
     "Australia": {"player_name": "Jackson Irvine", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jackson-irvine-australia-midfielder-profile-full.png"},
     "Canada": {"player_name": "Alphonso Davies", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
     "Czechia": {"player_name": "Patrik Schick", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/patrik-schick-czech-republic-forward-profile-full.png"},
@@ -366,12 +366,17 @@ GLOBAL_STYLE_TOKENS = """
         color: #FFFFFF !important;
     }
 
-    /* Matching exact hover red layout execution parameters */
-    .highlights-btn, .watch-live-btn {
+    /* Target class setups to securely manage structural background variants */
+    .highlights-btn, .watch-live-btn.is-scheduled-btn {
         background-color: #444444 !important;
     }
 
-    .highlights-btn:hover, .watch-live-btn:hover {
+    .watch-live-btn.is-live-btn {
+        background-color: #8b0802 !important;
+    }
+
+    /* Brighter red target hover configuration across all nodes */
+    .highlights-btn:hover, .watch-live-btn.is-scheduled-btn:hover, .watch-live-btn.is-live-btn:hover {
         background-color: #CC0000 !important;
     }
     
@@ -613,7 +618,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             <div class="inplay-bottom-bar" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
                 <span style="color: #FFFFFF !important;">⚽ Match in progress</span>
                 <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
-                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn" style="background-color: #8b0802 !important;">
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn is-live-btn">
                     WATCH LIVE
                     <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
                 </a>
@@ -632,7 +637,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             <div class="score-bubble" style="display: none;">{h_score} – {a_score}</div>
         </div>
         """
-        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn" style="background-color: #444444 !important;">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
+        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
     else:
         dt_uk = format_to_uk_time(match.get("utcDate"))
         if dt_uk:
@@ -651,7 +656,7 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             <div class="banner-bottom-time" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
                 <span style="color: #FFFFFF !important;">🗓️ {date_str}</span>
                 <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
-                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn" style="background-color: #444444 !important;">
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn is-scheduled-btn">
                     WATCH LIVE
                     <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
                 </a>
@@ -928,8 +933,7 @@ else:
                                         elif "finished" in s_row["status"] or "completed" in s_row["status"]:
                                             display_score = f"<b>{s_row['homeScore']} - {s_row['awayScore']}</b>"
                                             row_class = "fixture-row"
-                                        else:
-                                            display_score = f"<span style='color:#777; font-weight:500;'>{local_time_str}</span>"
+                                        else = display_score = f"<span style='color:#777; font-weight:500;'>{local_time_str}</span>"
                                             row_class = "fixture-row"
                                     else:
                                         m_status = match.get("status")
