@@ -102,7 +102,7 @@ GROUP_PLAYERS = {
     "Congo DR": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
     "DR Congo": {"player_name": "Aaron Wan-Bissaka", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/aaron-wan-bissaka-dr-congo-defender-profile-full.png"},
     "Ghana": {"player_name": "Antoine Semenyo", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/antoine-semenyo-ghana-forward-profile-full.png"},
-    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-algeria-forward-profile-full.png"},
+    "Algeria": {"player_name": "Riyad Mahrez", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/riyad-mahrez-alria-forward-profile-full.png"},
     "Australia": {"player_name": "Jackson Irvine", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/jackson-irvine-australia-midfielder-profile-full.png"},
     "Canada": {"player_name": "Alphonso Davies", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/alphonso-davies-canada-defender-profile-full.png"},
     "Czechia": {"player_name": "Patrik Schick", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/patrik-schick-czech-republic-forward-profile-full.png"},
@@ -156,224 +156,7 @@ BROADCAST_BRANDS = {
     }
 }
 
-# 3. Core Helper Utility Functions
-@st.cache_data(ttl=86400)
-def get_cached_team_crests():
-    crests = {}
-    if API_TOKEN == "placeholder":
-        return crests
-    try:
-        url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/teams"
-        res = requests.get(url, headers=HEADERS, timeout=10)
-        if res.status_code == 200:
-            teams_data = res.json().get("teams", [])
-            for t in teams_data:
-                name = t.get("name")
-                crest_url = t.get("crest")
-                if name and crest_url:
-                    crests[name] = crest_url
-                    if name == "DR Congo": crests["Congo DR"] = crest_url
-                    if name == "Congo DR": crests["DR Congo"] = crest_url
-                    if name == "Cape Verde": crests["Cape Verde Islands"] = crest_url
-                    if name == "Bosnia and Herzegovina": crests["Bosnia-Herzegovina"] = crest_url
-    except Exception:
-        pass
-    return crests
-
-CACHED_CRESTS = get_cached_team_crests()
-
-def get_banner_flag_html(team_name):
-    crest_url = CACHED_CRESTS.get(team_name)
-    if crest_url:
-        return f'<img src="{crest_url}" class="banner-flag" alt="{team_name}">'
-    return ''
-
-def get_group_flag_html(team_name):
-    crest_url = CACHED_CRESTS.get(team_name)
-    if crest_url:
-        return f'<img src="{crest_url}" class="flag-img" alt="{team_name}">'
-    return ''
-
-def format_to_uk_time(utc_str):
-    try:
-        dt = datetime.strptime(utc_str, "%Y-%m-%dT%H:%M:%SZ")
-        dt_utc = pytz.utc.localize(dt)
-        uk_tz = pytz.timezone("Europe/London")
-        return dt_utc.astimezone(uk_tz)
-    except Exception:
-        return None
-
-def get_live_score(match):
-    score_obj = match.get("score", {})
-    for target_key in ["fullTime", "regularTime", "halfTime"]:
-        s = score_obj.get(target_key, {})
-        if s and s.get("home") is not None and s.get("away") is not None:
-            return int(s.get("home")), int(s.get("away"))
-    return 0, 0
-
-# ── MASTER SPREADSHEET SCHEDULE OVERRIDES ENGINE ──
-@st.cache_data(ttl=15)
-def fetch_spreadsheet_overrides_master():
-    override_dict = {}
-    try:
-        csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeLButP4o4374i0KJP_YdOnTW1wN-Wzgqabuulvd1cMVmIuCfFTEM3CjJ4FmFIbBW6FLNDfaB9Hg4w/pub?gid=0&single=true&output=csv"
-        df = pd.read_csv(csv_url, header=None)
-        if not df.empty:
-            for _, row in df.iterrows():
-                try:
-                    if len(row) < 7:
-                        continue
-                    home_t = str(row[2]).strip() if pd.notna(row[2]) else ""
-                    away_t = str(row[3]).strip() if pd.notna(row[3]) else ""
-                    status_str = str(row[4]).strip().lower() if pd.notna(row[4]) else ""
-                    h_score = str(row[5]).strip() if pd.notna(row[5]) else "0"
-                    a_score = str(row[6]).strip() if pd.notna(row[6]) else "0"
-                    h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else ""
-                    
-                    # Parse Column I (Index 8) safely for TV Network parameters
-                    tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
-
-                    if home_t and away_t:
-                        lookup_key = f"{home_t.lower()}_v_{away_t.lower()}"
-                        override_dict[lookup_key] = {
-                            "status": status_str,
-                            "homeScore": h_score,
-                            "awayScore": a_score,
-                            "highlightsUrl": h_link if h_link.lower().startswith("http") else "https://www.youtube.com/@fifa/videos",
-                            "tvNetwork": tv_network
-                        }
-                except Exception:
-                    pass
-    except Exception:
-        pass
-    return override_dict
-
-SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
-
-# ── DESIGN HERO BANNER GENERATOR WITH MOBILE 3-LETTER ABBREVIATION RULES ──
-def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
-    home_team_obj = match.get("homeTeam", {})
-    away_team_obj = match.get("awayTeam", {})
-
-    h_name = home_team_obj.get("name", "TBD")
-    a_name = away_team_obj.get("name", "TBD")
-
-    h_abbrev = COUNTRY_ABBREVIATIONS.get(h_name, h_name[:3].upper())
-    a_abbrev = COUNTRY_ABBREVIATIONS.get(a_name, a_name[:3].upper())
-
-    left_color = TEAM_COLORS.get(h_name, DEFAULT_LEFT_COLOR)
-    right_color = TEAM_COLORS.get(a_name, DEFAULT_RIGHT_COLOR)
-    if left_color == right_color:
-        right_color = "#222222" if left_color != "#222222" else "#555555"
-
-    h_flag = get_banner_flag_html(h_name)
-    a_flag = get_banner_flag_html(a_name)
-
-    h_owner = f" ({SWEEPSTAKE_MAPPING.get(h_name, 'Unassigned')})"
-    a_owner = f" ({SWEEPSTAKE_MAPPING.get(a_name, 'Unassigned')})"
-
-    h_score, a_score = get_live_score(match)
-    highlights_url = "https://www.youtube.com/@fifa/videos"
-    tv_channel_text = ""
-    
-    if h_name and a_name:
-        lookup_key = f"{h_name.lower()}_v_{a_name.lower()}"
-        if lookup_key in SPREADSHEET_OVERRIDES:
-            sheet_row = SPREADSHEET_OVERRIDES[lookup_key]
-            h_score = sheet_row.get("homeScore", h_score)
-            a_score = sheet_row.get("awayScore", a_score)
-            highlights_url = sheet_row.get("highlightsUrl", highlights_url)
-            tv_channel_text = sheet_row.get("tvNetwork", "")
-
-    normalized_channel = tv_channel_text.lower().strip()
-
-    if is_live:
-        top_pane = '<div class="inplay-top-pane"><div class="next-match-title">🔴 Live now</div></div>'
-        centre_bubble = f'<div class="score-bubble">{h_score} – {a_score}</div>'
-        
-        if normalized_channel in BROADCAST_BRANDS:
-            brand_node = BROADCAST_BRANDS[normalized_channel]
-            bottom_bar = f"""
-            <div class="inplay-bottom-bar" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
-                <span style="color: #FFFFFF !important;">⚽ Match in progress</span>
-                <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
-                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn">
-                    WATCH LIVE
-                    <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
-                </a>
-            </div>
-            """
-        else:
-            channel_suffix = f" | 📺 {tv_channel_text}" if tv_channel_text else ""
-            bottom_bar = f'<div class="inplay-bottom-bar">⚽ Match in progress{channel_suffix}</div>'
-            
-    elif is_result:
-        top_pane = '<div class="result-top-pane"><div class="next-match-title" style="background: rgba(0,0,0,0.2);">✅ Latest result</div></div>'
-        centre_bubble = f"""
-        <div class="score-reveal-wrapper">
-            <input type="checkbox" id="reveal-toggle-{match_idx}" class="reveal-toggle-input">
-            <label for="reveal-toggle-{match_idx}" class="score-reveal-label">Show</label>
-            <div class="score-bubble" style="display: none;">{h_score} – {a_score}</div>
-        </div>
-        """
-        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
-    else:
-        dt_uk = format_to_uk_time(match.get("utcDate"))
-        if dt_uk:
-            day = dt_uk.day
-            suffix = "th" if 4 <= day <= 20 or 24 <= day <= 30 else ["st", "nd", "rd"][day % 10 - 1]
-            date_str = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
-        else:
-            date_str = "TBD"
-            
-        top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next match</div></div>'
-        centre_bubble = '<div class="vs-marker-bubble">VS</div>'
-        
-        if normalized_channel in BROADCAST_BRANDS:
-            brand_node = BROADCAST_BRANDS[normalized_channel]
-            bottom_bar = f"""
-            <div class="banner-bottom-time" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
-                <span style="color: #FFFFFF !important;">🗓️ {date_str}</span>
-                <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
-                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn">
-                    WATCH LIVE
-                    <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
-                </a>
-            </div>
-            """
-        else:
-            channel_suffix = f" | 📺 {tv_channel_text}" if tv_channel_text else ""
-            bottom_bar = f'<div class="banner-bottom-time" style="color: #FFFFFF !important;">🗓️ {date_str}{channel_suffix}</div>'
-
-    return f"""
-    {GLOBAL_STYLE_TOKENS}
-    <div class="match-banner-wrapper">
-        <div class="match-banner-container">
-            {top_pane}
-            <div class="matchup-split-screen">
-                <div class="team-panel home-panel" style="background-color: {left_color};">
-                    <div class="team-panel-text">
-                        {h_flag} 
-                        <span class="desktop-full-text">{h_name}</span>
-                        <span class="mobile-abbrev-text">{h_abbrev}</span>
-                        <span>{h_owner}</span>
-                    </div>
-                </div>
-                {centre_bubble}
-                <div class="team-panel away-panel" style="background-color: {right_color};">
-                    <div class="team-panel-text">
-                        <span>{a_owner}</span> 
-                        <span class="desktop-full-text">{a_name}</span>
-                        <span class="mobile-abbrev-text">{a_abbrev}</span>
-                        {a_flag}
-                    </div>
-                </div>
-            </div>
-            {bottom_bar}
-        </div>
-    </div>
-    """
-
+# Global baseline dashboard system architecture style tokens
 GLOBAL_STYLE_TOKENS = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght=0,300..900;1,300..900&display=swap');
@@ -585,7 +368,7 @@ GLOBAL_STYLE_TOKENS = """
 
     /* Matching exact hover red layout execution parameters */
     .highlights-btn, .watch-live-btn {
-        background-color: #8b0802 !important;
+        background-color: #444444 !important;
     }
 
     .highlights-btn:hover, .watch-live-btn:hover {
@@ -689,6 +472,224 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 3. Core Helper Utility Functions
+@st.cache_data(ttl=86400)
+def get_cached_team_crests():
+    crests = {}
+    if API_TOKEN == "placeholder":
+        return crests
+    try:
+        url = f"{BASE_URL}/competitions/{COMPETITION_CODE}/teams"
+        res = requests.get(url, headers=HEADERS, timeout=10)
+        if res.status_code == 200:
+            teams_data = res.json().get("teams", [])
+            for t in teams_data:
+                name = t.get("name")
+                crest_url = t.get("crest")
+                if name and crest_url:
+                    crests[name] = crest_url
+                    if name == "DR Congo": crests["Congo DR"] = crest_url
+                    if name == "Congo DR": crests["DR Congo"] = crest_url
+                    if name == "Cape Verde": crests["Cape Verde Islands"] = crest_url
+                    if name == "Bosnia and Herzegovina": crests["Bosnia-Herzegovina"] = crest_url
+    except Exception:
+        pass
+    return crests
+
+CACHED_CRESTS = get_cached_team_crests()
+
+def get_banner_flag_html(team_name):
+    crest_url = CACHED_CRESTS.get(team_name)
+    if crest_url:
+        return f'<img src="{crest_url}" class="banner-flag" alt="{team_name}">'
+    return ''
+
+def get_group_flag_html(team_name):
+    crest_url = CACHED_CRESTS.get(team_name)
+    if crest_url:
+        return f'<img src="{crest_url}" class="flag-img" alt="{team_name}">'
+    return ''
+
+def format_to_uk_time(utc_str):
+    try:
+        dt = datetime.strptime(utc_str, "%Y-%m-%dT%H:%M:%SZ")
+        dt_utc = pytz.utc.localize(dt)
+        uk_tz = pytz.timezone("Europe/London")
+        return dt_utc.astimezone(uk_tz)
+    except Exception:
+        return None
+
+def get_live_score(match):
+    score_obj = match.get("score", {})
+    for target_key in ["fullTime", "regularTime", "halfTime"]:
+        s = score_obj.get(target_key, {})
+        if s and s.get("home") is not None and s.get("away") is not None:
+            return int(s.get("home")), int(s.get("away"))
+    return 0, 0
+
+# ── MASTER SPREADSHEET SCHEDULE OVERRIDES ENGINE ──
+@st.cache_data(ttl=15)
+def fetch_spreadsheet_overrides_master():
+    override_dict = {}
+    try:
+        csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeLButP4o4374i0KJP_YdOnTW1wN-Wzgqabuulvd1cMVmIuCfFTEM3CjJ4FmFIbBW6FLNDfaB9Hg4w/pub?gid=0&single=true&output=csv"
+        df = pd.read_csv(csv_url, header=None)
+        if not df.empty:
+            for _, row in df.iterrows():
+                try:
+                    if len(row) < 7:
+                        continue
+                    home_t = str(row[2]).strip() if pd.notna(row[2]) else ""
+                    away_t = str(row[3]).strip() if pd.notna(row[3]) else ""
+                    status_str = str(row[4]).strip().lower() if pd.notna(row[4]) else ""
+                    h_score = str(row[5]).strip() if pd.notna(row[5]) else "0"
+                    a_score = str(row[6]).strip() if pd.notna(row[6]) else "0"
+                    h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else ""
+                    
+                    # Parse Column I (Index 8) safely for TV Network parameters
+                    tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
+
+                    if home_t and away_t:
+                        lookup_key = f"{home_t.lower()}_v_{away_t.lower()}"
+                        override_dict[lookup_key] = {
+                            "status": status_str,
+                            "homeScore": h_score,
+                            "awayScore": a_score,
+                            "highlightsUrl": h_link if h_link.lower().startswith("http") else "https://www.youtube.com/@fifa/videos",
+                            "tvNetwork": tv_network
+                        }
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    return override_dict
+
+SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
+
+# ── DESIGN HERO BANNER GENERATOR WITH MOBILE 3-LETTER ABBREVIATION RULES ──
+def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
+    home_team_obj = match.get("homeTeam", {})
+    away_team_obj = match.get("awayTeam", {})
+
+    h_name = home_team_obj.get("name", "TBD")
+    a_name = away_team_obj.get("name", "TBD")
+
+    h_abbrev = COUNTRY_ABBREVIATIONS.get(h_name, h_name[:3].upper())
+    a_abbrev = COUNTRY_ABBREVIATIONS.get(a_name, a_name[:3].upper())
+
+    left_color = TEAM_COLORS.get(h_name, DEFAULT_LEFT_COLOR)
+    right_color = TEAM_COLORS.get(a_name, DEFAULT_RIGHT_COLOR)
+    if left_color == right_color:
+        right_color = "#222222" if left_color != "#222222" else "#555555"
+
+    h_flag = get_banner_flag_html(h_name)
+    a_flag = get_banner_flag_html(a_name)
+
+    h_owner = f" ({SWEEPSTAKE_MAPPING.get(h_name, 'Unassigned')})"
+    a_owner = f" ({SWEEPSTAKE_MAPPING.get(a_name, 'Unassigned')})"
+
+    h_score, a_score = get_live_score(match)
+    highlights_url = "https://www.youtube.com/@fifa/videos"
+    tv_channel_text = ""
+    
+    if h_name and a_name:
+        lookup_key = f"{h_name.lower()}_v_{a_name.lower()}"
+        if lookup_key in SPREADSHEET_OVERRIDES:
+            sheet_row = SPREADSHEET_OVERRIDES[lookup_key]
+            h_score = sheet_row.get("homeScore", h_score)
+            a_score = sheet_row.get("awayScore", a_score)
+            highlights_url = sheet_row.get("highlightsUrl", highlights_url)
+            tv_channel_text = sheet_row.get("tvNetwork", "")
+
+    normalized_channel = tv_channel_text.lower().strip()
+
+    if is_live:
+        top_pane = '<div class="inplay-top-pane"><div class="next-match-title">🔴 Live now</div></div>'
+        centre_bubble = f'<div class="score-bubble">{h_score} – {a_score}</div>'
+        
+        if normalized_channel in BROADCAST_BRANDS:
+            brand_node = BROADCAST_BRANDS[normalized_channel]
+            bottom_bar = f"""
+            <div class="inplay-bottom-bar" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
+                <span style="color: #FFFFFF !important;">⚽ Match in progress</span>
+                <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn" style="background-color: #8b0802 !important;">
+                    WATCH LIVE
+                    <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
+                </a>
+            </div>
+            """
+        else:
+            channel_suffix = f" | 📺 {tv_channel_text}" if tv_channel_text else ""
+            bottom_bar = f'<div class="inplay-bottom-bar">⚽ Match in progress{channel_suffix}</div>'
+            
+    elif is_result:
+        top_pane = '<div class="result-top-pane"><div class="next-match-title" style="background: rgba(0,0,0,0.2);">✅ Latest result</div></div>'
+        centre_bubble = f"""
+        <div class="score-reveal-wrapper">
+            <input type="checkbox" id="reveal-toggle-{match_idx}" class="reveal-toggle-input">
+            <label for="reveal-toggle-{match_idx}" class="score-reveal-label">Show</label>
+            <div class="score-bubble" style="display: none;">{h_score} – {a_score}</div>
+        </div>
+        """
+        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn" style="background-color: #444444 !important;">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
+    else:
+        dt_uk = format_to_uk_time(match.get("utcDate"))
+        if dt_uk:
+            day = dt_uk.day
+            suffix = "th" if 4 <= day <= 20 or 24 <= day <= 30 else ["st", "nd", "rd"][day % 10 - 1]
+            date_str = dt_uk.strftime(f"{day}{suffix} %B @ %H:%M")
+        else:
+            date_str = "TBD"
+            
+        top_pane = '<div class="banner-top-pane"><div class="next-match-title">⏳ Next match</div></div>'
+        centre_bubble = '<div class="vs-marker-bubble">VS</div>'
+        
+        if normalized_channel in BROADCAST_BRANDS:
+            brand_node = BROADCAST_BRANDS[normalized_channel]
+            bottom_bar = f"""
+            <div class="banner-bottom-time" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
+                <span style="color: #FFFFFF !important;">🗓️ {date_str}</span>
+                <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn" style="background-color: #444444 !important;">
+                    WATCH LIVE
+                    <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
+                </a>
+            </div>
+            """
+        else:
+            channel_suffix = f" | 📺 {tv_channel_text}" if tv_channel_text else ""
+            bottom_bar = f'<div class="banner-bottom-time" style="color: #FFFFFF !important;">🗓️ {date_str}{channel_suffix}</div>'
+
+    return f"""
+    {GLOBAL_STYLE_TOKENS}
+    <div class="match-banner-wrapper">
+        <div class="match-banner-container">
+            {top_pane}
+            <div class="matchup-split-screen">
+                <div class="team-panel home-panel" style="background-color: {left_color};">
+                    <div class="team-panel-text">
+                        {h_flag} 
+                        <span class="desktop-full-text">{h_name}</span>
+                        <span class="mobile-abbrev-text">{h_abbrev}</span>
+                        <span>{h_owner}</span>
+                    </div>
+                </div>
+                {centre_bubble}
+                <div class="team-panel away-panel" style="background-color: {right_color};">
+                    <div class="team-panel-text">
+                        <span>{a_owner}</span> 
+                        <span class="desktop-full-text">{a_name}</span>
+                        <span class="mobile-abbrev-text">{a_abbrev}</span>
+                        {a_flag}
+                    </div>
+                </div>
+            </div>
+            {bottom_bar}
+        </div>
+    </div>
+    """
+    
 # ── Data Ingestion Pipeline Routing Engine ──
 @st.cache_data(ttl=120)  
 def fetch_football_data():
@@ -983,7 +984,7 @@ else:
                         st.markdown('</div>', unsafe_allow_html=True)
 
         # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
-        st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 3px solid #ff7d23;'>", unsafe_allow_html=True)
+        st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
         st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
 
