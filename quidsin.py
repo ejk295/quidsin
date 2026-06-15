@@ -585,7 +585,7 @@ GLOBAL_STYLE_TOKENS = """
 
     /* Matching exact hover red layout execution parameters */
     .highlights-btn, .watch-live-btn {
-        background-color: #444444 !important;
+        background-color: #8b0802 !important;
     }
 
     .highlights-btn:hover, .watch-live-btn:hover {
