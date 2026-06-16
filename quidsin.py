@@ -1000,9 +1000,9 @@ with stat_cols[2]:
         master_flat_leaderboard.sort(key=lambda x: (x["overperformance"], -x["actual_rank"]))
         underdog = master_flat_leaderboard[0]
         ud_owner = SWEEPSTAKE_MAPPING.get(underdog["name"], "Unassigned")
-        st.markdown(f'<div class="stat-banner-box"><medium>💩 Wooden spoon</medium><span>{underdog["name"]} ({ud_owner})</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>{underdog["name"]} ({ud_owner})</span></div>', unsafe_allow_html=True)
     else:
-        st.markdown('<div class="stat-banner-box"><medium>💩 Wooden spoon</medium><span>N/A</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>N/A</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
