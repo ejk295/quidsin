@@ -994,10 +994,15 @@ stat_cols = st.columns(3)
 with stat_cols[0]:
     st.markdown('<div class="stat-banner-box"><medium>💰 Prize pot</medium><span>£96</span></div>', unsafe_allow_html=True)
 with stat_cols[1]:
-    fave_owner = SWEEPSTAKE_MAPPING.get("France", "Unassigned")
-    st.markdown(f'<div class="stat-banner-box"><medium>⭐ Favourites</medium><span>France ({fave_owner})</span></div>', unsafe_allow_html=True)
-with stat_cols[2]:
     st.markdown('<div class="stat-banner-box"><medium>🚀 Overperformer</medium><span>' + top_performer_text + '</span></div>', unsafe_allow_html=True)
+with stat_cols[2]:
+    if master_flat_leaderboard:
+        master_flat_leaderboard.sort(key=lambda x: (x["overperformance"], -x["actual_rank"]))
+        underdog = master_flat_leaderboard[0]
+        ud_owner = SWEEPSTAKE_MAPPING.get(underdog["name"], "Unassigned")
+        st.markdown(f'<div class="stat-banner-box"><medium>🥄 Wooden spoon</medium><span>{underdog["name"]} ({ud_owner})</span></div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="stat-banner-box"><medium>🥄 Wooden spoon</medium><span>N/A</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
