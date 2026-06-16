@@ -712,13 +712,13 @@ def build_odds_favourites_banner():
     <div class="match-banner-wrapper">
         <div class="match-banner-container" style="border-color: #ff7d23;">
             <div class="banner-top-pane" style="background-color: #ff7d23; padding: 6px 15px;">
-                <div class="next-match-title" style="background: rgba(255,255,255,0.2); color: #FFFFFF !important; font-size: 11px; padding: 4px 10px;">🔥 World Cup Tournament Favourites</div>
+                <div class="next-match-title" style="background: rgba(255,255,255,0.2); color: #FFFFFF !important; font-size: 11px; padding: 4px 10px;">🔥 Tournament favourites</div>
             </div>
             <div class="odds-grid-row">
                 {cards_html}
             </div>
             <div class="banner-bottom-time" style="background-color: #ff7d23; color: #FFFFFF !important; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 15px;">
-                💰 UK fractional odds update automatically via active market data bookmakers
+                💰
             </div>
         </div>
     </div>
