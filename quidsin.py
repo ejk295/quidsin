@@ -176,20 +176,10 @@ GLOBAL_STYLE_TOKENS = """
         font-family: 'Figtree', sans-serif !important;
     }
 
-    /* --- STREAMLIT STRUCTURAL GAP REDUCTION --- */
-    [data-testid="stHorizontalBlock"] {
-        row-gap: 0px !important;
-        margin-bottom: -16px !important; /* Pulls subsequent banner rows up sharply */
-    }
-    
-    [data-testid="element-container"] {
-        margin-bottom: 0px !important;
-    }
-
     /* --- MATCH BANNER LAYOUT --- */
     .match-banner-wrapper {
         width: 100%;
-        margin: 0px 0px 4px 0px !important;
+        margin: 0px;
         box-sizing: border-box;
     }
 
@@ -464,9 +454,6 @@ GLOBAL_STYLE_TOKENS = """
 
     /* --- MOBILE OPTIMIZATION OVERRIDES --- */
     @media (max-width: 768px) {
-        [data-testid="stHorizontalBlock"] {
-            margin-bottom: -8px !important; /* Softens pull on small screens to prevent clip */
-        }
         .team-panel {
             padding: 10px 8px !important;
         }
@@ -505,7 +492,7 @@ GLOBAL_STYLE_TOKENS = """
             padding: 4px 8px !important;
         }
         .odds-item-card:nth-child(n+4) {
-            display: none !important;
+            display: none !important; /* Hide last 3 on narrow phone screens to avoid crowding */
         }
     }
 </style>
