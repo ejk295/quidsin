@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
+from fractions import Fraction
 
 # 1. Page Configurations & MASTER Layout Credentials
 st.set_page_config(
@@ -427,6 +428,9 @@ GLOBAL_STYLE_TOKENS = """
         text-overflow: ellipsis;
         width: 100%;
         text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .odds-item-owner {
         font-size: 10px;
@@ -501,12 +505,11 @@ st.markdown("""
             background-color: #FAFAFA !important;
         }
     h1, h2, h3, h1 span, h2 span, h3 span, h1 p, h2 p, h3 p {
-    color: #ff7d23 !important; /* <--- This will now strictly apply your custom color */
-    font-family: 'Figtree', sans-serif !important;
-    font-weight: 800 !important;
+        color: #ff7d23 !important; /* <--- This will now strictly apply your custom color */
+        font-family: 'Figtree', sans-serif !important;
+        font-weight: 800 !important;
     }
         .title-area h1 { margin: 0px !important; font-size: 28px; font-weight: 900 !important; }
-        .title-area p { margin: 4px 0px 0px 0px !important; color: #555555 !important; font-weight: 700 !important; font-size: 16px; }
         .title-area p { margin: 4px 0px 0px 0px !important; color: #555555 !important; font-weight: 700 !important; font-size: 16px; }
         .stat-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .stat-banner-box medium { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800 !important; color: #ff7d23 !important; }
@@ -553,7 +556,6 @@ def get_cached_team_crests():
                 if name and crest_url:
                     crests[name] = crest_url
                     if name == "DR Congo": crests["Congo DR"] = crest_url
-                    if name == "DR Congo": crests["Congo DR"] = crest_url
                     if name == "Cape Verde": crests["Cape Verde Islands"] = crest_url
                     if name == "Bosnia and Herzegovina": crests["Bosnia-Herzegovina"] = crest_url
     except Exception:
@@ -590,6 +592,15 @@ def get_live_score(match):
         if s and s.get("home") is not None and s.get("away") is not None:
             return int(s.get("home")), int(s.get("away"))
     return 0, 0
+
+def convert_to_fractional_odds(decimal_odds):
+    """Converts a standard decimal odds float into regular UK Fractional string format format."""
+    if decimal_odds <= 1.0:
+        return "1/1"
+    net_odds = decimal_odds - 1.0
+    # Limit denominator sizing up to 100 to clean out floating micro rounding traces
+    frac = Fraction(net_odds).limit_denominator(100)
+    return f"{frac.numerator}/{frac.denominator}"
 
 # ── MASTER SPREADSHEET SCHEDULE OVERRIDES ENGINE ──
 @st.cache_data(ttl=15)
@@ -630,7 +641,7 @@ def fetch_spreadsheet_overrides_master():
 
 SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
 
-# ── THE ODDS API LIVE OUTRIGHTS INGESTION SYSTEM ──
+# ── THE ODDS API LIVE OUTRIGHTS INGESTION SYSTEM (24 HOUR MAXIMUM SAFETY CELL) ──
 @st.cache_data(ttl=86400)
 def fetch_odds_api_favourites():
     favourites = []
@@ -680,15 +691,19 @@ def build_odds_favourites_banner():
     cards_html = ""
     for f in fav_list:
         team_name = f["team"]
-        odds_val = f["odds"]
+        decimal_odds = f["odds"]
+        fractional_str = convert_to_fractional_odds(decimal_odds)
         owner = SWEEPSTAKE_MAPPING.get(team_name, "Unassigned")
-        flag_html = get_group_flag_html(team_name)
+        
+        # Pull precise crest references cleanly bypassing global oversized elements seen on image_f76068.png
+        crest_url = CACHED_CRESTS.get(team_name, "")
+        flag_img_html = f'<img src="{crest_url}" style="width:24px; height:16px; min-width:24px; max-width:24px; object-fit:cover; border-radius:2px; border:1px solid #DDD; margin-right:6px; display:inline-block; vertical-align:middle;">' if crest_url else ""
         
         cards_html += f"""
         <div class="odds-item-card">
-            <div class="odds-item-team">{flag_html} {team_name}</div>
+            <div class="odds-item-team">{flag_img_html}{team_name}</div>
             <div class="odds-item-owner">({owner})</div>
-            <div class="odds-item-price">❌ {odds_val}</div>
+            <div class="odds-item-price">{fractional_str}</div>
         </div>
         """
         
@@ -696,14 +711,14 @@ def build_odds_favourites_banner():
     {GLOBAL_STYLE_TOKENS}
     <div class="match-banner-wrapper">
         <div class="match-banner-container" style="border-color: #ff7d23;">
-            <div class="banner-top-pane" style="background-color: #ff7d23;">
-                <div class="next-match-title" style="background: rgba(255,255,255,0.2); color: #FFFFFF !important;">🔥 World Cup Tournament Favourites (The Odds API)</div>
+            <div class="banner-top-pane" style="background-color: #ff7d23; padding: 6px 15px;">
+                <div class="next-match-title" style="background: rgba(255,255,255,0.2); color: #FFFFFF !important; font-size: 11px; padding: 4px 10px;">🔥 World Cup Tournament Favourites</div>
             </div>
             <div class="odds-grid-row">
                 {cards_html}
             </div>
-            <div class="banner-bottom-time" style="background-color: #ff7d23; color: #FFFFFF !important; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">
-                💰 Odds update automatically via active market data bookmakers
+            <div class="banner-bottom-time" style="background-color: #ff7d23; color: #FFFFFF !important; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 15px;">
+                💰 UK fractional odds update automatically via active market data bookmakers
             </div>
         </div>
     </div>
