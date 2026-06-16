@@ -718,7 +718,7 @@ def build_odds_favourites_banner():
                 {cards_html}
             </div>
             <div class="banner-bottom-time" style="background-color: #ff7d23; color: #FFFFFF !important; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 15px;">
-                💰
+                
             </div>
         </div>
     </div>
