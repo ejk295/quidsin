@@ -951,11 +951,11 @@ with header_cols[0]:
 with header_cols[1]:
     if live_matches:
         payload = build_combined_match_banner(live_matches, is_live=True, base_idx=200)
-        calculated_height = len(live_matches) * 145 + (len(live_matches) - 1) * 10
-        components.html(payload, height=max(calculated_height, 160), scrolling=False)
+        calculated_height = len(live_matches) * 165
+        components.html(payload, height=max(calculated_height, 165), scrolling=False)
     else:
         odds_payload = build_odds_favourites_banner()
-        components.html(odds_payload, height=160, scrolling=False)
+        components.html(odds_payload, height=165, scrolling=False)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -965,8 +965,8 @@ hero_cols = st.columns([1, 1], gap="medium")
 with hero_cols[0]:
     if next_kickoff_matches:
         payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
-        calculated_height = len(next_kickoff_matches) * 145 + (len(next_kickoff_matches) - 1) * 10
-        components.html(payload, height=max(calculated_height, 160), scrolling=False)
+        calculated_height = len(next_kickoff_matches) * 165
+        components.html(payload, height=max(calculated_height, 165), scrolling=False)
     else:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
@@ -988,8 +988,8 @@ with hero_cols[1]:
             {"".join(snippets)}
         </div>
         """
-        calculated_height = len(latest_finished_matches) * 145 + (len(latest_finished_matches) - 1) * 10
-        components.html(result_banner_html, height=max(calculated_height, 160), scrolling=False)
+        calculated_height = len(latest_finished_matches) * 165
+        components.html(result_banner_html, height=max(calculated_height, 165), scrolling=False)
     else:
         st.info("⚽ No results logged yet for this tournament state.")
 
