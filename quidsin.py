@@ -449,18 +449,8 @@ GLOBAL_STYLE_TOKENS = """
         border-radius: 4px;
     }
 
-    /* --- STREAMLIT STACKING REORDER CONTROLS --- */
+    /* --- MOBILE OPTIMIZATION OVERRIDES --- */
     @media (max-width: 768px) {
-        /* Force Streamlit column container blocks to follow CSS order parameters on Mobile Screens */
-        [data-testid="stMainBlockContainer"] > div {
-            display: flex !important;
-            flex-direction: column !important;
-        }
-        
-        .mobile-order-live { order: 1 !important; }
-        .mobile-order-upcoming { order: 2 !important; }
-        .mobile-order-complete { order: 3 !important; }
-        
         .team-panel {
             padding: 10px 8px !important;
         }
@@ -846,7 +836,7 @@ def build_combined_match_banner(matches, is_live=False, is_result=False, base_id
     snippets = []
     for idx, m in enumerate(matches):
         snippets.append(build_match_banner_html_snippet(m, is_live=is_live, is_result=is_result, match_idx=base_idx+idx))
-        
+    
     combined_html = f"""
     {GLOBAL_STYLE_TOKENS}
     <div style="display: flex; flex-direction: column; width: 100%; height: auto !important;">
@@ -958,33 +948,27 @@ with header_cols[0]:
     """, unsafe_allow_html=True)
 
 with header_cols[1]:
-    # Inject an HTML layout target tag wrapping the first Live display
-    st.markdown('<div class="mobile-order-live">', unsafe_allow_html=True)
     if live_matches:
+        # Render ONLY the first live match up here to sit inline with the title block
         first_live_payload = build_combined_match_banner([live_matches[0]], is_live=True, base_idx=200)
         components.html(first_live_payload, height=160, scrolling=False)
     else:
         odds_payload = build_odds_favourites_banner()
         components.html(odds_payload, height=160, scrolling=False)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ── LOWER ROW SETUP (UPCOMING GRID COOP ALIGNED WITH SECOND LIVE / LATEST RESULT) ──
 alignment_row_cols = st.columns([1, 1], gap="medium")
 
 with alignment_row_cols[0]:
-    # Inject an HTML layout target tag wrapping the Upcoming display
-    st.markdown('<div class="mobile-order-upcoming">', unsafe_allow_html=True)
     if next_kickoff_matches:
         payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
         calculated_height = len(next_kickoff_matches) * 160 + (len(next_kickoff_matches) - 1) * 15
         components.html(payload, height=calculated_height, scrolling=False)
     else:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with alignment_row_cols[1]:
-    # Inject an HTML layout target tag wrapping the Rest of Live / Completed display
-    st.markdown('<div class="mobile-order-complete">', unsafe_allow_html=True)
+    # Group any subsequent live matches followed by latest finished results into a single column array
     right_column_snippets = []
     
     # 1. Append second live match onwards if they exist
@@ -1013,7 +997,6 @@ with alignment_row_cols[1]:
         components.html(combined_right_html, height=calculated_height, scrolling=False)
     else:
         st.info("⚽ No additional active matches or results logged.")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
