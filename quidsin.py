@@ -158,7 +158,6 @@ BROADCAST_BRANDS = {
     }
 }
 
-# Global baseline dashboard system architecture style tokens
 GLOBAL_STYLE_TOKENS = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght=0,300..900;1,300..900&display=swap');
@@ -937,32 +936,19 @@ if finished_matches:
     last_finished_time = finished_matches[0].get("utcDate", "")
     latest_finished_matches = [m for m in finished_matches if m.get("utcDate", "") == last_finished_time]
 
-# ── HEADER ROW (TITLE LEFT, LIVE BANNER OR ODDS API FAVOURITES RIGHT) ──────────────────
-header_cols = st.columns([1, 1], gap="medium")
+# ── MAIN DASHBOARD LAYOUT (UNIFIED SIDE-BY-SIDE COLUMNS) ──────────────────
+master_left, master_right = st.columns([1, 1], gap="medium")
 
-with header_cols[0]:
+with master_left:
+    # Title Canvas Block
     st.markdown("""
         <div class="title-area" style="padding-top: 15px; margin-bottom: 20px;">
             <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
             <p>Live standings</p>
         </div>
     """, unsafe_allow_html=True)
-
-with header_cols[1]:
-    if live_matches:
-        payload = build_combined_match_banner(live_matches, is_live=True, base_idx=200)
-        calculated_height = len(live_matches) * 165
-        components.html(payload, height=max(calculated_height, 165), scrolling=False)
-    else:
-        odds_payload = build_odds_favourites_banner()
-        components.html(odds_payload, height=165, scrolling=False)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ── SECONDARY CONTENT ROW (NEXT MATCH AND LATEST RESULT SIDE-BY-SIDE) ──
-hero_cols = st.columns([1, 1], gap="medium")
-
-with hero_cols[0]:
+    
+    # Upcoming Matches
     if next_kickoff_matches:
         payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
         calculated_height = len(next_kickoff_matches) * 165
@@ -970,7 +956,19 @@ with hero_cols[0]:
     else:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
-with hero_cols[1]:
+with master_right:
+    # Live Matches (or Odds API Favourites Outright Box)
+    if live_matches:
+        payload = build_combined_match_banner(live_matches, is_live=True, base_idx=200)
+        calculated_height = len(live_matches) * 165
+        components.html(payload, height=max(calculated_height, 165), scrolling=False)
+    else:
+        odds_payload = build_odds_favourites_banner()
+        components.html(odds_payload, height=165, scrolling=False)
+        
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+    
+    # Latest Results
     if latest_finished_matches:
         chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
         
@@ -992,6 +990,8 @@ with hero_cols[1]:
         components.html(result_banner_html, height=max(calculated_height, 165), scrolling=False)
     else:
         st.info("⚽ No results logged yet for this tournament state.")
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ── STATS ROW ──────────────────────────────────────────────────────────
 stat_cols = st.columns(3)
