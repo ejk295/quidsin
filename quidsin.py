@@ -805,7 +805,7 @@ def build_match_banner_html_snippet(match, is_live=False, is_result=False, match
             bottom_bar = f'<div class="banner-bottom-time" style="color: #FFFFFF !important;">🗓️ {date_str}{channel_suffix}</div>'
 
     return f"""
-    <div class="match-banner-wrapper">
+    <div class="match-banner-wrapper" style="margin-bottom: 12px; height: auto !important;">
         <div class="match-banner-container">
             {top_pane}
             <div class="matchup-split-screen">
@@ -839,7 +839,7 @@ def build_combined_match_banner(matches, is_live=False, is_result=False, base_id
     
     combined_html = f"""
     {GLOBAL_STYLE_TOKENS}
-    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+    <div style="display: flex; flex-direction: column; width: 100%; height: auto !important;">
         {"".join(snippets)}
     </div>
     """
@@ -951,8 +951,8 @@ with master_left:
     # Upcoming Matches
     if next_kickoff_matches:
         payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
-        calculated_height = len(next_kickoff_matches) * 165
-        components.html(payload, height=max(calculated_height, 165), scrolling=False)
+        calculated_height = len(next_kickoff_matches) * 175
+        components.html(payload, height=max(calculated_height, 175), scrolling=False)
     else:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
@@ -960,11 +960,11 @@ with master_right:
     # Live Matches (or Odds API Favourites Outright Box)
     if live_matches:
         payload = build_combined_match_banner(live_matches, is_live=True, base_idx=200)
-        calculated_height = len(live_matches) * 165
-        components.html(payload, height=max(calculated_height, 165), scrolling=False)
+        calculated_height = len(live_matches) * 175
+        components.html(payload, height=max(calculated_height, 175), scrolling=False)
     else:
         odds_payload = build_odds_favourites_banner()
-        components.html(odds_payload, height=165, scrolling=False)
+        components.html(odds_payload, height=175, scrolling=False)
         
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     
@@ -982,12 +982,12 @@ with master_right:
             
         result_banner_html = f"""
         {GLOBAL_STYLE_TOKENS}
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        <div style="display: flex; flex-direction: column; width: 100%; height: auto !important;">
             {"".join(snippets)}
         </div>
         """
-        calculated_height = len(latest_finished_matches) * 165
-        components.html(result_banner_html, height=max(calculated_height, 165), scrolling=False)
+        calculated_height = len(latest_finished_matches) * 175
+        components.html(result_banner_html, height=max(calculated_height, 175), scrolling=False)
     else:
         st.info("⚽ No results logged yet for this tournament state.")
 
