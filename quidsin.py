@@ -86,6 +86,21 @@ TEAM_COLORS = {
     "Croatia": "#FF0000", "South Korea": "#111111"
 }
 
+GROUP_MAPPING = {
+    "Group A": ["Mexico", "South Africa", "Canada", "Switzerland"],
+    "Group B": ["Argentina", "France", "Brazil", "Spain"],
+    "Group C": ["Bosnia-Herzegovina", "Czechia", "Qatar", "Morocco"],
+    "Group D": ["Haiti", "Turkey", "Paraguay", "Germany"],
+    "Group E": ["Curaçao", "Ecuador", "Japan", "Belgium"],
+    "Group F": ["Egypt", "Tunisia", "Netherlands", "Ivory Coast"],
+    "Group G": ["Australia", "Cape Verde Islands", "Uruguay", "Sweden"],
+    "Group H": ["Saudi Arabia", "Scotland", "United States", "Senegal"],
+    "Group I": ["New Zealand", "Iran", "Iraq", "Norway"],
+    "Group J": ["Algeria", "Austria", "Jordan", "Congo DR"],
+    "Group K": ["Portugal", "Uzbekistan", "Colombia", "England"],
+    "Group L": ["Panama", "Ghana", "Croatia", "South Korea"]
+}
+
 GROUP_PLAYERS = {
     "Spain": {"player_name": "Lamine Yamal", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lamine-yamal-spain-forward-profile-full.png"},
     "France": {"player_name": "Kylian Mbappe", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kylian-mbappe-france-forward-profile-full.png"},
@@ -94,163 +109,40 @@ GROUP_PLAYERS = {
     "Germany": {"player_name": "Kai Havertz", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/kai-havertz-germany-forward-profile-full.png"},
     "Portugal": {"player_name": "Bruno Fernandes", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/bruno-fernandes-portugal-midfielder-profile-full.png"},
     "Netherlands": {"player_name": "Frenkie de Jong", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/frenkie-de-jong-netherlands-midfielder-profile-full.png"},
-    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"},
-    "Ivory Coast": {"player_name": "Yan Diomande", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/yan-diomande-ivory-coast-forward-profile-full.png"}
+    "Argentina": {"player_name": "Lionel Messi", "img_url": "https://graphics-cdn.theathletic.com/world-cup-stars-2026/images/lionel-messi-argentina-forward-profile-full.png"}
 }
 
 BROADCAST_BRANDS = {
-    "bbc one": {
-        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/BBC_One_logo_2021.svg/1920px-BBC_One_logo_2021.svg.png",
-        "live_url": "https://www.bbc.co.uk/iplayer/live/bbcone"
-    },
-    "bbc two": {
-        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/BBC_Two_logo_2021.svg/1920px-BBC_Two_logo_2021.svg.png",
-        "live_url": "https://www.bbc.co.uk/iplayer/live/bbctwo"
-    },
-    "itv1": {
-        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/ITV1_Logo_2022.svg/250px-ITV1_Logo_2022.svg.png",
-        "live_url": "https://www.itv.com/watch?channel=itv"
-    },
-    "itv4": {
-        "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/5/57/ITV4_logo_%282022%29.svg/1280px-ITV4_logo_%282022%29.svg.png",
-        "live_url": "https://www.itv.com/watch?channel=itv4"
-    }
+    "bbc one": {"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/BBC_One_logo_2021.svg/1920px-BBC_One_logo_2021.svg.png", "live_url": "https://www.bbc.co.uk/iplayer/live/bbcone"},
+    "bbc two": {"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/BBC_Two_logo_2021.svg/1920px-BBC_Two_logo_2021.svg.png", "live_url": "https://www.bbc.co.uk/iplayer/live/bbctwo"},
+    "itv1": {"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/ITV1_Logo_2022.svg/250px-ITV1_Logo_2022.svg.png", "live_url": "https://www.itv.com/watch?channel=itv"},
+    "itv4": {"logo": "https://upload.wikimedia.org/wikipedia/en/thumb/5/57/ITV4_logo_%282022%29.svg/1280px-ITV4_logo_%282022%29.svg.png", "live_url": "https://www.itv.com/watch?channel=itv4"}
 }
 
 GLOBAL_STYLE_TOKENS = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght=0,300..900;1,300..900&display=swap');
-    
-    body, html {
-        background-color: #FAFAFA !important;
-        color: #333333 !important;
-        font-family: 'Figtree', sans-serif !important;
-        margin: 0;
-        padding: 0;
-    }
-
-    .multi-match-container {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
-        margin-bottom: 15px;
-    }
-
-    .match-banner-card {
-        background: #FFFFFF;
-        border: 1px solid #DDDDDD;
-        border-radius: 12px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
-        overflow: hidden;
-        width: 100%;
-    }
-
-    .banner-top-pane {
-        background-color: #444444;
-        padding: 6px 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .next-match-title {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 800;
-        color: #FFFFFF !important;
-        background: rgba(255, 255, 255, 0.15);
-        padding: 4px 8px;
-        border-radius: 4px;
-    }
-
-    .matchup-split-screen {
-        display: flex;
-        position: relative;
-        align-items: center;
-        height: 65px;
-        width: 100%;
-    }
-
-    .team-panel {
-        width: 50%;
-        display: flex;
-        align-items: center;
-        padding: 5px 20px;
-        box-sizing: border-box;
-        height: 100%;
-    }
-    
+    body, html { background-color: #FAFAFA !important; color: #333333 !important; font-family: 'Figtree', sans-serif !important; }
+    .multi-match-container { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 15px; }
+    .match-banner-card { background: #FFFFFF; border: 1px solid #DDDDDD; border-radius: 12px; box-shadow: 0px 4px 12px rgba(0,0,0,0.05); overflow: hidden; width: 100%; }
+    .banner-top-pane { background-color: #444444; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; }
+    .next-match-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; color: #FFFFFF !important; background: rgba(255, 255, 255, 0.15); padding: 4px 8px; border-radius: 4px; }
+    .matchup-split-screen { display: flex; position: relative; align-items: center; height: 65px; width: 100%; }
+    .team-panel { width: 50%; display: flex; align-items: center; padding: 5px 20px; box-sizing: border-box; height: 100%; }
     .home-panel { justify-content: flex-end; padding-right: 45px; }
     .away-panel { justify-content: flex-start; padding-left: 45px; }
-
-    .team-panel-text {
-        color: #FFFFFF !important;
-        font-size: 16px;
-        font-weight: 800;
-        text-shadow: 0px 1px 2px rgba(0,0,0,0.3);
-        display: flex;
-        align-items: center;
-    }
-
-    .team-panel-text span {
-        font-size: 11px !important;
-        font-weight: 400;
-        opacity: 0.9;
-        color: #FFFFFF !important;
-        margin: 0 4px;
-    }
-
-    .vs-marker-bubble, .score-bubble {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        background-color: #111111;
-        color: #FFFFFF !important;
-        font-weight: 900;
-        border: 2px solid #FFFFFF;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    }
-
+    .team-panel-text { color: #FFFFFF !important; font-size: 16px; font-weight: 800; text-shadow: 0px 1px 2px rgba(0,0,0,0.3); display: flex; align-items: center; }
+    .team-panel-text span { font-size: 11px !important; font-weight: 400; opacity: 0.9; color: #FFFFFF !important; margin: 0 4px; }
+    .vs-marker-bubble, .score-bubble { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10; background-color: #111111; color: #FFFFFF !important; font-weight: 900; border: 2px solid #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
     .vs-marker-bubble { font-size: 11px; padding: 4px 7px; border-radius: 50%; }
     .score-bubble { font-size: 14px; padding: 4px 10px; border-radius: 4px; background-color: #444444; }
-
-    .banner-bottom-bar {
-        background-color: #F8F9FA;
-        border-top: 1px solid #EEEEEE;
-        padding: 6px 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .watch-live-btn-fixed {
-        font-weight: 800;
-        font-size: 10px;
-        text-transform: uppercase;
-        text-decoration: none !important;
-        padding: 4px 8px;
-        border-radius: 4px;
-        color: #FFFFFF !important;
-        background-color: #ff7d23;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
+    .banner-bottom-bar { background-color: #F8F9FA; border-top: 1px solid #EEEEEE; padding: 6px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; }
+    .watch-live-btn-fixed { font-weight: 800; font-size: 10px; text-transform: uppercase; text-decoration: none !important; padding: 4px 8px; border-radius: 4px; color: #FFFFFF !important; background-color: #ff7d23; display: inline-flex; align-items: center; gap: 5px; }
     .watch-live-btn-fixed:hover { background-color: #CC0000; }
-
-    .banner-flag {
-        width: 24px; height: 16px; object-fit: cover; border-radius: 2px; margin: 0 6px;
-    }
-
-    .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-left: 6px; }
-    .dot-green { background-color: #28a745; }
-    .dot-red { background-color: #dc3545; }
+    .banner-flag { width: 24px; height: 16px; object-fit: cover; border-radius: 2px; margin: 0 6px; }
+    .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-left: 6px; vertical-align: middle; }
+    .dot-green { background-color: #28a745; box-shadow: 0 0 4px #28a745; }
+    .dot-red { background-color: #dc3545; box-shadow: 0 0 4px #dc3545; }
 </style>
 """
 
@@ -261,13 +153,12 @@ st.markdown("""
         h1, h2, h3, h1 span, h2 span, h3 span { color: #ff7d23 !important; font-family: 'Figtree', sans-serif !important; font-weight: 800 !important; }
         .stat-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 1px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; }
         .custom-dashboard-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .custom-dashboard-table th { border-bottom: 2px solid #ff7d23; padding: 6px; font-weight: 700; }
+        .custom-dashboard-table th { border-bottom: 2px solid #ff7d23; padding: 6px; font-weight: 700; text-align: left; }
         .custom-dashboard-table td { padding: 6px; border-bottom: 1px solid #EAEAEA; background: #FFFFFF; }
         .fixture-row { background: #FFFFFF; padding: 6px 10px; border: 1px solid #EAEAEA; border-radius: 4px; display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Core Helper Utility Functions
 @st.cache_data(ttl=86400)
 def get_cached_team_crests():
     crests = {}
@@ -296,212 +187,188 @@ def get_group_flag_html(team_name):
     url = CACHED_CRESTS.get(team_name)
     return f'<img src="{url}" style="width:20px; height:14px; object-fit:cover; vertical-align:middle; margin-right:4px;">' if url else ''
 
-def format_to_uk_time(utc_str):
-    try:
-        dt = datetime.strptime(utc_str, "%Y-%m-%dT%H:%M:%SZ")
-        return pytz.utc.localize(dt).astimezone(pytz.timezone("Europe/London"))
-    except Exception: return None
-
-def get_live_score(match):
-    score_obj = match.get("score", {})
-    for k in ["fullTime", "regularTime", "halfTime"]:
-        s = score_obj.get(k, {})
-        if s.get("home") is not None: return int(s["home"]), int(s["away"])
-    return 0, 0
-
-# Master Spreadsheet Engine Ingestion 
+# ── FETCH SPREADSHEET OVERRIDES AND CALCULATE DYNAMIC DATA ──
 @st.cache_data(ttl=15)
-def fetch_spreadsheet_overrides_master():
-    override_dict = {}
+def fetch_spreadsheet_matches_and_build_state():
+    live_matches = []
+    upcoming_matches = []
+    finished_matches = []
+    
+    # Initialize blank structural records for every team
+    team_stats = {}
+    for g_name, teams in GROUP_MAPPING.items():
+        for t in teams:
+            team_stats[t] = {"name": t, "played": 0, "won": 0, "draw": 0, "lost": 0, "gf": 0, "ga": 0, "gd": 0, "pts": 0, "group": g_name, "h2h_points": {}}
+
     try:
         csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeLButP4o4374i0KJP_YdOnTW1wN-Wzgqabuulvd1cMVmIuCfFTEM3CjJ4FmFIbBW6FLNDfaB9Hg4w/pub?gid=0&single=true&output=csv"
         df = pd.read_csv(csv_url, header=None)
+        
         for _, row in df.iterrows():
-            if len(row) >= 7:
-                home_t = str(row[2]).strip()
-                away_t = str(row[3]).strip()
-                if home_t and away_t:
-                    override_dict[f"{home_t.lower()}_v_{away_t.lower()}"] = {
-                        "status": str(row[4]).strip().lower(),
-                        "homeScore": str(row[5]).strip(),
-                        "awayScore": str(row[6]).strip(),
-                        "highlightsUrl": str(row[7]).strip() if len(row) >= 8 and pd.notna(row[7]) else "https://www.youtube.com/@fifa/videos",
-                        "tvNetwork": str(row[8]).strip() if len(row) >= 9 and pd.notna(row[8]) else ""
-                    }
+            if len(row) < 7: continue
+            date_raw = str(row[0]).strip() if pd.notna(row[0]) else ""
+            time_raw = str(row[1]).strip() if pd.notna(row[1]) else ""
+            home_t = str(row[2]).strip()
+            away_t = str(row[3]).strip()
+            status_str = str(row[4]).strip().lower()
+            h_score_str = str(row[5]).strip()
+            a_score_str = str(row[6]).strip()
+            h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else "https://www.youtube.com/@fifa/videos"
+            tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
+
+            if not home_t or not away_t or home_t not in team_stats or away_t not in team_stats: continue
+
+            match_item = {
+                "utcDate": f"{date_raw} {time_raw}", "homeTeam": {"name": home_t}, "awayTeam": {"name": away_t},
+                "status": status_str, "homeScore": h_score_str, "awayScore": a_score_str, "tvNetwork": tv_network, "highlightsUrl": h_link
+            }
+
+            if "live" in status_str:
+                live_matches.append(match_item)
+            elif "finished" in status_str or "completed" in status_str:
+                finished_matches.append(match_item)
+                
+                # Compute and accumulate dynamic statistics
+                try:
+                    hs = int(h_score_str)
+                    as_ = int(a_score_str)
+                    
+                    team_stats[home_t]["played"] += 1
+                    team_stats[away_t]["played"] += 1
+                    team_stats[home_t]["gf"] += hs
+                    team_stats[home_t]["ga"] += as_
+                    team_stats[away_t]["gf"] += as_
+                    team_stats[away_t]["ga"] += hs
+                    
+                    if hs > as_:
+                        team_stats[home_t]["won"] += 1
+                        team_stats[home_t]["pts"] += 3
+                        team_stats[home_t]["h2h_points"][away_t] = team_stats[home_t]["h2h_points"].get(away_t, 0) + 3
+                    elif as_ > hs:
+                        team_stats[away_t]["won"] += 1
+                        team_stats[away_t]["pts"] += 3
+                        team_stats[away_t]["h2h_points"][home_t] = team_stats[away_t]["h2h_points"].get(home_t, 0) + 3
+                    else:
+                        team_stats[home_t]["draw"] += 1
+                        team_stats[away_t]["draw"] += 1
+                        team_stats[home_t]["pts"] += 1
+                        team_stats[away_t]["pts"] += 1
+                        team_stats[home_t]["h2h_points"][away_t] = team_stats[home_t]["h2h_points"].get(away_t, 0) + 1
+                        team_stats[away_t]["h2h_points"][home_t] = team_stats[away_t]["h2h_points"].get(home_t, 0) + 1
+                except ValueError: pass
+            else:
+                upcoming_matches.append(match_item)
     except Exception: pass
-    return override_dict
 
-SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
+    # Finish remaining GD calculations
+    for t in team_stats:
+        team_stats[t]["gd"] = team_stats[t]["gf"] - team_stats[t]["ga"]
 
-# ── DYNAMIC BLOCK GENERATION ENGINE ──
+    return live_matches, upcoming_matches, finished_matches, team_stats
+
+LIVE_MATCHES, UPCOMING_MATCHES, FINISHED_MATCHES, TEAM_STATS = fetch_spreadsheet_matches_and_build_state()
+
+# ── OFFICIAL TIE-BREAKER SORTING AND PLACEMENT ALGORITHM ENGINE ──
+processed_standings = {}
+third_place_pool = []
+all_group_games_finished = True
+
+for g_name, teams in GROUP_MAPPING.items():
+    g_rows = [TEAM_STATS[t] for t in teams]
+    if any(r["played"] < 3 for r in g_rows): all_group_games_finished = False
+
+    # 1. Primary order: Points -> Goal Difference -> Goals For
+    g_rows.sort(key=lambda x: (-x["pts"], -x["gd"], -x["gf"]))
+
+    # 2. Secondary refinement check: Head-to-Head Evaluation against a specific tied team
+    i = 0
+    while i < len(g_rows) - 1:
+        if g_rows[i]["pts"] == g_rows[i+1]["pts"]:
+            t1, t2 = g_rows[i]["name"], g_rows[i+1]["name"]
+            t1_h2h = g_rows[i]["h2h_points"].get(t2, 0)
+            t2_h2h = g_rows[i+1]["h2h_points"].get(t1, 0)
+            if t2_h2h > t1_h2h:
+                g_rows[i], g_rows[i+1] = g_rows[i+1], g_rows[i]
+        i += 1
+
+    processed_standings[g_name] = g_rows
+    if len(g_rows) >= 3: third_place_pool.append(g_rows[2])
+
+# Sort third-place teams across entire tournament structure
+third_place_pool.sort(key=lambda x: (-x["pts"], -x["gd"], -x["gf"]))
+highest_8_third_place = [t["name"] for t in third_place_pool[:8]]
+
+# Dynamic Node Position Resolution Function
+def resolve_pos(group_letter, position):
+    g_key = f"Group {group_letter}"
+    if g_key in processed_standings:
+        return processed_standings[g_key][position-1]["name"]
+    return f"{position if position==1 else 'Runner-up'} Group {group_letter}"
+
+# ── DESIGN BANNER RENDERER FOR NO LOGGED CUTOFFS ──
 def build_dashboard_match_grid(matches, is_live=False, is_result=False):
     if not matches: return ""
     html_out = f"{GLOBAL_STYLE_TOKENS}<div class='multi-match-container'>"
     
-    for idx, match in enumerate(matches):
+    for match in matches:
         h_name = match.get("homeTeam", {}).get("name", "TBD")
         a_name = match.get("awayTeam", {}).get("name", "TBD")
-        
         left_color = TEAM_COLORS.get(h_name, DEFAULT_LEFT_COLOR)
         right_color = TEAM_COLORS.get(a_name, DEFAULT_RIGHT_COLOR)
         if left_color == right_color: right_color = "#222222"
 
-        h_score, a_score = get_live_score(match)
-        tv_channel = ""
-        highlights_url = "https://www.youtube.com/@fifa/videos"
-        
-        lookup_key = f"{h_name.lower()}_v_{a_name.lower()}"
-        if lookup_key in SPREADSHEET_OVERRIDES:
-            overrides = SPREADSHEET_OVERRIDES[lookup_key]
-            h_score = overrides["homeScore"]
-            a_score = overrides["awayScore"]
-            tv_channel = overrides["tvNetwork"]
-            highlights_url = overrides["highlightsUrl"]
+        lbl = "🔴 Live Now" if is_live else ("✅ Result" if is_result else "⏳ Next Match")
+        bubble = f'<div class="score-bubble">{match["homeScore"]} – {match["awayScore"]}</div>' if (is_live or is_result) else '<div class="vs-marker-bubble">VS</div>'
 
-        # Card status label setup
-        if is_live: status_lbl, bubble = "🔴 Live Now", f'<div class="score-bubble">{h_score} – {a_score}</div>'
-        elif is_result: status_lbl, bubble = "✅ Result", f'<div class="score-bubble">{h_score} – {a_score}</div>'
-        else: status_lbl, bubble = "⏳ Scheduled", '<div class="vs-marker-bubble">VS</div>'
-
-        dt_uk = format_to_uk_time(match.get("utcDate"))
-        time_meta = dt_uk.strftime("%d/%m %H:%M") if dt_uk else "TBD"
-        
-        # Broadcast Action Button integration
+        tv = match.get("tvNetwork", "")
         btn_html = ""
-        if tv_channel:
-            norm_ch = tv_channel.lower().strip()
-            if norm_ch in BROADCAST_BRANDS:
-                brand = BROADCAST_BRANDS[norm_ch]
-                btn_html = f'<a href="{brand["live_url"]}" target="_blank" class="watch-live-btn-fixed">Watch Live <img src="{brand["logo"]}" style="height:11px; width:auto;"></a>'
+        if tv:
+            norm = tv.lower().strip()
+            if norm in BROADCAST_BRANDS:
+                btn_html = f'<a href="{BROADCAST_BRANDS[norm]["live_url"]}" target="_blank" class="watch-live-btn-fixed">WATCH LIVE <img src="{BROADCAST_BRANDS[norm]["logo"]}" style="height:11px; width:auto;"></a>'
             else:
-                btn_html = f'<span style="color:#666; font-size:11px;">📺 {tv_channel}</span>'
+                btn_html = f'<span style="color:#666; font-size:11px;">📺 {tv}</span>'
         elif is_result:
-            btn_html = f'<a href="{highlights_url}" target="_blank" class="watch-live-btn-fixed" style="background:#444;">Highlights</a>'
+            btn_html = f'<a href="{match.get("highlightsUrl")}" target="_blank" class="watch-live-btn-fixed" style="background:#444;">WATCH HIGHLIGHTS</a>'
 
         html_out += f"""
         <div class="match-banner-card">
-            <div class="banner-top-pane">
-                <span class="next-match-title">{status_lbl}</span>
-                <span style="color:#FFF; font-size:11px; font-weight:700;">{time_meta}</span>
-            </div>
+            <div class="banner-top-pane"><span class="next-match-title">{lbl}</span><span style="color:#FFF; font-size:11px; font-weight:700;">{match["utcDate"]}</span></div>
             <div class="matchup-split-screen">
                 <div class="team-panel home-panel" style="background-color: {left_color};">
                     <div class="team-panel-text">
-                        {get_banner_flag_html(h_name)}
-                        <span style="font-weight:800;">{COUNTRY_ABBREVIATIONS.get(h_name, h_name[:3].upper())}</span>
-                        <span>({SWEEPSTAKE_MAPPING.get(h_name, 'Unassigned')})</span>
+                        {get_banner_flag_html(h_name)}<span style="font-weight:800;">{COUNTRY_ABBREVIATIONS.get(h_name, h_name[:3].upper())}</span><span>({SWEEPSTAKE_MAPPING.get(h_name, 'Unassigned')})</span>
                     </div>
                 </div>
                 {bubble}
                 <div class="team-panel away-panel" style="background-color: {right_color};">
                     <div class="team-panel-text">
-                        <span>({SWEEPSTAKE_MAPPING.get(a_name, 'Unassigned')})</span>
-                        <span style="font-weight:800;">{COUNTRY_ABBREVIATIONS.get(a_name, a_name[:3].upper())}</span>
-                        {get_banner_flag_html(a_name)}
+                        <span>({SWEEPSTAKE_MAPPING.get(a_name, 'Unassigned')})</span><span style="font-weight:800;">{COUNTRY_ABBREVIATIONS.get(a_name, a_name[:3].upper())}</span>{get_banner_flag_html(a_name)}
                     </div>
                 </div>
             </div>
-            <div class="banner-bottom-bar">
-                <span style="color:#555; font-size:11px;">World Cup Sweepstake State</span>
-                {btn_html}
-            </div>
-        </div>
-        """
+            <div class="banner-bottom-bar"><span style="color:#555; font-size:11px;">Sweepstake Dashboard Interface</span>{btn_html}</div>
+        </div>"""
     html_out += "</div>"
     return html_out
-
-# Data Processing Core
-all_matches, standings_list = fetch_football_data()
-
-processed_standings = {}
-third_place_pool = []
-all_group_games_finished = True
-
-for group in standings_list:
-    g_name = group.get("group", "Group")
-    rows = []
-    for row in group.get("table", []):
-        t_info = row.get("team", {})
-        t_name = t_info.get("name", "Unknown")
-        played = row.get("playedGames", 0)
-        if played < 3: all_group_games_finished = False
-        
-        rows.append({
-            "name": t_name, "played": played, "won": row.get("won", 0),
-            "draw": row.get("draw", 0), "lost": row.get("lost", 0),
-            "gf": row.get("goalsFor", 0), "ga": row.get("goalsAgainst", 0),
-            "gd": row.get("goalDifference", 0), "pts": row.get("points", 0)
-        })
-        
-    # Official Multi-factor Custom Sorting Logic Engine
-    rows.sort(key=lambda x: (-x["pts"], -x["gd"], -x["gf"]))
-    
-    # Evaluate explicit Head-to-Head structural adjustments if points match
-    idx = 0
-    while idx < len(rows) - 1:
-        if rows[idx]["pts"] == rows[idx+1]["pts"]:
-            for m in all_matches:
-                if m.get("status") == "FINISHED":
-                    h = m.get("homeTeam", {}).get("name")
-                    a = m.get("awayTeam", {}).get("name")
-                    if {h, a} == {rows[idx]["name"], rows[idx+1]["name"]}:
-                        hs, _ = get_live_score(m)
-                        _, as_ = get_live_score(m)
-                        if hs < as_ and h == rows[idx]["name"]:
-                            rows[idx], rows[idx+1] = rows[idx+1], rows[idx]
-        idx += 1
-        
-    processed_standings[g_name] = rows
-    if len(rows) >= 3: third_place_pool.append(rows[2])
-
-third_place_pool.sort(key=lambda x: (-x["pts"], -x["gd"], -x["gf"]))
-highest_8_third_place = [t["name"] for t in third_place_pool[:8]]
-
-# Dynamic Node Position Resolution Wrapper Function
-def resolve_pos(group_letter, position):
-    g_key = f"Group {group_letter}"
-    if g_key in processed_standings and len(processed_standings[g_key]) >= position:
-        return processed_standings[g_key][position-1]["name"]
-    return f"{position if position==1 else 'Runner-up'} Group {group_letter}"
-
-# Ingest and Category Pipeline Sort Arrays
-live_m, upcoming_m, finished_m = [], [], []
-for m in all_matches:
-    h_n = m.get("homeTeam", {}).get("name", "")
-    a_n = m.get("awayTeam", {}).get("name", "")
-    lookup_key = f"{h_n.lower()}_v_{a_n.lower()}"
-    
-    if lookup_key in SPREADSHEET_OVERRIDES:
-        st_str = SPREADSHEET_OVERRIDES[lookup_key]["status"]
-        if "live" in st_str: live_m.append(m)
-        elif "finished" in st_str or "completed" in st_str: finished_m.append(m)
-        else: upcoming_m.append(m)
-    else:
-        status = m.get("status")
-        if status in ["IN_PLAY", "PAUSED"]: live_m.append(m)
-        elif status == "FINISHED": finished_m.append(m)
-        else: upcoming_m.append(m)
-
-upcoming_m = sorted(upcoming_m, key=lambda x: x.get("utcDate", ""))
-finished_m = sorted(finished_m, key=lambda x: x.get("utcDate", ""), reverse=True)
 
 # ── RENDERING HEADER LAYOUT CELLS ──
 cols = st.columns([1, 1], gap="medium")
 with cols[0]:
-    st.markdown('<div class="title-area" style="padding-top:10px;"><h1>🏆 BYWAY SWEEPSTAKE</h1><p>Tournament Arena Dashboard</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="title-area" style="padding-top:10px;"><h1>🏆 BYWAY SWEEPSTAKE</h1><p>Spreadsheet Engine Dashboard State</p></div>', unsafe_allow_html=True)
 with cols[1]:
-    if live_m:
-        st.markdown(build_dashboard_match_grid([live_m[0]], is_live=True), unsafe_allow_html=True)
-    elif upcoming_m:
-        tk = upcoming_m[0].get("utcDate")
-        same_time = [m for m in upcoming_m if m.get("utcDate") == tk]
-        components.html(build_dashboard_match_grid(same_time, is_live=False), height=90 * len(same_time) + 20)
+    if LIVE_MATCHES:
+        components.html(build_dashboard_match_grid(LIVE_MATCHES, is_live=True), height=85 * len(LIVE_MATCHES) + 20)
+    elif UPCOMING_MATCHES:
+        first_time = UPCOMING_MATCHES[0].get("utcDate")
+        concurrent = [m for m in UPCOMING_MATCHES if m.get("utcDate") == first_time]
+        components.html(build_dashboard_match_grid(concurrent, is_live=False), height=85 * len(concurrent) + 20)
 
 # Stat Box Row
 sc1, sc2, sc3 = st.columns(3)
 sc1.markdown('<div class="stat-banner-box"><medium>💰 Prize Pot</medium><span>£96</span></div>', unsafe_allow_html=True)
-sc2.markdown('<div class="stat-banner-box"><medium>🚀 Status</medium><span>Live Tracking Active</span></div>', unsafe_allow_html=True)
-sc3.markdown('<div class="stat-banner-box"><medium>⚽ Played Match States</medium><span>' + str(len(finished_m)) + ' Logged</span></div>', unsafe_allow_html=True)
+sc2.markdown('<div class="stat-banner-box"><medium>🚀 Latest Match Outcome</medium><span>' + (f"{FINISHED_MATCHES[0]['homeTeam']['name']} v {FINISHED_MATCHES[0]['awayTeam']['name']}" if FINISHED_MATCHES else "N/A") + '</span></div>', unsafe_allow_html=True)
+sc3.markdown('<div class="stat-banner-box"><medium>📊 Completed Group Matches</medium><span>' + str(len(FINISHED_MATCHES)) + ' Logged</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:15px 0; border-top:1px solid #ff7d23;'>", unsafe_allow_html=True)
 
@@ -511,35 +378,33 @@ group_open = not all_group_games_finished
 
 # ── COLLAPSIBLE MODULE 1: KNOCKOUT PHASE ──
 with st.expander("🏅 KNOCKOUT STAGE BRACKET", expanded=ko_open):
-    
-    # Dynamic Brackets Layout Object Schema
     ko_structure = {
         "Round of 32": [
-            {"date": "June 28 @ 17:00", "t1": resolve_pos("A", 2), "t2": resolve_pos("B", 2)},
-            {"date": "June 29 @ 21:00", "t1": resolve_pos("E", 1), "t2": "3rd Group A/B/C/D/F"},
-            {"date": "June 29 @ 18:00", "t1": resolve_pos("F", 1), "t2": resolve_pos("C", 2)},
-            {"date": "June 29 @ 20:00", "t1": resolve_pos("C", 1), "t2": resolve_pos("F", 2)},
-            {"date": "June 30 @ 16:00", "t1": resolve_pos("I", 1), "t2": "3rd Group C/D/F/G/H"},
-            {"date": "June 30 @ 19:00", "t1": resolve_pos("E", 2), "t2": resolve_pos("I", 2)},
-            {"date": "June 30 @ 22:00", "t1": resolve_pos("A", 1), "t2": "3rd Group C/E/F/H/I"}
+            {"date": "28th June @ 17:00", "t1": resolve_pos("A", 2), "t2": resolve_pos("B", 2)},
+            {"date": "29th June @ 21:00", "t1": resolve_pos("E", 1), "t2": "3rd Group A/B/C/D/F"},
+            {"date": "29th June @ 18:00", "t1": resolve_pos("F", 1), "t2": resolve_pos("C", 2)},
+            {"date": "29th June @ 20:00", "t1": resolve_pos("C", 1), "t2": resolve_pos("F", 2)},
+            {"date": "30th June @ 16:00", "t1": resolve_pos("I", 1), "t2": "3rd Group C/D/F/G/H"},
+            {"date": "30th June @ 19:00", "t1": resolve_pos("E", 2), "t2": resolve_pos("I", 2)},
+            {"date": "30th June @ 22:00", "t1": resolve_pos("A", 1), "t2": "3rd Group C/E/F/H/I"}
         ],
         "Round of 16": [
-            {"date": "July 4 @ 18:00", "t1": "Winner Match 74", "t2": "Winner Match 77"},
-            {"date": "July 4 @ 21:00", "t1": "Winner Match 73", "t2": "Winner Match 76"},
-            {"date": "July 5 @ 17:00", "t1": "Winner Match 78", "t2": "Winner Match 91"},
-            {"date": "July 5 @ 20:00", "t1": "Winner Match 92", "t2": "Winner Match 79"}
+            {"date": "4th July @ 18:00", "t1": "Winner Match 74", "t2": "Winner Match 77"},
+            {"date": "4th July @ 21:00", "t1": "Winner Match 73", "t2": "Winner Match 76"},
+            {"date": "5th July @ 17:00", "t1": "Winner Match 78", "t2": "Winner Match 91"},
+            {"date": "5th July @ 20:00", "t1": "Winner Match 92", "t2": "Winner Match 79"}
         ],
         "Quarter-Finals": [
-            {"date": "July 9 @ 19:00", "t1": "Winner Match 89", "t2": "Winner Match 90"},
-            {"date": "July 10 @ 20:00", "t1": "Winner Match 83", "t2": "Winner Match 84"}
+            {"date": "9th July @ 19:00", "t1": "Winner Match 89", "t2": "Winner Match 90"},
+            {"date": "10th July @ 20:00", "t1": "Winner Match 83", "t2": "Winner Match 84"}
         ],
         "Semi-Finals": [
-            {"date": "July 14 @ 20:00", "t1": "Winner Match 97", "t2": "Winner Match 98"},
-            {"date": "July 15 @ 20:00", "t1": "Winner Match 99", "t2": "Winner Match 100"}
+            {"date": "14th July @ 20:00", "t1": "Winner Match 97", "t2": "Winner Match 98"},
+            {"date": "15th July @ 20:00", "t1": "Winner Match 99", "t2": "Winner Match 100"}
         ],
         "Finals": [
-            {"date": "July 18 @ 21:00 (Third Place Play-off)", "t1": "Loser Match 101", "t2": "Loser Match 102"},
-            {"date": "July 19 @ 20:00 (World Cup Final)", "t1": "Winner Match 101", "t2": "Winner Match 102"}
+            {"date": "18th July @ 21:00 (Third Place Play-off)", "t1": "Loser Match 101", "t2": "Loser Match 102"},
+            {"date": "19th July @ 20:00 (World Cup Final)", "t1": "Winner Match 101", "t2": "Winner Match 102"}
         ]
     }
 
@@ -547,17 +412,15 @@ with st.expander("🏅 KNOCKOUT STAGE BRACKET", expanded=ko_open):
         st.markdown(f"#### 🏆 {round_name}")
         rcs = st.columns(len(round_matches) if len(round_matches) <= 4 else 4)
         for idx, rm in enumerate(round_matches):
-            col_target = rcs[idx % 4]
-            with col_target:
+            with rcs[idx % 4]:
                 st.markdown(f"""
                 <div style="background:#FFF; padding:8px; border-radius:6px; border:1px solid #ff7d23; margin-bottom:8px;">
                     <span style="font-size:10px; color:#ff7d23; font-weight:800; display:block;">🕒 {rm['date']}</span>
                     <span style="font-size:12px; font-weight:700; color:#333; display:block; margin-top:3px;">⚽ {rm['t1']}</span>
                     <span style="font-size:12px; font-weight:700; color:#333; display:block;">⚽ {rm['t2']}</span>
-                </div>
-                """, unsafe_allow_html=True)
+                </div>""", unsafe_allow_html=True)
 
-# ── COLLAPSIBLE MODULE 2: GROUP STAGE STATE TABLES ──
+# ── COLLAPSIBLE MODULE 2: GROUP STAGE LIVE TABLES ──
 with st.expander("📊 GROUP STAGE LIVE TABLES", expanded=group_open):
     g_keys = list(processed_standings.keys())
     for i in range(0, len(g_keys), 2):
@@ -575,7 +438,6 @@ with st.expander("📊 GROUP STAGE LIVE TABLES", expanded=group_open):
                     for ranking_pos, r in enumerate(t_rows, start=1):
                         owner = SWEEPSTAKE_MAPPING.get(r["name"], "Unassigned")
                         
-                        # Apply Status Validation progress dot indicators explicitly to right of owner names
                         dot_indicator = ""
                         if r["played"] == 3:
                             if ranking_pos <= 2:
@@ -601,6 +463,7 @@ for gname, rows in processed_standings.items():
         master_flat_leaderboard.append(r.copy())
 
 if master_flat_leaderboard:
+    master_flat_leaderboard.sort(key=lambda x: (-x["pts"], -x["gd"], -x["gf"]))
     for idx, team_item in enumerate(master_flat_leaderboard, start=1):
         team_item["actual_rank"] = idx
         team_item["expected_rank"] = EXPECTED_RANKINGS.get(team_item["name"], 25)
