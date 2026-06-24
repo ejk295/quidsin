@@ -179,7 +179,7 @@ GLOBAL_STYLE_TOKENS = """
     /* --- MATCH BANNER LAYOUT --- */
     .match-banner-wrapper {
         width: 100%;
-        margin: 0px;
+        margin: 0px 0px 10px 0px;
         box-sizing: border-box;
     }
 
@@ -332,7 +332,7 @@ GLOBAL_STYLE_TOKENS = """
     }
 
     .banner-bottom-time {
-        background-color: #444444; /* Standard unlit dark baseline background */
+        background-color: #444444;
         padding: 8px 15px;
         font-size: 12px;
         font-weight: 700 !important;
@@ -368,7 +368,6 @@ GLOBAL_STYLE_TOKENS = """
         color: #FFFFFF !important;
     }
 
-    /* Target class setups to securely manage structural background variants */
     .highlights-btn, .watch-live-btn.is-scheduled-btn {
         background-color: #444444 !important;
     }
@@ -377,7 +376,6 @@ GLOBAL_STYLE_TOKENS = """
         background-color: #8b0802 !important;
     }
 
-    /* Brighter red target hover configuration across all nodes */
     .highlights-btn:hover, .watch-live-btn.is-scheduled-btn:hover, .watch-live-btn.is-live-btn:hover {
         background-color: #CC0000 !important;
     }
@@ -492,7 +490,7 @@ GLOBAL_STYLE_TOKENS = """
             padding: 4px 8px !important;
         }
         .odds-item-card:nth-child(n+4) {
-            display: none !important; /* Hide last 3 on narrow phone screens to avoid crowding */
+            display: none !important;
         }
     }
 </style>
@@ -505,7 +503,7 @@ st.markdown("""
             background-color: #FAFAFA !important;
         }
     h1, h2, h3, h1 span, h2 span, h3 span, h1 p, h2 p, h3 p {
-        color: #ff7d23 !important; /* <--- This will now strictly apply your custom color */
+        color: #ff7d23 !important;
         font-family: 'Figtree', sans-serif !important;
         font-weight: 800 !important;
     }
@@ -594,11 +592,9 @@ def get_live_score(match):
     return 0, 0
 
 def convert_to_fractional_odds(decimal_odds):
-    """Converts a standard decimal odds float into regular UK Fractional string format format."""
     if decimal_odds <= 1.0:
         return "1/1"
     net_odds = decimal_odds - 1.0
-    # Limit denominator sizing up to 100 to clean out floating micro rounding traces
     frac = Fraction(net_odds).limit_denominator(100)
     return f"{frac.numerator}/{frac.denominator}"
 
@@ -620,8 +616,6 @@ def fetch_spreadsheet_overrides_master():
                     h_score = str(row[5]).strip() if pd.notna(row[5]) else "0"
                     a_score = str(row[6]).strip() if pd.notna(row[6]) else "0"
                     h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else ""
-                    
-                    # Parse Column I (Index 8) safely for TV Network parameters
                     tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
 
                     if home_t and away_t:
@@ -641,12 +635,11 @@ def fetch_spreadsheet_overrides_master():
 
 SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
 
-# ── THE ODDS API LIVE OUTRIGHTS INGESTION SYSTEM (24 HOUR MAXIMUM SAFETY CELL) ──
+# ── THE ODDS API LIVE OUTRIGHTS INGESTION SYSTEM ──
 @st.cache_data(ttl=86400)
 def fetch_odds_api_favourites():
     favourites = []
     if ODDS_API_TOKEN == "placeholder":
-        # Safe structural fallback array if key missing
         return [
             {"team": "France", "odds": 5.5}, {"team": "Brazil", "odds": 6.0}, 
             {"team": "England", "odds": 6.5}, {"team": "Argentina", "odds": 7.0}, 
@@ -659,19 +652,15 @@ def fetch_odds_api_favourites():
         if response.status_code == 200:
             data = response.json()
             if data and isinstance(data, list):
-                # Target first available bookmaker record safely
                 bookmakers = data[0].get("bookmakers", [])
                 if bookmakers:
                     markets = bookmakers[0].get("markets", [])
                     if markets:
                         outcomes = markets[0].get("outcomes", [])
-                        # Map out cleanly and sort descending by lowest price values
                         sorted_outcomes = sorted(outcomes, key=lambda x: x.get("price", 999))
                         for item in sorted_outcomes[:6]:
                             raw_name = item.get("name", "Unknown")
-                            # Normalize key naming alignments
                             if raw_name == "USA": raw_name = "United States"
-                            if raw_name == "South Korea": raw_name = "South Korea"
                             favourites.append({
                                 "team": raw_name,
                                 "odds": item.get("price", 0.0)
@@ -679,7 +668,6 @@ def fetch_odds_api_favourites():
                         return favourites
     except Exception:
         pass
-    # Baseline configuration structure fallback if endpoint fails
     return [
         {"team": "France", "odds": 5.5}, {"team": "Brazil", "odds": 6.0}, 
         {"team": "England", "odds": 6.5}, {"team": "Argentina", "odds": 7.0}, 
@@ -695,7 +683,6 @@ def build_odds_favourites_banner():
         fractional_str = convert_to_fractional_odds(decimal_odds)
         owner = SWEEPSTAKE_MAPPING.get(team_name, "Unassigned")
         
-        # Pull precise crest references cleanly bypassing global oversized elements seen on image_f76068.png
         crest_url = CACHED_CRESTS.get(team_name, "")
         flag_img_html = f'<img src="{crest_url}" style="width:24px; height:16px; min-width:24px; max-width:24px; object-fit:cover; border-radius:2px; border:1px solid #DDD; margin-right:6px; display:inline-block; vertical-align:middle;">' if crest_url else ""
         
@@ -718,14 +705,13 @@ def build_odds_favourites_banner():
                 {cards_html}
             </div>
             <div class="banner-bottom-time" style="background-color: #ff7d23; color: #FFFFFF !important; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 15px;">
-                
             </div>
         </div>
     </div>
     """
 
-# ── DESIGN HERO BANNER GENERATOR WITH MOBILE 3-LETTER ABBREVIATION RULES ──
-def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
+# ── DESIGN HERO BANNER GENERATOR ──
+def build_match_banner_html_snippet(match, is_live=False, is_result=False, match_idx=2):
     home_team_obj = match.get("homeTeam", {})
     away_team_obj = match.get("awayTeam", {})
 
@@ -820,7 +806,6 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
             bottom_bar = f'<div class="banner-bottom-time" style="color: #FFFFFF !important;">🗓️ {date_str}{channel_suffix}</div>'
 
     return f"""
-    {GLOBAL_STYLE_TOKENS}
     <div class="match-banner-wrapper">
         <div class="match-banner-container">
             {top_pane}
@@ -847,6 +832,19 @@ def build_match_banner(match, is_live=False, is_result=False, match_idx=2):
         </div>
     </div>
     """
+
+def build_combined_match_banner(matches, is_live=False, is_result=False, base_idx=100):
+    snippets = []
+    for idx, m in enumerate(matches):
+        snippets.append(build_match_banner_html_snippet(m, is_live=is_live, is_result=is_result, match_idx=base_idx+idx))
+    
+    combined_html = f"""
+    {GLOBAL_STYLE_TOKENS}
+    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        {"".join(snippets)}
+    </div>
+    """
+    return combined_html
     
 # ── Data Ingestion Pipeline Routing Engine ──
 @st.cache_data(ttl=120)  
@@ -934,6 +932,10 @@ if upcoming_matches:
     next_kickoff_matches = [m for m in upcoming_matches if m.get("utcDate", "") == first_kickoff]
 
 finished_matches = sorted(finished_matches, key=lambda x: x.get("utcDate", ""), reverse=True)
+latest_finished_matches = []
+if finished_matches:
+    last_finished_time = finished_matches[0].get("utcDate", "")
+    latest_finished_matches = [m for m in finished_matches if m.get("utcDate", "") == last_finished_time]
 
 # ── HEADER ROW (TITLE LEFT, LIVE BANNER OR ODDS API FAVOURITES RIGHT) ──────────────────
 header_cols = st.columns([1, 1], gap="medium")
@@ -948,10 +950,10 @@ with header_cols[0]:
 
 with header_cols[1]:
     if live_matches:
-        payload = build_match_banner(live_matches[0], is_live=True, match_idx=200)
-        components.html(payload, height=160, scrolling=False)
+        payload = build_combined_match_banner(live_matches, is_live=True, base_idx=200)
+        calculated_height = len(live_matches) * 145 + (len(live_matches) - 1) * 10
+        components.html(payload, height=max(calculated_height, 160), scrolling=False)
     else:
-        # Replacement target block when no live football matches are running
         odds_payload = build_odds_favourites_banner()
         components.html(odds_payload, height=160, scrolling=False)
 
@@ -962,32 +964,34 @@ hero_cols = st.columns([1, 1], gap="medium")
 
 with hero_cols[0]:
     if next_kickoff_matches:
-        payload = build_match_banner(next_kickoff_matches[0], is_live=False, match_idx=100)
-        components.html(payload, height=160, scrolling=False)
+        payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
+        calculated_height = len(next_kickoff_matches) * 145 + (len(next_kickoff_matches) - 1) * 10
+        components.html(payload, height=max(calculated_height, 160), scrolling=False)
     else:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
 with hero_cols[1]:
-    if finished_matches:
-        latest_match = finished_matches[0]
+    if latest_finished_matches:
         chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
-        try:
-            match_index = chronological_matches.index(latest_match) + 2
-        except ValueError:
-            match_index = 2
+        
+        snippets = []
+        for idx, finished_m in enumerate(latest_finished_matches):
+            try:
+                match_index = chronological_matches.index(finished_m) + 2
+            except ValueError:
+                match_index = 2 + idx
+            snippets.append(build_match_banner_html_snippet(finished_m, is_live=False, is_result=True, match_idx=match_index))
             
-        result_banner_html = build_match_banner(latest_match, is_live=False, is_result=True, match_idx=match_index)
-        components.html(result_banner_html, height=160, scrolling=False)
+        result_banner_html = f"""
+        {GLOBAL_STYLE_TOKENS}
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+            {"".join(snippets)}
+        </div>
+        """
+        calculated_height = len(latest_finished_matches) * 145 + (len(latest_finished_matches) - 1) * 10
+        components.html(result_banner_html, height=max(calculated_height, 160), scrolling=False)
     else:
         st.info("⚽ No results logged yet for this tournament state.")
-
-if len(live_matches) > 1:
-    for idx, live_match in enumerate(live_matches[1:]):
-        components.html(build_match_banner(live_match, is_live=True, match_idx=300+idx), height=160, scrolling=False)
-
-if len(next_kickoff_matches) > 1:
-    for idx, next_match in enumerate(next_kickoff_matches[1:]):
-        components.html(build_match_banner(next_match, is_live=False, match_idx=400+idx), height=160, scrolling=False)
 
 # ── STATS ROW ──────────────────────────────────────────────────────────
 stat_cols = st.columns(3)
