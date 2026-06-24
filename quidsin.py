@@ -159,7 +159,6 @@ BROADCAST_BRANDS = {
 }
 
 # ── HARDCODED BRACKET VALUE OVERRIDES ENGINE ──
-# Update these string variables with concrete team names once calculated!
 ROUND_OF_32_PAIRINGS = {
     "M73_H": "Runner-up Group A", "M73_A": "Runner-up Group B",
     "M76_H": "Winner Group C",     "M76_A": "Runner-up Group F",
@@ -191,9 +190,10 @@ GLOBAL_STYLE_TOKENS = """
         padding: 0;
     }
     
-    p, span, div, label, small, td, th, b {
+    /* TARGETED CONTENT RESETS (Prevents breaking native Streamlit layout text ligatures) */
+    .stApp p, .stApp th, .stApp td, .stApp b, .stApp span:not([class*="icon"]) {
         color: #333333;
-        font-family: 'Figtree', sans-serif !important;
+        font-family: 'Figtree', sans-serif;
     }
 
     /* --- MATCH BANNER LAYOUT --- */
@@ -470,48 +470,18 @@ GLOBAL_STYLE_TOKENS = """
         padding: 2px 8px;
     }
 
-    /* --- MOBILE OPTIMIZATION OVERRIDES --- */
     @media (max-width: 768px) {
-        .team-panel {
-            padding: 10px 8px !important;
-        }
-        .home-panel {
-            padding-right: 32px !important;
-        }
-        .away-panel {
-            padding-left: 32px !important;
-        }
-        .team-panel-text {
-            font-size: 15px !important;
-        }
-        .team-panel-text span {
-            font-size: 11px !important;
-            margin: 0 2px !important;
-        }
-        .desktop-full-text {
-            display: none !important;
-        }
-        .mobile-abbrev-text {
-            display: inline-block !important;
-        }
-        .banner-flag {
-            width: 20px !important;
-            height: 14px !important;
-            min-width: 20px !important;
-            max-width: 20px !important;
-            margin: 0 4px !important;
-        }
-        .score-bubble, .vs-marker-bubble {
-            font-size: 12px !important;
-            padding: 4px 10px !important;
-        }
-        .score-reveal-label {
-            font-size: 9px !important;
-            padding: 4px 8px !important;
-        }
-        .odds-item-card:nth-child(n+4) {
-            display: none !important;
-        }
+        .team-panel { padding: 10px 8px !important; }
+        .home-panel { padding-right: 32px !important; }
+        .away-panel { padding-left: 32px !important; }
+        .team-panel-text { font-size: 15px !important; }
+        .team-panel-text span { font-size: 11px !important; margin: 0 2px !important; }
+        .desktop-full-text { display: none !important; }
+        .mobile-abbrev-text { display: inline-block !important; }
+        .banner-flag { width: 20px !important; height: 14px !important; min-width: 20px !important; max-width: 20px !important; margin: 0 4px !important; }
+        .score-bubble, .vs-marker-bubble { font-size: 12px !important; padding: 4px 10px !important; }
+        .score-reveal-label { font-size: 9px !important; padding: 4px 8px !important; }
+        .odds-item-card:nth-child(n+4) { display: none !important; }
     }
 </style>
 """
@@ -555,7 +525,6 @@ st.markdown("""
         .fixture-row-live { background-color: #FFF5F5 !important; border: 1px solid #FFCCCC !important; }
         .group-header-text { color: #ff7d23 !important; font-size: 18px; font-weight: 800 !important; margin-bottom: 4px !important; margin-top: 0px !important; display: inline-block; }
         
-        /* Knockout specifics */
         .ko-stage-title { color: #ff7d23 !important; font-size: 16px; font-weight: 800 !important; margin-top: 15px !important; margin-bottom: 8px !important; border-bottom: 1px dashed #ff7d23; padding-bottom: 3px; }
         .ko-match-row { background-color: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
         .ko-time-badge { font-size: 11px; font-weight: 600; color: #666666; background-color: #F0F0F0; padding: 2px 6px; border-radius: 4px; }
@@ -915,7 +884,6 @@ all_matches, standings_list = fetch_football_data()
 master_flat_leaderboard = []
 top_performer_text = "N/A"
 
-# Determine group stages operational progression limits dynamically
 total_group_games_played = 0
 total_teams_counted = 0
 
@@ -936,7 +904,6 @@ for group in standings_list:
             "crest": t_info.get("crest", "")
         })
 
-# Check if ALL teams in groups have played their 3 games (48 teams x 3 games = 144 matches evaluated)
 is_group_stage_done = False
 if total_teams_counted > 0 and (total_group_games_played >= total_teams_counted * 3):
     is_group_stage_done = True
@@ -1008,7 +975,6 @@ with header_cols[0]:
 
 with header_cols[1]:
     if live_matches:
-        # Render ONLY the first live match up here to sit inline with the title block
         first_live_payload = build_combined_match_banner([live_matches[0]], is_live=True, base_idx=200)
         components.html(first_live_payload, height=160, scrolling=False)
     else:
@@ -1027,15 +993,12 @@ with alignment_row_cols[0]:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
 with alignment_row_cols[1]:
-    # Group any subsequent live matches followed by latest finished results into a single column array
     right_column_snippets = []
     
-    # 1. Append second live match onwards if they exist
     if len(live_matches) > 1:
         for idx, extra_live_m in enumerate(live_matches[1:]):
             right_column_snippets.append(build_match_banner_html_snippet(extra_live_m, is_live=True, match_idx=250+idx))
             
-    # 2. Append latest finished matches
     if latest_finished_matches:
         chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
         for idx, finished_m in enumerate(latest_finished_matches):
@@ -1076,11 +1039,8 @@ with stat_cols[2]:
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
-
 # ── KNOCKOUT PHASE CANVAS ───────────────────────────────────────────────────
-# Collapsible knockout block: auto-open if group games completed, else auto-closed
 with st.expander("⚽ KNOCKOUT PHASE", expanded=is_group_stage_done):
-    
     st.markdown('<div class="ko-stage-title">Round of 32</div>', unsafe_allow_html=True)
     render_ko_match(ROUND_OF_32_PAIRINGS["M73_H"], ROUND_OF_32_PAIRINGS["M73_A"], "28/06 20:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M76_H"], ROUND_OF_32_PAIRINGS["M76_A"], "29/06 18:00")
@@ -1125,9 +1085,7 @@ with st.expander("⚽ KNOCKOUT PHASE", expanded=is_group_stage_done):
     st.markdown('<div class="ko-stage-title">Final</div>', unsafe_allow_html=True)
     render_ko_match("Winner Match 101", "Winner Match 102", "19/07 20:00")
 
-
 # ── GROUPS CANVAS ─────────────────────────────────────────────────────────
-# Collapsible group block: auto-open unless all teams played 3 games, then auto-closed
 with st.expander("📊 GROUP STAGE STANDINGS & FIXTURES", expanded=not is_group_stage_done):
     if API_TOKEN == "placeholder":
         st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists.")
@@ -1273,7 +1231,6 @@ with st.expander("📊 GROUP STAGE STANDINGS & FIXTURES", expanded=not is_group_
                             st.markdown('</div>', unsafe_allow_html=True)
 
 # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
-# Placed OUTSIDE the collapsible element as explicitly requested
 if standings_list:
     st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
     st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
