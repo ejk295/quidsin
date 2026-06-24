@@ -178,7 +178,7 @@ GLOBAL_STYLE_TOKENS = """
     /* --- MATCH BANNER LAYOUT --- */
     .match-banner-wrapper {
         width: 100%;
-        margin: 0px 0px 10px 0px;
+        margin: 0px 0px 15px 0px;
         box-sizing: border-box;
     }
 
@@ -805,7 +805,7 @@ def build_match_banner_html_snippet(match, is_live=False, is_result=False, match
             bottom_bar = f'<div class="banner-bottom-time" style="color: #FFFFFF !important;">🗓️ {date_str}{channel_suffix}</div>'
 
     return f"""
-    <div class="match-banner-wrapper" style="margin-bottom: 12px; height: auto !important;">
+    <div class="match-banner-wrapper" style="margin-bottom: 15px; height: auto !important;">
         <div class="match-banner-container">
             {top_pane}
             <div class="matchup-split-screen">
@@ -936,60 +936,67 @@ if finished_matches:
     last_finished_time = finished_matches[0].get("utcDate", "")
     latest_finished_matches = [m for m in finished_matches if m.get("utcDate", "") == last_finished_time]
 
-# ── MAIN DASHBOARD LAYOUT (UNIFIED SIDE-BY-SIDE COLUMNS) ──────────────────
-master_left, master_right = st.columns([1, 1], gap="medium")
+# ── TOP SPLIT HEADER (TITLE CANVAS LEFT, FIRST IN-PROGRESS MATCH RIGHT) ──
+header_cols = st.columns([1, 1], gap="medium")
 
-with master_left:
-    # Title Canvas Block
+with header_cols[0]:
     st.markdown("""
         <div class="title-area" style="padding-top: 15px; margin-bottom: 20px;">
             <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
             <p>Live standings</p>
         </div>
     """, unsafe_allow_html=True)
-    
-    # Upcoming Matches
+
+with header_cols[1]:
+    if live_matches:
+        # Render ONLY the first live match up here to sit inline with the title block
+        first_live_payload = build_combined_match_banner([live_matches[0]], is_live=True, base_idx=200)
+        components.html(first_live_payload, height=160, scrolling=False)
+    else:
+        odds_payload = build_odds_favourites_banner()
+        components.html(odds_payload, height=160, scrolling=False)
+
+# ── LOWER ROW SETUP (UPCOMING GRID COOP ALIGNED WITH SECOND LIVE / LATEST RESULT) ──
+alignment_row_cols = st.columns([1, 1], gap="medium")
+
+with alignment_row_cols[0]:
     if next_kickoff_matches:
         payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
-        calculated_height = len(next_kickoff_matches) * 175
-        components.html(payload, height=max(calculated_height, 175), scrolling=False)
+        calculated_height = len(next_kickoff_matches) * 160 + (len(next_kickoff_matches) - 1) * 15
+        components.html(payload, height=calculated_height, scrolling=False)
     else:
         st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
 
-with master_right:
-    # Live Matches (or Odds API Favourites Outright Box)
-    if live_matches:
-        payload = build_combined_match_banner(live_matches, is_live=True, base_idx=200)
-        calculated_height = len(live_matches) * 175
-        components.html(payload, height=max(calculated_height, 175), scrolling=False)
-    else:
-        odds_payload = build_odds_favourites_banner()
-        components.html(odds_payload, height=175, scrolling=False)
-        
-    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+with alignment_row_cols[1]:
+    # Group any subsequent live matches followed by latest finished results into a single column array
+    right_column_snippets = []
     
-    # Latest Results
+    # 1. Append second live match onwards if they exist
+    if len(live_matches) > 1:
+        for idx, extra_live_m in enumerate(live_matches[1:]):
+            right_column_snippets.append(build_match_banner_html_snippet(extra_live_m, is_live=True, match_idx=250+idx))
+            
+    # 2. Append latest finished matches
     if latest_finished_matches:
         chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
-        
-        snippets = []
         for idx, finished_m in enumerate(latest_finished_matches):
             try:
                 match_index = chronological_matches.index(finished_m) + 2
             except ValueError:
-                match_index = 2 + idx
-            snippets.append(build_match_banner_html_snippet(finished_m, is_live=False, is_result=True, match_idx=match_index))
-            
-        result_banner_html = f"""
+                match_index = 2000 + idx
+            right_column_snippets.append(build_match_banner_html_snippet(finished_m, is_live=False, is_result=True, match_idx=match_index))
+
+    if right_column_snippets:
+        combined_right_html = f"""
         {GLOBAL_STYLE_TOKENS}
         <div style="display: flex; flex-direction: column; width: 100%; height: auto !important;">
-            {"".join(snippets)}
+            {"".join(right_column_snippets)}
         </div>
         """
-        calculated_height = len(latest_finished_matches) * 175
-        components.html(result_banner_html, height=max(calculated_height, 175), scrolling=False)
+        calculated_height = len(right_column_snippets) * 160 + (len(right_column_snippets) - 1) * 15
+        components.html(combined_right_html, height=calculated_height, scrolling=False)
     else:
-        st.info("⚽ No results logged yet for this tournament state.")
+        st.info("⚽ No additional active matches or results logged.")
 
 st.markdown("<br>", unsafe_allow_html=True)
 
