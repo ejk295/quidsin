@@ -160,7 +160,7 @@ BROADCAST_BRANDS = {
 
 # ── HARDCODED BRACKET VALUE OVERRIDES ENGINE ──
 ROUND_OF_32_PAIRINGS = {
-    "M73_H": "Runner-up Group A", "M73_A": "Runner-up Group B",
+    "M73_H": "Runner-up Group A", "M73_A": "Canada",
     "M76_H": "Winner Group C",     "M76_A": "Runner-up Group F",
     "M74_H": "Germany",            "M74_A": "3rd Group A/B/C/D/F",
     "M75_H": "Winner Group F",     "M75_A": "Runner-up Group C",
@@ -172,7 +172,7 @@ ROUND_OF_32_PAIRINGS = {
     "M81_H": "United States",      "M81_A": "3rd Group B/E/F/I/J",
     "M84_H": "Winner Group H",     "M84_A": "Runner-up Group J",
     "M83_H": "Runner-up Group K",  "M83_A": "Runner-up Group L",
-    "M85_H": "Winner Group B",     "M85_A": "3rd Group E/F/G/I/J",
+    "M85_H": "Switzerland",     "M85_A": "3rd Group E/F/G/I/J",
     "M88_H": "Runner-up Group D",  "M88_A": "Runner-up Group G",
     "M86_H": "Argentina",          "M86_A": "Runner-up Group H",
     "M87_H": "Winner Group K",     "M87_A": "3rd Group D/E/I/J/L",
@@ -1043,7 +1043,7 @@ with stat_cols[2]:
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
 # ── KNOCKOUT PHASE CANVAS ───────────────────────────────────────────────────
-with st.expander("⚽ KNOCKOUT PHASE", expanded=is_group_stage_done):
+with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     st.markdown('<div class="ko-stage-title">Round of 32</div>', unsafe_allow_html=True)
     render_ko_match(ROUND_OF_32_PAIRINGS["M73_H"], ROUND_OF_32_PAIRINGS["M73_A"], "28/06 20:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M76_H"], ROUND_OF_32_PAIRINGS["M76_A"], "29/06 18:00")
@@ -1089,7 +1089,7 @@ with st.expander("⚽ KNOCKOUT PHASE", expanded=is_group_stage_done):
     render_ko_match("Winner Match 101", "Winner Match 102", "19/07 20:00")
 
 # ── GROUPS CANVAS ─────────────────────────────────────────────────────────
-with st.expander("📊 GROUP STAGE STANDINGS & FIXTURES", expanded=not is_group_stage_done):
+with st.expander("📊 Group stage", expanded=not is_group_stage_done):
     if API_TOKEN == "placeholder":
         st.warning("⚠️ Using placeholder API key. Please insert your true Football-Data.org token to pull live group lists.")
     else:
