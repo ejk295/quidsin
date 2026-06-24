@@ -190,8 +190,8 @@ GLOBAL_STYLE_TOKENS = """
         padding: 0;
     }
     
-    /* TARGETED CONTENT RESETS (Prevents breaking native Streamlit layout text ligatures) */
-    .stApp p, .stApp th, .stApp td, .stApp b, .stApp span:not([class*="icon"]) {
+    /* SAFE TARGETED RESETS (Prevents generic text selectors from bleeding into native Streamlit icon assets) */
+    .stApp p, .stApp th, .stApp td, .stApp b, .stApp div.fixture-row span, .stApp div.ko-match-row span {
         color: #333333;
         font-family: 'Figtree', sans-serif;
     }
@@ -492,11 +492,14 @@ st.markdown("""
         .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
             background-color: #FAFAFA !important;
         }
-    h1, h2, h3, h1 span, h2 span, h3 span, h1 p, h2 p, h3 p {
-        color: #ff7d23 !important;
-        font-family: 'Figtree', sans-serif !important;
-        font-weight: 800 !important;
-    }
+        
+        /* LOCALLY SCOPED HEADERS (Stops native expander labels from breaking code typography formats) */
+        .title-area h1, .title-area h1 span, .overperformance-section-title {
+            color: #ff7d23 !important;
+            font-family: 'Figtree', sans-serif !important;
+            font-weight: 800 !important;
+        }
+        
         .title-area h1 { margin: 0px !important; font-size: 28px; font-weight: 900 !important; }
         .title-area p { margin: 4px 0px 0px 0px !important; color: #555555 !important; font-weight: 700 !important; font-size: 16px; }
         .stat-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -1233,7 +1236,7 @@ with st.expander("📊 GROUP STAGE STANDINGS & FIXTURES", expanded=not is_group_
 # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
 if standings_list:
     st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='overperformance-section-title' style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
 
     master_flat_leaderboard.sort(key=lambda x: (-x["overperformance"], x["actual_rank"]))
