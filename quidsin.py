@@ -175,6 +175,19 @@ GLOBAL_STYLE_TOKENS = """
         font-family: 'Figtree', sans-serif !important;
     }
 
+    /* --- MOBILE REORDERING GRID FLEX ENGINE --- */
+    .responsive-banner-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0px;
+    }
+    
+    /* Default Ordering Matrix */
+    .mobile-live-wrapper { order: 1; }
+    .mobile-upcoming-wrapper { order: 2; }
+    .mobile-results-wrapper { order: 3; }
+
     /* --- MATCH BANNER LAYOUT --- */
     .match-banner-wrapper {
         width: 100%;
@@ -508,9 +521,9 @@ st.markdown("""
     }
         .title-area h1 { margin: 0px !important; font-size: 28px; font-weight: 900 !important; }
         .title-area p { margin: 4px 0px 0px 0px !important; color: #555555 !important; font-weight: 700 !important; font-size: 16px; }
-        .stat-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .stat-banner-box medium { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800 !important; color: #ff7d23 !important; }
-        .stat-banner-box span { font-size: 14px; font-weight: 800 !important; text-align: right; color: #333333 !important; }
+        .sttext-banner-box { background: #FFFFFF !important; padding: 12px 20px; border-radius: 8px; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .sttext-banner-box medium { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800 !important; color: #ff7d23 !important; }
+        .sttext-banner-box span { font-size: 14px; font-weight: 800 !important; text-align: right; color: #333333 !important; }
         .group-row-spacer { margin-bottom: 15px !important; }
         .table-responsive-wrapper { width: 100%; overflow-x: auto; margin-bottom: 8px !important; }
         
@@ -836,7 +849,7 @@ def build_combined_match_banner(matches, is_live=False, is_result=False, base_id
     snippets = []
     for idx, m in enumerate(matches):
         snippets.append(build_match_banner_html_snippet(m, is_live=is_live, is_result=is_result, match_idx=base_idx+idx))
-    
+        
     combined_html = f"""
     {GLOBAL_STYLE_TOKENS}
     <div style="display: flex; flex-direction: column; width: 100%; height: auto !important;">
@@ -936,84 +949,129 @@ if finished_matches:
     last_finished_time = finished_matches[0].get("utcDate", "")
     latest_finished_matches = [m for m in finished_matches if m.get("utcDate", "") == last_finished_time]
 
-# ── TOP SPLIT HEADER (TITLE CANVAS LEFT, FIRST IN-PROGRESS MATCH RIGHT) ──
-header_cols = st.columns([1, 1], gap="medium")
 
-with header_cols[0]:
-    st.markdown("""
-        <div class="title-area" style="padding-top: 15px; margin-bottom: 20px;">
-            <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
-            <p>Live standings</p>
-        </div>
-    """, unsafe_allow_html=True)
+# ── THE RESPONSIVE HYBRID INJECTOR ──
+# To allow mobile stacking order to flow freely, we combine live, upcoming, and results 
+# inside a unified HTML parent grid context. Desktop handles columns via standard layout structure.
 
-with header_cols[1]:
-    if live_matches:
-        # Render ONLY the first live match up here to sit inline with the title block
-        first_live_payload = build_combined_match_banner([live_matches[0]], is_live=True, base_idx=200)
-        components.html(first_live_payload, height=160, scrolling=False)
-    else:
-        odds_payload = build_odds_favourites_banner()
-        components.html(odds_payload, height=160, scrolling=False)
+# Build content strings
+first_live_html = ""
+if live_matches:
+    first_live_html = build_combined_match_banner([live_matches[0]], is_live=True, base_idx=200)
+else:
+    first_live_html = build_odds_favourites_banner()
 
-# ── LOWER ROW SETUP (UPCOMING GRID COOP ALIGNED WITH SECOND LIVE / LATEST RESULT) ──
-alignment_row_cols = st.columns([1, 1], gap="medium")
+upcoming_html = ""
+if next_kickoff_matches:
+    upcoming_html = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
+else:
+    upcoming_html = '<div style="font-family:sans-serif; padding:15px; background:#fff; border-radius:8px; border:1px solid #eaeaea; color:#666;">⏳ No matches scheduled.</div>'
 
-with alignment_row_cols[0]:
-    if next_kickoff_matches:
-        payload = build_combined_match_banner(next_kickoff_matches, is_live=False, base_idx=100)
-        calculated_height = len(next_kickoff_matches) * 160 + (len(next_kickoff_matches) - 1) * 15
-        components.html(payload, height=calculated_height, scrolling=False)
-    else:
-        st.info("⏳ No matches currently scheduled. Check back soon for the next fixtures.")
+right_column_snippets = []
+if len(live_matches) > 1:
+    for idx, extra_live_m in enumerate(live_matches[1:]):
+        right_column_snippets.append(build_match_banner_html_snippet(extra_live_m, is_live=True, match_idx=250+idx))
+if latest_finished_matches:
+    chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
+    for idx, finished_m in enumerate(latest_finished_matches):
+        try:
+            match_index = chronological_matches.index(finished_m) + 2
+        except ValueError:
+            match_index = 2000 + idx
+        right_column_snippets.append(build_match_banner_html_snippet(finished_m, is_live=False, is_result=True, match_idx=match_index))
 
-with alignment_row_cols[1]:
-    # Group any subsequent live matches followed by latest finished results into a single column array
-    right_column_snippets = []
+results_html = ""
+if right_column_snippets:
+    results_html = f"""
+    <div style="display: flex; flex-direction: column; width: 100%;">
+        {"".join(right_column_snippets)}
+    </div>
+    """
+else:
+    results_html = '<div style="font-family:sans-serif; padding:15px; background:#fff; border-radius:8px; border:1px solid #eaeaea; color:#666;">⚽ No additional active matches or results.</div>'
+
+
+# Inject Layout Component
+st.markdown("""
+    <div class="title-area" style="padding-top: 15px; margin-bottom: 20px;">
+        <h1>🏆 BYWAY WORLD CUP SWEEPSTAKE</h1>
+        <p>Live standings</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# Main Grid Component Wrapper Engine
+master_flex_html = f"""
+{GLOBAL_STYLE_TOKENS}
+<style>
+    /* Desktop dual column implementation override layout grid */
+    .desktop-layout-row {{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        width: 100%;
+    }}
+    .desktop-left-col {{
+        display: flex;
+        flex-direction: column;
+    }}
+    .desktop-right-col {{
+        display: flex;
+        flex-direction: column;
+    }}
     
-    # 1. Append second live match onwards if they exist
-    if len(live_matches) > 1:
-        for idx, extra_live_m in enumerate(live_matches[1:]):
-            right_column_snippets.append(build_match_banner_html_snippet(extra_live_m, is_live=True, match_idx=250+idx))
-            
-    # 2. Append latest finished matches
-    if latest_finished_matches:
-        chronological_matches = sorted(all_matches, key=lambda x: x.get("utcDate", ""))
-        for idx, finished_m in enumerate(latest_finished_matches):
-            try:
-                match_index = chronological_matches.index(finished_m) + 2
-            except ValueError:
-                match_index = 2000 + idx
-            right_column_snippets.append(build_match_banner_html_snippet(finished_m, is_live=False, is_result=True, match_idx=match_index))
+    /* Responsive stacking mobile implementation layout rules grid */
+    @media (max-width: 768px) {{
+        .desktop-layout-row {{
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0px !important;
+        }}
+        .mobile-live-wrapper {{ order: 1 !important; }}
+        .mobile-upcoming-wrapper {{ order: 2 !important; }}
+        .mobile-results-wrapper {{ order: 3 !important; }}
+    }}
+</style>
 
-    if right_column_snippets:
-        combined_right_html = f"""
-        {GLOBAL_STYLE_TOKENS}
-        <div style="display: flex; flex-direction: column; width: 100%; height: auto !important;">
-            {"".join(right_column_snippets)}
+<div class="desktop-layout-row">
+    <div class="desktop-left-col">
+        <div class="mobile-live-wrapper">
+            {first_live_html}
         </div>
-        """
-        calculated_height = len(right_column_snippets) * 160 + (len(right_column_snippets) - 1) * 15
-        components.html(combined_right_html, height=calculated_height, scrolling=False)
-    else:
-        st.info("⚽ No additional active matches or results logged.")
+        <div class="mobile-upcoming-wrapper">
+            {upcoming_html}
+        </div>
+    </div>
+    
+    <div class="desktop-right-col mobile-results-wrapper">
+        {results_html}
+    </div>
+</div>
+"""
+
+# Calculate overall max iframe scaling buffer constraint dimensions dynamically
+left_count = 1 + (len(next_kickoff_matches) if next_kickoff_matches else 1)
+right_count = len(right_column_snippets) if right_column_snippets else 1
+max_height_calc = max(left_count, right_count) * 165 + 100
+
+components.html(master_flex_html, height=max_height_calc, scrolling=True)
+
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ── STATS ROW ──────────────────────────────────────────────────────────
 stat_cols = st.columns(3)
 with stat_cols[0]:
-    st.markdown('<div class="stat-banner-box"><medium>💰 Prize pot</medium><span>£96</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sttext-banner-box"><medium>💰 Prize pot</medium><span>£96</span></div>', unsafe_allow_html=True)
 with stat_cols[1]:
-    st.markdown('<div class="stat-banner-box"><medium>🚀 Overperformer</medium><span>' + top_performer_text + '</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sttext-banner-box"><medium>🚀 Overperformer</medium><span>' + top_performer_text + '</span></div>', unsafe_allow_html=True)
 with stat_cols[2]:
     if master_flat_leaderboard:
         master_flat_leaderboard.sort(key=lambda x: (x["overperformance"], -x["actual_rank"]))
         underdog = master_flat_leaderboard[0]
         ud_owner = SWEEPSTAKE_MAPPING.get(underdog["name"], "Unassigned")
-        st.markdown(f'<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>{underdog["name"]} ({ud_owner})</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="sttext-banner-box"><medium>💩 Underperformer</medium><span>{underdog["name"]} ({ud_owner})</span></div>', unsafe_allow_html=True)
     else:
-        st.markdown('<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>N/A</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sttext-banner-box"><medium>💩 Underperformer</medium><span>N/A</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
