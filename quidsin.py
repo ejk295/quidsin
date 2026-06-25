@@ -160,11 +160,11 @@ BROADCAST_BRANDS = {
 
 # ── HARDCODED BRACKET VALUE OVERRIDES ENGINE ──
 ROUND_OF_32_PAIRINGS = {
-    "M73_H": "Runner-up Group A", "M73_A": "Canada",
-    "M76_H": "Winner Group C",     "M76_A": "Runner-up Group F",
+    "M73_H": "South Africa", "M73_A": "Canada",
+    "M76_H": "Brazil",     "M76_A": "Runner-up Group F",
     "M74_H": "Germany",            "M74_A": "3rd Group A/B/C/D/F",
     "M75_H": "Winner Group F",     "M75_A": "Runner-up Group C",
-    "M78_H": "Runner-up Group E",  "M78_A": "Runner-up Group I",
+    "M78_H": "Runner-up Group E",  "M78_A": "Morocco",
     "M77_H": "Winner Group I",     "M77_A": "3rd Group C/D/F/G/H",
     "M79_H": "Mexico",             "M79_A": "3rd Group C/E/F/H/I",
     "M80_H": "Winner Group L",     "M80_A": "3rd Group E/H/I/J/K",
