@@ -1062,7 +1062,7 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M86_H"], ROUND_OF_32_PAIRINGS["M86_A"], "03/07 23:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
-    st.markdown('<div class="ko-stage-title">Round of 16</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ko-stage-title">Last 16</div>', unsafe_allow_html=True)
     render_ko_match("Winner Match 73", "Winner Match 75", "04/07 18:00")
     render_ko_match("Winner Match 74", "Winner Match 77", "04/07 22:00")
     render_ko_match("Winner Match 76", "Winner Match 78", "05/07 21:00")
@@ -1072,17 +1072,17 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match("Winner Match 86", "Winner Match 88", "07/07 17:00")
     render_ko_match("Winner Match 85", "Winner Match 87", "08/07 01:00")
 
-    st.markdown('<div class="ko-stage-title">Quarterfinals</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ko-stage-title">Quarter-finals</div>', unsafe_allow_html=True)
     render_ko_match("Winner Match 89", "Winner Match 90", "09/07 21:00")
     render_ko_match("Winner Match 93", "Winner Match 94", "10/07 20:00")
     render_ko_match("Winner Match 91", "Winner Match 92", "11/07 22:00")
     render_ko_match("Winner Match 95", "Winner Match 96", "12/07 02:00")
 
-    st.markdown('<div class="ko-stage-title">Semifinals</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ko-stage-title">Semi-finals</div>', unsafe_allow_html=True)
     render_ko_match("Winner Match 97", "Winner Match 98", "14/07 20:00")
     render_ko_match("Winner Match 99", "Winner Match 100", "15/07 20:00")
 
-    st.markdown('<div class="ko-stage-title">Match for Third Place</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ko-stage-title">Third place play-off</div>', unsafe_allow_html=True)
     render_ko_match("Loser Match 101", "Loser Match 102", "18/07 22:00")
 
     st.markdown('<div class="ko-stage-title">Final</div>', unsafe_allow_html=True)
