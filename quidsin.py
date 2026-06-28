@@ -166,16 +166,16 @@ ROUND_OF_32_PAIRINGS = {
     "M75_H": "Netherlands",     "M75_A": "Morocco",
     "M78_H": "Ivory Coast",  "M78_A": "Norway",
     "M77_H": "France",     "M77_A": "Sweden",
-    "M79_H": "Mexico",             "M79_A": "3rd Group C/E/F/H/I",
-    "M80_H": "Winner Group L",     "M80_A": "3rd Group E/H/I/J/K",
-    "M82_H": "Belgium",     "M82_A": "3rd Group A/E/H/I/J",
+    "M79_H": "Mexico",             "M79_A": "Ecuador",
+    "M80_H": "Winner Group L",     "M80_A": "Congo DR",
+    "M82_H": "Belgium",     "M82_A": "Senegal",
     "M81_H": "United States",      "M81_A": "Bosnia-Herzegovina",
-    "M84_H": "Spain",     "M84_A": "Runner-up Group J",
-    "M83_H": "Runner-up Group K",  "M83_A": "Runner-up Group L",
-    "M85_H": "Switzerland",     "M85_A": "3rd Group E/F/G/I/J",
+    "M84_H": "Spain",     "M84_A": "Austria",
+    "M83_H": "Portugal",  "M83_A": "Croatia",
+    "M85_H": "Switzerland",     "M85_A": "Algeria",
     "M88_H": "Australia",  "M88_A": "Egypt",
     "M86_H": "Argentina",          "M86_A": "Cape Verde",
-    "M87_H": "Winner Group K",     "M87_A": "3rd Group D/E/I/J/L",
+    "M87_H": "Colombia",     "M87_A": "Ghana",
 }
 
 GLOBAL_STYLE_TOKENS = """
