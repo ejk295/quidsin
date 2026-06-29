@@ -174,7 +174,7 @@ ROUND_OF_32_PAIRINGS = {
     "M83_H": "Portugal",  "M83_A": "Croatia",
     "M85_H": "Switzerland",     "M85_A": "Algeria",
     "M88_H": "Australia",  "M88_A": "Egypt",
-    "M86_H": "Argentina",          "M86_A": "Cape Verde Islands",
+    "M86_H": "Argentina",          "M86_A": "Cape Verde",
     "M87_H": "Colombia",     "M87_A": "Ghana",
 }
 
@@ -595,7 +595,7 @@ def convert_to_fractional_odds(decimal_odds):
     frac = Fraction(net_odds).limit_denominator(100)
     return f"{frac.numerator}/{frac.denominator}"
 
-# ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES INTO EXISTING CSS BADGE ──
+# ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES OR FALLS BACK TO SCHEDULED TIME ──
 def render_ko_match(home, away, time_str):
     h_owner = f" ({SWEEPSTAKE_MAPPING[home]})" if home in SWEEPSTAKE_MAPPING else ""
     a_owner = f" ({SWEEPSTAKE_MAPPING[away]})" if away in SWEEPSTAKE_MAPPING else ""
@@ -604,18 +604,23 @@ def render_ko_match(home, away, time_str):
     
     # Check if a matchup outcome is logged inside SPREADSHEET_OVERRIDES
     lookup_key = f"{home.lower()}_v_{away.lower()}"
+    badge_content = f"{time_str}"
+    
     if lookup_key in SPREADSHEET_OVERRIDES:
         sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
-        m_status = sheet_match.get("status", "").lower()
-        h_score = sheet_match.get("homeScore", "0")
-        a_score = sheet_match.get("awayScore", "0")
+        m_status = sheet_match.get("status", "").lower().strip()
+        h_score = sheet_match.get("homeScore", "").strip()
+        a_score = sheet_match.get("awayScore", "").strip()
         
-        if "live" in m_status:
-            badge_content = f"<span style='color:#CC0000; font-weight:800; font-family:sans-serif;'>LIVE 🔴 {h_score}-{a_score}</span>"
-        else:
-            badge_content = f"<b style='font-family:sans-serif; color:#ff7d23; font-size:14px;'>{h_score} - {a_score}</b>"
-    else:
-        badge_content = f"{time_str}"
+        # Avoid overriding with empty dashes or placeholding strings if the game hasn't kickstarted
+        has_score = h_score != "" and a_score != "" and h_score != "-" and a_score != "-"
+        is_active = "live" in m_status or "finished" in m_status or "completed" in m_status
+        
+        if is_active and has_score:
+            if "live" in m_status:
+                badge_content = f"<span style='color:#CC0000; font-weight:800; font-family:sans-serif;'>LIVE 🔴 {h_score}-{a_score}</span>"
+            else:
+                badge_content = f"<b style='font-family:sans-serif; color:#ff7d23; font-size:14px;'>{h_score} - {a_score}</b>"
         
     st.markdown(f"""
         <div class="ko-match-row">
@@ -646,8 +651,8 @@ def fetch_spreadsheet_overrides_master():
                     home_t = str(row[2]).strip() if pd.notna(row[2]) else ""
                     away_t = str(row[3]).strip() if pd.notna(row[3]) else ""
                     status_str = str(row[4]).strip().lower() if pd.notna(row[4]) else ""
-                    h_score = str(row[5]).strip() if pd.notna(row[5]) else "0"
-                    a_score = str(row[6]).strip() if pd.notna(row[6]) else "0"
+                    h_score = str(row[5]).strip() if pd.notna(row[5]) else ""
+                    a_score = str(row[6]).strip() if pd.notna(row[6]) else ""
                     h_link = str(row[7]).strip() if (len(row) >= 8 and pd.notna(row[7])) else ""
                     tv_network = str(row[8]).strip() if (len(row) >= 9 and pd.notna(row[8])) else ""
 
@@ -1068,7 +1073,7 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M78_H"], ROUND_OF_32_PAIRINGS["M78_A"], "30/06 18:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M77_H"], ROUND_OF_32_PAIRINGS["M77_A"], "30/06 22:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M79_H"], ROUND_OF_32_PAIRINGS["M79_A"], "01/07 02:00")
-    render_ko_match(ROUND_OF_32_PAIRINGS["M80_H"], ROUND_OF_32_PAIRINGS["M80_A"], "01/07 17:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M80_H"], ROUND_OF_32_PAIRINGS["M80_A"], "01/07 20:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M82_H"], ROUND_OF_32_PAIRINGS["M82_A"], "01/07 21:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M81_H"], ROUND_OF_32_PAIRINGS["M81_A"], "02/07 01:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M84_H"], ROUND_OF_32_PAIRINGS["M84_A"], "02/07 20:00")
