@@ -190,6 +190,7 @@ GLOBAL_STYLE_TOKENS = """
         padding: 0;
     }
     
+    /* SAFE TARGETED RESETS (Prevents generic text selectors from bleeding into native Streamlit icon assets) */
     .stApp p, .stApp th, .stApp td, .stApp b, .stApp div.fixture-row span, .stApp div.ko-match-row span {
         color: #333333;
         font-family: 'Figtree', sans-serif;
@@ -213,39 +214,261 @@ GLOBAL_STYLE_TOKENS = """
         background-color: #FFFFFF;
     }
 
-    .banner-top-pane { background-color: #444444; padding: 8px 15px; }
-    .next-match-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800 !important; color: #FFFFFF !important; background: rgba(255, 255, 255, 0.15); padding: 8px 15px; border-radius: 6px; display: inline-block; }
-    .inplay-top-pane { background-color: #8B0000; padding: 8px 15px; }
-    .result-top-pane { background-color: #444444; padding: 6px 10px; }
-    .matchup-split-screen { display: flex; position: relative; align-items: center; height: 75px; width: 100%; }
-    .team-panel { width: 50%; display: flex; align-items: center; padding: 10px 25px; box-sizing: border-box; height: 100%; overflow: hidden; }
-    .home-panel { justify-content: flex-end; padding-right: 50px; border-right: 1px solid rgba(255, 255, 255, 0.15); }
-    .away-panel { justify-content: flex-start; padding-left: 50px; }
+    .banner-top-pane {
+        background-color: #444444;
+        padding: 8px 15px;
+    }
 
-    .team-panel-text { color: #FFFFFF !important; font-size: 18px; font-weight: 800 !important; text-shadow: 0px 1px 3px rgba(0,0,0,0.3); display: flex; align-items: center; white-space: nowrap; }
-    .team-panel-text span { font-size: 13px !important; font-weight: 400 !important; opacity: 0.95; color: #FFFFFF !important; margin: 0 6px; }
-    .mobile-abbrev-text { display: none; }
-    .vs-marker-bubble, .score-bubble, .score-reveal-wrapper { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10; white-space: nowrap; }
+    .next-match-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800 !important;
+        color: #FFFFFF !important;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 8px 15px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .inplay-top-pane {
+        background-color: #8B0000;
+        padding: 8px 15px;
+    }
     
-    .vs-marker-bubble { background-color: #111111; color: #FFFFFF !important; font-size: 12px; font-weight: 900 !important; padding: 5px 9px; border-radius: 50%; border: 2px solid #FFFFFF; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-    .score-bubble { background-color: #444444; color: #FFFFFF !important; font-size: 16px; font-weight: 900 !important; padding: 6px 14px; border-radius: 6px; border: 2px solid #FFFFFF; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-    .reveal-toggle-input { display: none !important; }
-    .score-reveal-label { background-color: #111111; color: #FFFFFF !important; font-size: 11px !important; font-weight: 900 !important; padding: 6px 12px !important; border-radius: 6px; cursor: pointer; border: 2px solid #FFFFFF; box-shadow: 0 2px 5px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; user-select: none; }
+    .result-top-pane {
+        background-color: #444444;
+        padding: 6px 10px;
+    }
 
-    .reveal-toggle-input:checked ~ .score-reveal-label { display: none !important; }
-    .reveal-toggle-input:checked ~ .score-bubble { display: block !important; }
-    .banner-bottom-time { background-color: #444444; padding: 8px 15px; font-size: 12px; font-weight: 700 !important; color: #FFFFFF !important; }
-    .inplay-bottom-bar { background-color: #8B0000; padding: 8px 15px; font-size: 12px; font-weight: 700 !important; color: #FFFFFF !important; }
-    .result-bottom-bar { background-color: #444444; padding: 8px 15px; font-size: 12px; font-weight: 700 !important; color: #FFFFFF !important; }
+    .matchup-split-screen {
+        display: flex;
+        position: relative;
+        align-items: center;
+        height: 75px;
+        width: 100%;
+    }
+
+    .team-panel {
+        width: 50%;
+        display: flex;
+        align-items: center;
+        padding: 10px 25px;
+        box-sizing: border-box;
+        height: 100%;
+        overflow: hidden;
+    }
     
-    .banner-flag { width: 28px !important; height: 19px !important; min-width: 28px !important; max-width: 28px !important; object-fit: cover !important; border-radius: 2px; border: 1px solid rgba(255,255,255,0.3); display: inline-block; margin: 0 8px; vertical-align: middle; }
+    .home-panel {
+        justify-content: flex-end;
+        padding-right: 50px;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .away-panel {
+        justify-content: flex-start;
+        padding-left: 50px;
+    }
 
-    /* --- ODDS CARD DESIGN --- */
-    .odds-grid-row { display: flex; width: 100%; height: 75px; background-color: #FFFFFF; align-items: center; justify-content: space-around; padding: 0 10px; box-sizing: border-box; }
-    .odds-item-card { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 4px; padding: 6px; border-radius: 6px; background: #FFFDFC; border: 1px solid #FFEAD6; min-width: 0; }
-    .odds-item-team { font-size: 13px; font-weight: 800; color: #333333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; }
-    .odds-item-owner { font-size: 10px; color: #666666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; }
-    .odds-item-price { font-size: 12px; font-weight: 900; color: #ff7d23; margin-top: 4px; background: #FFF1E5; border-radius: 4px; padding: 2px 8px; }
+    .team-panel-text {
+        color: #FFFFFF !important;
+        font-size: 18px;
+        font-weight: 800 !important;
+        text-shadow: 0px 1px 3px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .team-panel-text span {
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        opacity: 0.95;
+        color: #FFFFFF !important;
+        margin: 0 6px;
+    }
+
+    .mobile-abbrev-text {
+        display: none;
+    }
+
+    .vs-marker-bubble, .score-bubble, .score-reveal-wrapper {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        white-space: nowrap;
+    }
+
+    .vs-marker-bubble {
+        background-color: #111111;
+        color: #FFFFFF !important;
+        font-size: 12px;
+        font-weight: 900 !important;
+        padding: 5px 9px;
+        border-radius: 50%;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .score-bubble {
+        background-color: #444444;
+        color: #FFFFFF !important;
+        font-size: 16px;
+        font-weight: 900 !important;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .reveal-toggle-input {
+        display: none !important;
+    }
+
+    .score-reveal-label {
+        background-color: #111111;
+        color: #FFFFFF !important;
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        padding: 6px 12px !important;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        user-select: none;
+    }
+
+    .reveal-toggle-input:checked ~ .score-reveal-label {
+        display: none !important;
+    }
+
+    .reveal-toggle-input:checked ~ .score-bubble {
+        display: block !important;
+    }
+
+    .banner-bottom-time {
+        background-color: #444444;
+        padding: 8px 15px;
+        font-size: 12px;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
+    }
+
+    .inplay-bottom-bar {
+        background-color: #8B0000;
+        padding: 8px 15px;
+        font-size: 12px;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
+    }
+    
+    .result-bottom-bar {
+        background-color: #444444;
+        padding: 8px 15px;
+        font-size: 12px;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
+    }
+    
+    .highlights-btn, .watch-live-btn {
+        font-weight: 800 !important;
+        font-size: 11px !important;
+        text-transform: uppercase;
+        text-decoration: none !important;
+        padding: 6px 10px;
+        border-radius: 2px;
+        display: inline-flex !important;
+        align-items: center;
+        gap: 4px;
+        color: #FFFFFF !important;
+    }
+
+    .highlights-btn, .watch-live-btn.is-scheduled-btn {
+        background-color: #444444 !important;
+    }
+
+    .watch-live-btn.is-live-btn {
+        background-color: #8b0802 !important;
+    }
+
+    .highlights-btn:hover, .watch-live-btn.is-scheduled-btn:hover, .watch-live-btn.is-live-btn:hover {
+        background-color: #CC0000 !important;
+    }
+    
+    .banner-flag {
+        width: 28px !important;
+        height: 19px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        object-fit: cover !important;
+        border-radius: 2px;
+        border: 1px solid rgba(255,255,255,0.3);
+        display: inline-block;
+        margin: 0 8px;
+        vertical-align: middle;
+    }
+
+    /* --- ODDS FAVOURITES WORKBENCH --- */
+    .odds-grid-row {
+        display: flex;
+        width: 100%;
+        height: 75px;
+        background-color: #FFFFFF;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+    .odds-item-card {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 4px;
+        padding: 6px;
+        border-radius: 6px;
+        background: #FFFDFC;
+        border: 1px solid #FFEAD6;
+        min-width: 0;
+    }
+    .odds-item-team {
+        font-size: 13px;
+        font-weight: 800;
+        color: #333333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .odds-item-owner {
+        font-size: 10px;
+        color: #666666;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center;
+    }
+    .odds-item-price {
+        font-size: 12px;
+        font-weight: 900;
+        color: #ff7d23;
+        margin-top: 4px;
+        background: #FFF1E5;
+        border-radius: 4px;
+        padding: 2px 8px;
+    }
 
     @media (max-width: 768px) {
         .team-panel { padding: 10px 8px !important; }
@@ -270,6 +493,7 @@ st.markdown("""
             background-color: #FAFAFA !important;
         }
         
+        /* LOCALLY SCOPED HEADERS (Stops native expander labels from breaking code typography formats) */
         .title-area h1, .title-area h1 span, .overperformance-section-title {
             color: #ff7d23 !important;
             font-family: 'Figtree', sans-serif !important;
@@ -307,11 +531,6 @@ st.markdown("""
         .ko-stage-title { color: #ff7d23 !important; font-size: 16px; font-weight: 800 !important; margin-top: 15px !important; margin-bottom: 8px !important; border-bottom: 1px dashed #ff7d23; padding-bottom: 3px; }
         .ko-match-row { background-color: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
         .ko-time-badge { font-size: 11px; font-weight: 600; color: #666666; background-color: #F0F0F0; padding: 2px 6px; border-radius: 4px; }
-        
-        /* Dynamic scores style adjustments */
-        .ko-score-container { display: inline-flex; align-items: center; gap: 6px; }
-        .ko-score-badge { font-size: 12px; font-weight: 800; color: #FFFFFF; background-color: #ff7d23; padding: 2px 8px; border-radius: 4px; font-family: sans-serif; }
-        .ko-live-indicator { font-size: 9px; font-weight: 800; color: #FFFFFF; background-color: #CD201F; padding: 1px 4px; border-radius: 3px; letter-spacing: 0.5px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -376,27 +595,35 @@ def convert_to_fractional_odds(decimal_odds):
     frac = Fraction(net_odds).limit_denominator(100)
     return f"{frac.numerator}/{frac.denominator}"
 
-# ── FIXED: UPDATED RENDER FUNCTION TO SUPPORT DYNAMIC SCORES ──
-def render_ko_match(home, away, time_str, home_score=None, away_score=None, status=None):
+# ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES INTO EXISTING CSS BADGE ──
+def render_ko_match(home, away, time_str):
     h_owner = f" ({SWEEPSTAKE_MAPPING[home]})" if home in SWEEPSTAKE_MAPPING else ""
     a_owner = f" ({SWEEPSTAKE_MAPPING[away]})" if away in SWEEPSTAKE_MAPPING else ""
     h_flag = get_group_flag_html(home)
     a_flag = get_group_flag_html(away)
     
-    # Process layout view based on actual active game state variables
-    if status in ["live", "finished", "completed", "in_play", "paused"] and home_score is not None and away_score is not None:
-        live_label = '<span class="ko-live-indicator">LIVE</span>' if "live" in status or status == "IN_PLAY" else ''
-        middle_pane = f'<div class="ko-score-container"><span class="ko-score-badge">{home_score} - {away_score}</span>{live_label}</div>'
+    # Check if a matchup outcome is logged inside SPREADSHEET_OVERRIDES
+    lookup_key = f"{home.lower()}_v_{away.lower()}"
+    if lookup_key in SPREADSHEET_OVERRIDES:
+        sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
+        m_status = sheet_match.get("status", "").lower()
+        h_score = sheet_match.get("homeScore", "0")
+        a_score = sheet_match.get("awayScore", "0")
+        
+        if "live" in m_status:
+            badge_content = f"<span style='color:#CC0000; font-weight:800; font-family:sans-serif;'>LIVE 🔴 {h_score}-{a_score}</span>"
+        else:
+            badge_content = f"<b style='font-family:sans-serif; color:#ff7d23; font-size:14px;'>{h_score} - {a_score}</b>"
     else:
-        middle_pane = f'<span class="ko-time-badge">{time_str}</span>'
-    
+        badge_content = f"{time_str}"
+        
     st.markdown(f"""
         <div class="ko-match-row">
             <div style="width: 40%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 {h_flag} <b>{home}</b><span style="font-size:11px; color:#666;">{h_owner}</span>
             </div>
             <div style="width: 20%; text-align: center;">
-                {middle_pane}
+                <span class="ko-time-badge">{badge_content}</span>
             </div>
             <div style="width: 40%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <span style="font-size:11px; color:#666;">{a_owner}</span> <b>{away}</b> {a_flag}
@@ -563,7 +790,7 @@ def build_match_banner_html_snippet(match, is_live=False, is_result=False, match
             <div class="inplay-bottom-bar" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
                 <span style="color: #FFFFFF !important;">⚽ Match in progress</span>
                 <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
-                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn is-live-btn">
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn is-live-btn" style="color: #FFFFFF !important;">
                     WATCH LIVE
                     <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
                 </a>
@@ -582,7 +809,7 @@ def build_match_banner_html_snippet(match, is_live=False, is_result=False, match
             <div class="score-bubble" style="display: none;">{h_score} – {a_score}</div>
         </div>
         """
-        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
+        bottom_bar = f'<div class="result-bottom-bar"><a href="{highlights_url}" target="_blank" class="highlights-btn" style="color: #FFFFFF !important;">📺 SPOILER-FREE HIGHLIGHTS 📺</a></div>'
     else:
         dt_uk = format_to_uk_time(match.get("utcDate"))
         if dt_uk:
@@ -601,7 +828,7 @@ def build_match_banner_html_snippet(match, is_live=False, is_result=False, match
             <div class="banner-bottom-time" style="display: flex; align-items: center; justify-content: center; gap: 15px; padding: 5px 15px;">
                 <span style="color: #FFFFFF !important;">🗓️ {date_str}</span>
                 <span style="opacity: 0.4; color: #FFFFFF !important;">|</span>
-                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn is-scheduled-btn">
+                <a href="{brand_node['live_url']}" target="_blank" class="watch-live-btn is-scheduled-btn" style="color: #FFFFFF !important;">
                     WATCH LIVE
                     <img src="{brand_node['logo']}" style="height: 14.5px; width: auto; object-fit: contain; vertical-align: middle; margin-left: 2px;" alt="{tv_channel_text}">
                 </a>
@@ -651,7 +878,7 @@ def build_combined_match_banner(matches, is_live=False, is_result=False, base_id
     </div>
     """
     return combined_html
-        
+    
 # ── Data Ingestion Pipeline Routing Engine ──
 @st.cache_data(ttl=120)  
 def fetch_football_data():
@@ -833,58 +1060,49 @@ st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;
 
 # ── KNOCKOUT PHASE CANVAS ───────────────────────────────────────────────────
 with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
-    
-    # Helper to check if a specific matchup exists in the spreadsheet database
-    def get_override_or_default(h, a, default_time):
-        lk = f"{h.lower()}_v_{a.lower()}"
-        if lk in SPREADSHEET_OVERRIDES:
-            node = SPREADSHEET_OVERRIDES[lk]
-            return h, a, default_time, node.get("homeScore"), node.get("awayScore"), node.get("status")
-        return h, a, default_time, None, None, None
-
     st.markdown('<div class="ko-stage-title">Round of 32</div>', unsafe_allow_html=True)
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M73_H"], ROUND_OF_32_PAIRINGS["M73_A"], "28/06 20:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M76_H"], ROUND_OF_32_PAIRINGS["M76_A"], "29/06 18:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M74_H"], ROUND_OF_32_PAIRINGS["M74_A"], "29/06 21:30"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M75_H"], ROUND_OF_32_PAIRINGS["M75_A"], "30/06 02:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M78_H"], ROUND_OF_32_PAIRINGS["M78_A"], "30/06 18:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M77_H"], ROUND_OF_32_PAIRINGS["M77_A"], "30/06 22:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M79_H"], ROUND_OF_32_PAIRINGS["M79_A"], "01/07 02:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M80_H"], ROUND_OF_32_PAIRINGS["M80_A"], "01/07 17:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M82_H"], ROUND_OF_32_PAIRINGS["M82_A"], "01/07 21:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M81_H"], ROUND_OF_32_PAIRINGS["M81_A"], "02/07 01:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M84_H"], ROUND_OF_32_PAIRINGS["M84_A"], "02/07 20:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M83_H"], ROUND_OF_32_PAIRINGS["M83_A"], "03/07 00:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M85_H"], ROUND_OF_32_PAIRINGS["M85_A"], "03/07 04:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M88_H"], ROUND_OF_32_PAIRINGS["M88_A"], "03/07 19:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M86_H"], ROUND_OF_32_PAIRINGS["M86_A"], "03/07 23:00"))
-    render_ko_match(*get_override_or_default(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30"))
+    render_ko_match(ROUND_OF_32_PAIRINGS["M73_H"], ROUND_OF_32_PAIRINGS["M73_A"], "28/06 20:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M76_H"], ROUND_OF_32_PAIRINGS["M76_A"], "29/06 18:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M74_H"], ROUND_OF_32_PAIRINGS["M74_A"], "29/06 21:30")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M75_H"], ROUND_OF_32_PAIRINGS["M75_A"], "30/06 02:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M78_H"], ROUND_OF_32_PAIRINGS["M78_A"], "30/06 18:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M77_H"], ROUND_OF_32_PAIRINGS["M77_A"], "30/06 22:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M79_H"], ROUND_OF_32_PAIRINGS["M79_A"], "01/07 02:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M80_H"], ROUND_OF_32_PAIRINGS["M80_A"], "01/07 17:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M82_H"], ROUND_OF_32_PAIRINGS["M82_A"], "01/07 21:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M81_H"], ROUND_OF_32_PAIRINGS["M81_A"], "02/07 01:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M84_H"], ROUND_OF_32_PAIRINGS["M84_A"], "02/07 20:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M83_H"], ROUND_OF_32_PAIRINGS["M83_A"], "03/07 00:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M85_H"], ROUND_OF_32_PAIRINGS["M85_A"], "03/07 04:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M88_H"], ROUND_OF_32_PAIRINGS["M88_A"], "03/07 19:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M86_H"], ROUND_OF_32_PAIRINGS["M86_A"], "03/07 23:00")
+    render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
     st.markdown('<div class="ko-stage-title">Last 16</div>', unsafe_allow_html=True)
-    render_ko_match(*get_override_or_default("Winner Match 73", "Winner Match 75", "04/07 18:00"))
-    render_ko_match(*get_override_or_default("Winner Match 74", "Winner Match 77", "04/07 22:00"))
-    render_ko_match(*get_override_or_default("Winner Match 76", "Winner Match 78", "05/07 21:00"))
-    render_ko_match(*get_override_or_default("Winner Match 79", "Winner Match 80", "06/07 01:00"))
-    render_ko_match(*get_override_or_default("Winner Match 83", "Winner Match 84", "06/07 20:00"))
-    render_ko_match(*get_override_or_default("Winner Match 81", "Winner Match 82", "07/07 01:00"))
-    render_ko_match(*get_override_or_default("Winner Match 86", "Winner Match 88", "07/07 17:00"))
-    render_ko_match(*get_override_or_default("Winner Match 85", "Winner Match 87", "08/07 01:00"))
+    render_ko_match("Winner Match 73", "Winner Match 75", "04/07 18:00")
+    render_ko_match("Winner Match 74", "Winner Match 77", "04/07 22:00")
+    render_ko_match("Winner Match 76", "Winner Match 78", "05/07 21:00")
+    render_ko_match("Winner Match 79", "Winner Match 80", "06/07 01:00")
+    render_ko_match("Winner Match 83", "Winner Match 84", "06/07 20:00")
+    render_ko_match("Winner Match 81", "Winner Match 82", "07/07 01:00")
+    render_ko_match("Winner Match 86", "Winner Match 88", "07/07 17:00")
+    render_ko_match("Winner Match 85", "Winner Match 87", "08/07 01:00")
 
     st.markdown('<div class="ko-stage-title">Quarter-finals</div>', unsafe_allow_html=True)
-    render_ko_match(*get_override_or_default("Winner Match 89", "Winner Match 90", "09/07 21:00"))
-    render_ko_match(*get_override_or_default("Winner Match 93", "Winner Match 94", "10/07 20:00"))
-    render_ko_match(*get_override_or_default("Winner Match 91", "Winner Match 92", "11/07 22:00"))
-    render_ko_match(*get_override_or_default("Winner Match 95", "Winner Match 96", "12/07 02:00"))
+    render_ko_match("Winner Match 89", "Winner Match 90", "09/07 21:00")
+    render_ko_match("Winner Match 93", "Winner Match 94", "10/07 20:00")
+    render_ko_match("Winner Match 91", "Winner Match 92", "11/07 22:00")
+    render_ko_match("Winner Match 95", "Winner Match 96", "12/07 02:00")
 
     st.markdown('<div class="ko-stage-title">Semi-finals</div>', unsafe_allow_html=True)
-    render_ko_match(*get_override_or_default("Winner Match 97", "Winner Match 98", "14/07 20:00"))
-    render_ko_match(*get_override_or_default("Winner Match 99", "Winner Match 100", "15/07 20:00"))
+    render_ko_match("Winner Match 97", "Winner Match 98", "14/07 20:00")
+    render_ko_match("Winner Match 99", "Winner Match 100", "15/07 20:00")
 
     st.markdown('<div class="ko-stage-title">Third place play-off</div>', unsafe_allow_html=True)
-    render_ko_match(*get_override_or_default("Loser Match 101", "Loser Match 102", "18/07 22:00"))
+    render_ko_match("Loser Match 101", "Loser Match 102", "18/07 22:00")
 
     st.markdown('<div class="ko-stage-title">Final</div>', unsafe_allow_html=True)
-    render_ko_match(*get_override_or_default("Winner Match 101", "Winner Match 102", "19/07 20:00"))
+    render_ko_match("Winner Match 101", "Winner Match 102", "19/07 20:00")
 
 # ── GROUPS CANVAS ─────────────────────────────────────────────────────────
 with st.expander("📊 Group stage", expanded=not is_group_stage_done):
