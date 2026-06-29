@@ -595,12 +595,44 @@ def convert_to_fractional_odds(decimal_odds):
     frac = Fraction(net_odds).limit_denominator(100)
     return f"{frac.numerator}/{frac.denominator}"
 
+# ── HELPER ENGINE TO AUTOMATICALLY EXTRACT WINNERS ──
+def resolve_winner_team(placeholder, match_id):
+    """
+    Parses SPREADSHEET_OVERRIDES to fetch winners cleanly.
+    Falls back gracefully if the game isn't finished.
+    """
+    h_key = f"M{match_id}_H"
+    a_key = f"M{match_id}_A"
+    
+    if h_key in ROUND_OF_32_PAIRINGS and a_key in ROUND_OF_32_PAIRINGS:
+        home_team = ROUND_OF_32_PAIRINGS[h_key]
+        away_team = ROUND_OF_32_PAIRINGS[a_key]
+        lookup_key = f"{home_team.lower()}_v_{away_team.lower()}"
+        
+        if lookup_key in SPREADSHEET_OVERRIDES:
+            sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
+            status = sheet_match.get("status", "").lower().strip()
+            
+            # If match is over/live, calculate winner
+            if "finished" in status or "completed" in status or "live" in status:
+                try:
+                    h_score = int(sheet_match.get("homeScore", 0))
+                    a_score = int(sheet_match.get("awayScore", 0))
+                    if h_score > a_score:
+                        return home_team
+                    elif a_score > h_score:
+                        return away_team
+                except ValueError:
+                    pass
+    return placeholder
+
 # ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES OR FALLS BACK TO SCHEDULED TIME ──
 def render_ko_match(home, away, time_str):
+    # Safe checks if placeholder string has placeholder values
+    h_flag = get_group_flag_html(home) if home in SWEEPSTAKE_MAPPING else ""
+    a_flag = get_group_flag_html(away) if away in SWEEPSTAKE_MAPPING else ""
     h_owner = f" ({SWEEPSTAKE_MAPPING[home]})" if home in SWEEPSTAKE_MAPPING else ""
     a_owner = f" ({SWEEPSTAKE_MAPPING[away]})" if away in SWEEPSTAKE_MAPPING else ""
-    h_flag = get_group_flag_html(home)
-    a_flag = get_group_flag_html(away)
     
     # Check if a matchup outcome is logged inside SPREADSHEET_OVERRIDES
     lookup_key = f"{home.lower()}_v_{away.lower()}"
@@ -713,9 +745,7 @@ def fetch_odds_api_favourites():
     ]
 
 def build_odds_favourites_banner():
-    fav_list = fetch_odds_api_favourites()
-    cards_html = ""
-    for f in fav_list:
+    for f in fetch_odds_api_favourites():
         team_name = f["team"]
         decimal_odds = f["odds"]
         fractional_str = convert_to_fractional_odds(decimal_odds)
@@ -1084,14 +1114,14 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
     st.markdown('<div class="ko-stage-title">Last 16</div>', unsafe_allow_html=True)
-    render_ko_match("Winner Match 73", "Winner Match 75", "04/07 18:00")
-    render_ko_match("Winner Match 74", "Winner Match 77", "04/07 22:00")
-    render_ko_match("Winner Match 76", "Winner Match 78", "05/07 21:00")
-    render_ko_match("Winner Match 79", "Winner Match 80", "06/07 01:00")
-    render_ko_match("Winner Match 83", "Winner Match 84", "06/07 20:00")
-    render_ko_match("Winner Match 81", "Winner Match 82", "07/07 01:00")
-    render_ko_match("Winner Match 86", "Winner Match 88", "07/07 17:00")
-    render_ko_match("Winner Match 85", "Winner Match 87", "08/07 01:00")
+    render_ko_match(resolve_winner_team("Winner Match 73", 73), resolve_winner_team("Winner Match 75", 75), "04/07 18:00")
+    render_ko_match(resolve_winner_team("Winner Match 74", 74), resolve_winner_team("Winner Match 77", 77), "04/07 22:00")
+    render_ko_match(resolve_winner_team("Winner Match 76", 76), resolve_winner_team("Winner Match 78", 78), "05/07 21:00")
+    render_ko_match(resolve_winner_team("Winner Match 79", 79), resolve_winner_team("Winner Match 80", 80), "06/07 01:00")
+    render_ko_match(resolve_winner_team("Winner Match 83", 83), resolve_winner_team("Winner Match 84", 84), "06/07 20:00")
+    render_ko_match(resolve_winner_team("Winner Match 81", 81), resolve_winner_team("Winner Match 82", 82), "07/07 01:00")
+    render_ko_match(resolve_winner_team("Winner Match 86", 86), resolve_winner_team("Winner Match 88", 88), "07/07 17:00")
+    render_ko_match(resolve_winner_team("Winner Match 85", 85), resolve_winner_team("Winner Match 87", 87), "08/07 01:00")
 
     st.markdown('<div class="ko-stage-title">Quarter-finals</div>', unsafe_allow_html=True)
     render_ko_match("Winner Match 89", "Winner Match 90", "09/07 21:00")
