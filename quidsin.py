@@ -190,7 +190,7 @@ GLOBAL_STYLE_TOKENS = """
         padding: 0;
     }
     
-    /* SAFE TARGETED RESETS (Prevents generic text selectors from bleeding into native Streamlit icon assets) */
+    /* SAFE TARGETED RESETS */
     .stApp p, .stApp th, .stApp td, .stApp b, .stApp div.fixture-row span, .stApp div.ko-match-row span {
         color: #333333;
         font-family: 'Figtree', sans-serif;
@@ -493,7 +493,7 @@ st.markdown("""
             background-color: #FAFAFA !important;
         }
         
-        /* LOCALLY SCOPED HEADERS (Stops native expander labels from breaking code typography formats) */
+        /* LOCALLY SCOPED HEADERS */
         .title-area h1, .title-area h1 span, .overperformance-section-title {
             color: #ff7d23 !important;
             font-family: 'Figtree', sans-serif !important;
@@ -597,10 +597,6 @@ def convert_to_fractional_odds(decimal_odds):
 
 # ── HELPER ENGINE TO AUTOMATICALLY EXTRACT WINNERS ──
 def resolve_winner_team(placeholder, match_id):
-    """
-    Parses SPREADSHEET_OVERRIDES to fetch winners cleanly.
-    Falls back gracefully if the game isn't finished.
-    """
     h_key = f"M{match_id}_H"
     a_key = f"M{match_id}_A"
     
@@ -613,7 +609,6 @@ def resolve_winner_team(placeholder, match_id):
             sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
             status = sheet_match.get("status", "").lower().strip()
             
-            # If match is over/live, calculate winner
             if "finished" in status or "completed" in status or "live" in status:
                 try:
                     h_score = int(sheet_match.get("homeScore", 0))
@@ -628,13 +623,11 @@ def resolve_winner_team(placeholder, match_id):
 
 # ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES OR FALLS BACK TO SCHEDULED TIME ──
 def render_ko_match(home, away, time_str):
-    # Safe checks if placeholder string has placeholder values
     h_flag = get_group_flag_html(home) if home in SWEEPSTAKE_MAPPING else ""
     a_flag = get_group_flag_html(away) if away in SWEEPSTAKE_MAPPING else ""
     h_owner = f" ({SWEEPSTAKE_MAPPING[home]})" if home in SWEEPSTAKE_MAPPING else ""
     a_owner = f" ({SWEEPSTAKE_MAPPING[away]})" if away in SWEEPSTAKE_MAPPING else ""
     
-    # Check if a matchup outcome is logged inside SPREADSHEET_OVERRIDES
     lookup_key = f"{home.lower()}_v_{away.lower()}"
     badge_content = f"{time_str}"
     
@@ -644,7 +637,6 @@ def render_ko_match(home, away, time_str):
         h_score = sheet_match.get("homeScore", "").strip()
         a_score = sheet_match.get("awayScore", "").strip()
         
-        # Avoid overriding with empty dashes or placeholding strings if the game hasn't kickstarted
         has_score = h_score != "" and a_score != "" and h_score != "-" and a_score != "-"
         is_active = "live" in m_status or "finished" in m_status or "completed" in m_status
         
@@ -745,7 +737,9 @@ def fetch_odds_api_favourites():
     ]
 
 def build_odds_favourites_banner():
-    for f in fetch_odds_api_favourites():
+    fav_list = fetch_odds_api_favourites()
+    cards_html = ""  
+    for f in fav_list:
         team_name = f["team"]
         decimal_odds = f["odds"]
         fractional_str = convert_to_fractional_odds(decimal_odds)
@@ -1016,7 +1010,7 @@ if finished_matches:
     last_finished_time = finished_matches[0].get("utcDate", "")
     latest_finished_matches = [m for m in finished_matches if m.get("utcDate", "") == last_finished_time]
 
-# ── TOP SPLIT HEADER (TITLE CANVAS LEFT, FIRST IN-PROGRESS MATCH RIGHT) ──
+# ── TOP SPLIT HEADER ──
 header_cols = st.columns([1, 1], gap="medium")
 
 with header_cols[0]:
@@ -1035,7 +1029,7 @@ with header_cols[1]:
         odds_payload = build_odds_favourites_banner()
         components.html(odds_payload, height=160, scrolling=False)
 
-# ── LOWER ROW SETUP (UPCOMING GRID COOP ALIGNED WITH SECOND LIVE / LATEST RESULT) ──
+# ── LOWER ROW SETUP ──
 alignment_row_cols = st.columns([1, 1], gap="medium")
 
 with alignment_row_cols[0]:
