@@ -174,7 +174,7 @@ ROUND_OF_32_PAIRINGS = {
     "M83_H": "Portugal",  "M83_A": "Croatia",
     "M85_H": "Switzerland",     "M85_A": "Algeria",
     "M88_H": "Australia",  "M88_A": "Egypt",
-    "M86_H": "Argentina",          "M86_A": "Cape Verde",
+    "M86_H": "Argentina",          "M86_A": "Cape Verde Islands",
     "M87_H": "Colombia",     "M87_A": "Ghana",
 }
 
