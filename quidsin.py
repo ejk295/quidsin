@@ -167,7 +167,7 @@ ROUND_OF_32_PAIRINGS = {
     "M78_H": "Ivory Coast",  "M78_A": "Norway",
     "M77_H": "France",     "M77_A": "Sweden",
     "M79_H": "Mexico",             "M79_A": "Ecuador",
-    "M80_H": "Winner Group L",     "M80_A": "Congo DR",
+    "M80_H": "England",     "M80_A": "Congo DR",
     "M82_H": "Belgium",     "M82_A": "Senegal",
     "M81_H": "United States",      "M81_A": "Bosnia-Herzegovina",
     "M84_H": "Spain",     "M84_A": "Austria",
