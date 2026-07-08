@@ -963,7 +963,6 @@ all_matches, standings_list = fetch_football_data()
 
 # Process Leaderboard Data safely
 master_flat_leaderboard = []
-top_performer_text = "N/A"
 
 total_group_games_played = 0
 total_teams_counted = 0
@@ -988,17 +987,6 @@ for group in standings_list:
 is_group_stage_done = False
 if total_teams_counted > 0 and (total_group_games_played >= total_teams_counted * 3):
     is_group_stage_done = True
-
-if master_flat_leaderboard:
-    master_flat_leaderboard.sort(key=lambda x: (-x["pts"], -x["won"], -x["gd"], -x["gf"], x["name"]))
-    for idx, team_item in enumerate(master_flat_leaderboard, start=1):
-        team_item["actual_rank"] = idx
-        team_item["expected_rank"] = EXPECTED_RANKINGS.get(team_item["name"], 25)
-        team_item["overperformance"] = team_item["expected_rank"] - idx
-
-    best = max(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]))
-    op_owner = SWEEPSTAKE_MAPPING.get(best["name"], "Unassigned")
-    top_performer_text = f"{best['name']} ({op_owner})"
 
 live_matches = []
 upcoming_matches = []
@@ -1103,6 +1091,90 @@ with alignment_row_cols[1]:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# ── KNOCKOUT STAGE VARIABLE TRACKING CANVAS ─────────────────────────────────
+# Setup tracking for bracket trees prior to stats row generation
+# Resolve last 16 individual contest components dynamically
+m89_h = resolve_winner_team("Winner Match 73", 73)
+m89_a = resolve_winner_team("Winner Match 75", 75)
+m90_h = resolve_winner_team("Winner Match 74", 74)
+m90_a = resolve_winner_team("Winner Match 77", 77)
+m91_h = resolve_winner_team("Winner Match 76", 76)
+m91_a = resolve_winner_team("Winner Match 78", 78)
+m92_h = resolve_winner_team("Winner Match 79", 79)
+m92_a = resolve_winner_team("Winner Match 80", 80)
+m93_h = resolve_winner_team("Winner Match 83", 83)
+m93_a = resolve_winner_team("Winner Match 84", 84)
+m94_h = resolve_winner_team("Winner Match 81", 81)
+m94_a = resolve_winner_team("Winner Match 82", 82)
+m95_h = resolve_winner_team("Winner Match 86", 86)
+m95_a = resolve_winner_team("Winner Match 88", 88)
+m96_h = resolve_winner_team("Winner Match 85", 85)
+m96_a = resolve_winner_team("Winner Match 87", 87)
+
+# Cascade to determine Quarter-final teams based on Last 16 results
+m97_a = extract_bracket_winner(m89_h, m89_a, "Winner Match 89")
+m97_h = extract_bracket_winner(m90_h, m90_a, "Winner Match 90")
+m98_h = extract_bracket_winner(m93_h, m93_a, "Winner Match 93")
+m98_a = extract_bracket_winner(m94_h, m94_a, "Winner Match 94")
+m99_h = extract_bracket_winner(m91_h, m91_a, "Winner Match 91")
+m99_a = extract_bracket_winner(m92_h, m92_a, "Winner Match 92")
+m100_h = extract_bracket_winner(m95_h, m95_a, "Winner Match 95")
+m100_a = extract_bracket_winner(m96_h, m96_a, "Winner Match 96")
+
+# Cascade to determine Semi-final teams based on Quarter-final results
+m101_h = extract_bracket_winner(m97_h, m97_a, "Winner Match 97")
+m101_a = extract_bracket_winner(m98_h, m98_a, "Winner Match 98")
+m102_h = extract_bracket_winner(m99_h, m99_a, "Winner Match 99")
+m102_a = extract_bracket_winner(m100_h, m100_a, "Winner Match 100")
+
+# Finalists and Third Place nodes
+loser_101 = extract_bracket_loser(m101_h, m101_a, "Loser Match 101")
+loser_102 = extract_bracket_loser(m102_h, m102_a, "Loser Match 102")
+winner_101 = extract_bracket_winner(m101_h, m101_a, "Winner Match 101")
+winner_102 = extract_bracket_winner(m102_h, m102_a, "Winner Match 102")
+
+# Determine explicit ranking lists based on knockout phase progress tiers
+finalist_tier = [winner_101, winner_102]
+third_place_tier = [loser_101, loser_102]
+quarter_final_tier = [m97_h, m97_a, m98_h, m98_a, m99_h, m99_a, m100_h, m100_a]
+last_16_tier = [m89_h, m89_a, m90_h, m90_a, m91_h, m91_a, m92_h, m92_a, m93_h, m93_a, m94_h, m94_a, m95_h, m95_a, m96_h, m96_a]
+round_of_32_tier = list(ROUND_OF_32_PAIRINGS.values())
+
+# Calculate dynamic accurate actual tournament ranking array placements
+if master_flat_leaderboard:
+    # Sub-sort each group safely via group stage rules
+    master_flat_leaderboard.sort(key=lambda x: (-x["pts"], -x["won"], -x["gd"], -x["gf"], x["name"]))
+    
+    classified_teams = []
+    
+    # 1. Finalists Tier (1-2)
+    classified_teams.extend([t for t in master_flat_leaderboard if t["name"] in finalist_tier])
+    # 2. 3rd/4th Tier (3-4)
+    classified_teams.extend([t for t in master_flat_leaderboard if t["name"] in third_place_tier and t not in classified_teams])
+    # 3. Quarter-final Tier (5-8)
+    classified_teams.extend([t for t in master_flat_leaderboard if t["name"] in quarter_final_tier and t not in classified_teams])
+    # 4. Last 16 Tier (9-16)
+    classified_teams.extend([t for t in master_flat_leaderboard if t["name"] in last_16_tier and t not in classified_teams])
+    # 5. Round of 32 Tier (17-32)
+    classified_teams.extend([t for t in master_flat_leaderboard if t["name"] in round_of_32_tier and t not in classified_teams])
+    # 6. Group Stage dropouts (33-48)
+    classified_teams.extend([t for t in master_flat_leaderboard if t not in classified_teams])
+    
+    master_flat_leaderboard = classified_teams
+
+    # Assign final actual rankings based on overall position index
+    for idx, team_item in enumerate(master_flat_leaderboard, start=1):
+        team_item["actual_rank"] = idx
+        team_item["expected_rank"] = EXPECTED_RANKINGS.get(team_item["name"], 25)
+        team_item["overperformance"] = team_item["expected_rank"] - idx
+
+    # Safeguard max lookup text safely
+    best = max(master_flat_leaderboard, key=lambda x: (x["overperformance"], -x["actual_rank"]))
+    op_owner = SWEEPSTAKE_MAPPING.get(best["name"], "Unassigned")
+    top_performer_text = f"{best['name']} ({op_owner})"
+else:
+    top_performer_text = "N/A"
+
 # ── STATS ROW ──────────────────────────────────────────────────────────
 stat_cols = st.columns(3)
 with stat_cols[0]:
@@ -1114,9 +1186,10 @@ with stat_cols[2]:
         master_flat_leaderboard.sort(key=lambda x: (x["overperformance"], -x["actual_rank"]))
         underdog = master_flat_leaderboard[0]
         ud_owner = SWEEPSTAKE_MAPPING.get(underdog["name"], "Unassigned")
-        st.markdown(f'<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>{underdog["name"]} ({ud_owner})</span></div>', unsafe_allow_html=True)
+        on_deck_underperformer = f"{underdog['name']} ({ud_owner})"
     else:
-        st.markdown('<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>N/A</span></div>', unsafe_allow_html=True)
+        on_deck_underperformer = "N/A"
+    st.markdown('<div class="stat-banner-box"><medium>💩 Underperformer</medium><span>' + on_deck_underperformer + '</span></div>', unsafe_allow_html=True)
 
 st.markdown("<hr style='margin:10px 0px 25px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
 
@@ -1140,31 +1213,6 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M86_H"], ROUND_OF_32_PAIRINGS["M86_A"], "03/07 23:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
-    # Resolve last 16 individual contest components dynamically
-    m89_h = resolve_winner_team("Winner Match 73", 73)
-    m89_a = resolve_winner_team("Winner Match 75", 75)
-    
-    m90_h = resolve_winner_team("Winner Match 74", 74)
-    m90_a = resolve_winner_team("Winner Match 77", 77)
-    
-    m91_h = resolve_winner_team("Winner Match 76", 76)
-    m91_a = resolve_winner_team("Winner Match 78", 78)
-    
-    m92_h = resolve_winner_team("Winner Match 79", 79)
-    m92_a = resolve_winner_team("Winner Match 80", 80)
-    
-    m93_h = resolve_winner_team("Winner Match 83", 83)
-    m93_a = resolve_winner_team("Winner Match 84", 84)
-    
-    m94_h = resolve_winner_team("Winner Match 81", 81)
-    m94_a = resolve_winner_team("Winner Match 82", 82)
-    
-    m95_h = resolve_winner_team("Winner Match 86", 86)
-    m95_a = resolve_winner_team("Winner Match 88", 88)
-    
-    m96_h = resolve_winner_team("Winner Match 85", 85)
-    m96_a = resolve_winner_team("Winner Match 87", 87)
-
     st.markdown('<div class="ko-stage-title">Last 16</div>', unsafe_allow_html=True)
     render_ko_match(m89_h, m89_a, "04/07 18:00")
     render_ko_match(m90_h, m90_a, "04/07 22:00")
@@ -1175,45 +1223,18 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(m95_h, m95_a, "07/07 17:00")
     render_ko_match(m96_h, m96_a, "08/07 01:00")
 
-    # Cascade to determine Quarter-final teams based on Last 16 results
-    m97_a = extract_bracket_winner(m89_h, m89_a, "Winner Match 89")
-    m97_h = extract_bracket_winner(m90_h, m90_a, "Winner Match 90")
-    
-    m98_h = extract_bracket_winner(m93_h, m93_a, "Winner Match 93")
-    m98_a = extract_bracket_winner(m94_h, m94_a, "Winner Match 94")
-    
-    m99_h = extract_bracket_winner(m91_h, m91_a, "Winner Match 91")
-    m99_a = extract_bracket_winner(m92_h, m92_a, "Winner Match 92")
-    
-    m100_h = extract_bracket_winner(m95_h, m95_a, "Winner Match 95")
-    m100_a = extract_bracket_winner(m96_h, m96_a, "Winner Match 96")
-
     st.markdown('<div class="ko-stage-title">Quarter-finals</div>', unsafe_allow_html=True)
     render_ko_match(m97_h, m97_a, "09/07 21:00")
     render_ko_match(m98_h, m98_a, "10/07 20:00")
     render_ko_match(m99_h, m99_a, "11/07 22:00")
     render_ko_match(m100_h, m100_a, "12/07 02:00")
 
-    # Cascade to determine Semi-final teams based on Quarter-final results
-    m101_h = extract_bracket_winner(m97_h, m97_a, "Winner Match 97")
-    m101_a = extract_bracket_winner(m98_h, m98_a, "Winner Match 98")
-    
-    m102_h = extract_bracket_winner(m99_h, m99_a, "Winner Match 99")
-    m102_a = extract_bracket_winner(m100_h, m100_a, "Winner Match 100")
-
     st.markdown('<div class="ko-stage-title">Semi-finals</div>', unsafe_allow_html=True)
     render_ko_match(m101_h, m101_a, "14/07 20:00")
     render_ko_match(m102_h, m102_a, "15/07 20:00")
 
-    # Cascade to determine Third Place and Final matches
-    loser_101 = extract_bracket_loser(m101_h, m101_a, "Loser Match 101")
-    loser_102 = extract_bracket_loser(m102_h, m102_a, "Loser Match 102")
-
     st.markdown('<div class="ko-stage-title">Third place play-off</div>', unsafe_allow_html=True)
     render_ko_match(loser_101, loser_102, "18/07 22:00")
-
-    winner_101 = extract_bracket_winner(m101_h, m101_a, "Winner Match 101")
-    winner_102 = extract_bracket_winner(m102_h, m102_a, "Winner Match 102")
 
     st.markdown('<div class="ko-stage-title">Final</div>', unsafe_allow_html=True)
     render_ko_match(winner_101, winner_102, "19/07 20:00")
@@ -1366,9 +1387,10 @@ with st.expander("📊 Group stage", expanded=not is_group_stage_done):
 # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
 if standings_list:
     st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
-    st.markdown("<h2 class='overperformance-section-title' style='text-align: center; margin-bottom: 5px;'>📈 Overperformance table</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by overperformance: (Rank - Performance)</p>", unsafe_allow_html=True)
+    st.markdown("<h2 class='overperformance-section-title' style='text-align: center; margin-bottom: 5px;'>📈 Tournament overperformance table</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by dynamic overperformance tier: (Expected Rank - Actual Tournament Rank)</p>", unsafe_allow_html=True)
 
+    # Sort master list view by current calculated overperformance metric rankings
     master_flat_leaderboard.sort(key=lambda x: (-x["overperformance"], x["actual_rank"]))
 
     master_table_html = """
@@ -1378,8 +1400,8 @@ if standings_list:
                 <tr>
                     <th style="width: 100px;">Pos</th>
                     <th>Team</th>
-                    <th style="text-align:center;">Rank</th>
-                    <th style="text-align:center;">Actual</th>
+                    <th style="text-align:center;">Expected</th>
+                    <th style="text-align:center;">Tournament Actual</th>
                     <th style="text-align:center;">P</th>
                     <th style="text-align:center;">GD</th>
                     <th style="text-align:center;">Pts</th>
