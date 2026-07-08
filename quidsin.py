@@ -1141,8 +1141,8 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
     # Resolve last 16 individual contest components dynamically
-    m89_h = resolve_winner_team("Winner Match 73", 73)
-    m89_a = resolve_winner_team("Winner Match 75", 75)
+    m89_a = resolve_winner_team("Winner Match 73", 73)
+    m89_h = resolve_winner_team("Winner Match 75", 75)
     
     m90_h = resolve_winner_team("Winner Match 74", 74)
     m90_a = resolve_winner_team("Winner Match 77", 77)
