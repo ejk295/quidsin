@@ -34,12 +34,12 @@ SWEEPSTAKE_MAPPING = {
     "Bosnia and Herzegovina": "Izzy", "Bosnia-Herzegovina": "Izzy", "Czechia": "Pablo", "Qatar": "Jess", "Morocco": "Bartek",
     "Haiti": "Hatty", "Turkey": "Adrienne", "Paraguay": "Becca", "Germany": "Oliwia",
     "Curaçao": "Justin", "Ecuador": "Cat", "Japan": "Adem", "Belgium": "Mart",
-    "Egypt": "Chris", "Tunisia": "Jess 2", "Netherlands": "Louis", "Ivory Coast": "Suzie",
-    "Australia": "Amy", "Cape Verde Islands": "Justin 2", "Cape Verde": "Justin 2", "Uruguay": "Paul 2", "Sweden": "Kat",
-    "Saudi Arabia": "Aurelie", "Scotland": "Elaine 2", "United States": "Neil", "Senegal": "Sara",
+    "Egypt": "Chris", "Tunisia": "Jess", "Netherlands": "Louis", "Ivory Coast": "Suzie",
+    "Australia": "Amy", "Cape Verde Islands": "Justin", "Cape Verde": "Justin", "Uruguay": "Paul", "Sweden": "Kat",
+    "Saudi Arabia": "Aurelie", "Scotland": "Elaine", "United States": "Neil", "Senegal": "Sara",
     "New Zealand": "James", "Iran": "Elaine", "Iraq": "Paul", "Norway": "Claire",
-    "Algeria": "Adrienne 2", "Austria": "Rich", "Jordan": "Maria", "Congo DR": "Ellis", "DR Congo": "Ellis",
-    "Portugal": "Lucy 2", "Uzbekistan": "Kat 2", "Colombia": "Neil 2", "England": "Marijke",
+    "Algeria": "Adrienne", "Austria": "Rich", "Jordan": "Maria", "Congo DR": "Ellis", "DR Congo": "Ellis",
+    "Portugal": "Lucy", "Uzbekistan": "Kat", "Colombia": "Neil", "England": "Marijke",
     "Panama": "Lucy", "Ghana": "Sam", "Croatia": "Kurt", "South Korea": "Beau",
 }
 
@@ -1387,7 +1387,7 @@ with st.expander("📊 Group stage", expanded=not is_group_stage_done):
 # ── OVERPERFORMANCE LEADERBOARD ──────────────────────────────────────
 if standings_list:
     st.markdown("<hr style='margin:30px 0px 20px 0px; border-top: 2px solid #ff7d23;'>", unsafe_allow_html=True)
-    st.markdown("<h2 class='overperformance-section-title' style='text-align: center; margin-bottom: 5px;'>📈 Tournament overperformance table</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='overperformance-section-title' style='text-align: center; margin-bottom: 5px;'>📈 Overperformance ranking</h2>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #666; font-size: 13px; margin-bottom: 20px;'>Ranked by dynamic overperformance tier: (Expected Rank - Actual Tournament Rank)</p>", unsafe_allow_html=True)
 
     # Sort master list view by current calculated overperformance metric rankings
