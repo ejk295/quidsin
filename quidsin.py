@@ -1141,8 +1141,8 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
     # Resolve last 16 individual contest components dynamically
-    m89_a = resolve_winner_team("Winner Match 73", 73)
-    m89_h = resolve_winner_team("Winner Match 75", 75)
+    m89_h = resolve_winner_team("Winner Match 73", 73)
+    m89_a = resolve_winner_team("Winner Match 75", 75)
     
     m90_h = resolve_winner_team("Winner Match 74", 74)
     m90_a = resolve_winner_team("Winner Match 77", 77)
@@ -1176,8 +1176,8 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(m96_h, m96_a, "08/07 01:00")
 
     # Cascade to determine Quarter-final teams based on Last 16 results
-    m97_h = extract_bracket_winner(m89_h, m89_a, "Winner Match 89")
-    m97_a = extract_bracket_winner(m90_h, m90_a, "Winner Match 90")
+    m97_a = extract_bracket_winner(m89_h, m89_a, "Winner Match 89")
+    m97_h = extract_bracket_winner(m90_h, m90_a, "Winner Match 90")
     
     m98_h = extract_bracket_winner(m93_h, m93_a, "Winner Match 93")
     m98_a = extract_bracket_winner(m94_h, m94_a, "Winner Match 94")
