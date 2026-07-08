@@ -595,71 +595,6 @@ def convert_to_fractional_odds(decimal_odds):
     frac = Fraction(net_odds).limit_denominator(100)
     return f"{frac.numerator}/{frac.denominator}"
 
-# ── HELPER ENGINE TO AUTOMATICALLY EXTRACT WINNERS ──
-def resolve_winner_team(placeholder, match_id):
-    h_key = f"M{match_id}_H"
-    a_key = f"M{match_id}_A"
-    
-    if h_key in ROUND_OF_32_PAIRINGS and a_key in ROUND_OF_32_PAIRINGS:
-        home_team = ROUND_OF_32_PAIRINGS[h_key]
-        away_team = ROUND_OF_32_PAIRINGS[a_key]
-        lookup_key = f"{home_team.lower()}_v_{away_team.lower()}"
-        
-        if lookup_key in SPREADSHEET_OVERRIDES:
-            sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
-            status = sheet_match.get("status", "").lower().strip()
-            
-            if "finished" in status or "completed" in status or "live" in status:
-                try:
-                    h_score = int(sheet_match.get("homeScore", 0))
-                    a_score = int(sheet_match.get("awayScore", 0))
-                    if h_score > a_score:
-                        return home_team
-                    elif a_score > h_score:
-                        return away_team
-                except ValueError:
-                    pass
-    return placeholder
-
-# ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES OR FALLS BACK TO SCHEDULED TIME ──
-def render_ko_match(home, away, time_str):
-    h_flag = get_group_flag_html(home) if home in SWEEPSTAKE_MAPPING else ""
-    a_flag = get_group_flag_html(away) if away in SWEEPSTAKE_MAPPING else ""
-    h_owner = f" ({SWEEPSTAKE_MAPPING[home]})" if home in SWEEPSTAKE_MAPPING else ""
-    a_owner = f" ({SWEEPSTAKE_MAPPING[away]})" if away in SWEEPSTAKE_MAPPING else ""
-    
-    lookup_key = f"{home.lower()}_v_{away.lower()}"
-    badge_content = f"{time_str}"
-    
-    if lookup_key in SPREADSHEET_OVERRIDES:
-        sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
-        m_status = sheet_match.get("status", "").lower().strip()
-        h_score = sheet_match.get("homeScore", "").strip()
-        a_score = sheet_match.get("awayScore", "").strip()
-        
-        has_score = h_score != "" and a_score != "" and h_score != "-" and a_score != "-"
-        is_active = "live" in m_status or "finished" in m_status or "completed" in m_status
-        
-        if is_active and has_score:
-            if "live" in m_status:
-                badge_content = f"<span style='color:#CC0000; font-weight:800; font-family:sans-serif;'>LIVE 🔴 {h_score}-{a_score}</span>"
-            else:
-                badge_content = f"<b style='font-family:sans-serif; color:#ff7d23; font-size:14px;'>{h_score} - {a_score}</b>"
-        
-    st.markdown(f"""
-        <div class="ko-match-row">
-            <div style="width: 40%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                {h_flag} <b>{home}</b><span style="font-size:11px; color:#666;">{h_owner}</span>
-            </div>
-            <div style="width: 20%; text-align: center;">
-                <span class="ko-time-badge">{badge_content}</span>
-            </div>
-            <div style="width: 40%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                <span style="font-size:11px; color:#666;">{a_owner}</span> <b>{away}</b> {a_flag}
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
 # ── MASTER SPREADSHEET SCHEDULE OVERRIDES ENGINE ──
 @st.cache_data(ttl=15)
 def fetch_spreadsheet_overrides_master():
@@ -696,6 +631,104 @@ def fetch_spreadsheet_overrides_master():
     return override_dict
 
 SPREADSHEET_OVERRIDES = fetch_spreadsheet_overrides_master()
+
+# ── HELPER ENGINE TO AUTOMATICALLY EXTRACT WINNERS AT ANY KO PHASE STAGE ──
+def resolve_winner_team(placeholder, match_id):
+    h_key = f"M{match_id}_H"
+    a_key = f"M{match_id}_A"
+    
+    if h_key in ROUND_OF_32_PAIRINGS and a_key in ROUND_OF_32_PAIRINGS:
+        home_team = ROUND_OF_32_PAIRINGS[h_key]
+        away_team = ROUND_OF_32_PAIRINGS[a_key]
+        lookup_key = f"{home_team.lower()}_v_{away_team.lower()}"
+        
+        if lookup_key in SPREADSHEET_OVERRIDES:
+            sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
+            status = sheet_match.get("status", "").lower().strip()
+            
+            if "finished" in status or "completed" in status or "live" in status:
+                try:
+                    h_score = int(sheet_match.get("homeScore", 0))
+                    a_score = int(sheet_match.get("awayScore", 0))
+                    if h_score > a_score:
+                        return home_team
+                    elif a_score > h_score:
+                        return away_team
+                except ValueError:
+                    pass
+    return placeholder
+
+# Helper utility to easily evaluate dynamic matches down the bracket channel tree
+def extract_bracket_winner(home, away, default_label):
+    if not home or not away or "Winner" in str(home) or "Winner" in str(away):
+        return default_label
+    lookup_key = f"{str(home).lower()}_v_{str(away).lower()}"
+    if lookup_key in SPREADSHEET_OVERRIDES:
+        sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
+        status = sheet_match.get("status", "").lower().strip()
+        if "finished" in status or "completed" in status:
+            try:
+                h_s = int(sheet_match.get("homeScore", 0))
+                a_s = int(sheet_match.get("awayScore", 0))
+                return home if h_s > a_s else away
+            except ValueError:
+                pass
+    return default_label
+
+def extract_bracket_loser(home, away, default_label):
+    if not home or not away or "Winner" in str(home) or "Winner" in str(away):
+        return default_label
+    lookup_key = f"{str(home).lower()}_v_{str(away).lower()}"
+    if lookup_key in SPREADSHEET_OVERRIDES:
+        sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
+        status = sheet_match.get("status", "").lower().strip()
+        if "finished" in status or "completed" in status:
+            try:
+                h_s = int(sheet_match.get("homeScore", 0))
+                a_s = int(sheet_match.get("awayScore", 0))
+                return away if h_s > a_s else home
+            except ValueError:
+                pass
+    return default_label
+
+# ── DYNAMICALLY RENDERS INJECTED SPREADSHEET VALUES OR FALLS BACK TO SCHEDULED TIME ──
+def render_ko_match(home, away, time_str):
+    h_flag = get_group_flag_html(home) if home in SWEEPSTAKE_MAPPING else ""
+    a_flag = get_group_flag_html(away) if away in SWEEPSTAKE_MAPPING else ""
+    h_owner = f" ({SWEEPSTAKE_MAPPING[home]})" if home in SWEEPSTAKE_MAPPING else ""
+    a_owner = f" ({SWEEPSTAKE_MAPPING[away]})" if away in SWEEPSTAKE_MAPPING else ""
+    
+    lookup_key = f"{str(home).lower()}_v_{str(away).lower()}"
+    badge_content = f"{time_str}"
+    
+    if lookup_key in SPREADSHEET_OVERRIDES:
+        sheet_match = SPREADSHEET_OVERRIDES[lookup_key]
+        m_status = sheet_match.get("status", "").lower().strip()
+        h_score = sheet_match.get("homeScore", "").strip()
+        a_score = sheet_match.get("awayScore", "").strip()
+        
+        has_score = h_score != "" and a_score != "" and h_score != "-" and a_score != "-"
+        is_active = "live" in m_status or "finished" in m_status or "completed" in m_status
+        
+        if is_active and has_score:
+            if "live" in m_status:
+                badge_content = f"<span style='color:#CC0000; font-weight:800; font-family:sans-serif;'>LIVE 🔴 {h_score}-{a_score}</span>"
+            else:
+                badge_content = f"<b style='font-family:sans-serif; color:#ff7d23; font-size:14px;'>{h_score} - {a_score}</b>"
+        
+    st.markdown(f"""
+        <div class="ko-match-row">
+            <div style="width: 40%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {h_flag} <b>{home}</b><span style="font-size:11px; color:#666;">{h_owner}</span>
+            </div>
+            <div style="width: 20%; text-align: center;">
+                <span class="ko-time-badge">{badge_content}</span>
+            </div>
+            <div style="width: 40%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <span style="font-size:11px; color:#666;">{a_owner}</span> <b>{away}</b> {a_flag}
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 # ── THE ODDS API LIVE OUTRIGHTS INGESTION SYSTEM ──
 @st.cache_data(ttl=86400)
@@ -1107,31 +1140,83 @@ with st.expander("⚽ Knockout phase", expanded=is_group_stage_done):
     render_ko_match(ROUND_OF_32_PAIRINGS["M86_H"], ROUND_OF_32_PAIRINGS["M86_A"], "03/07 23:00")
     render_ko_match(ROUND_OF_32_PAIRINGS["M87_H"], ROUND_OF_32_PAIRINGS["M87_A"], "04/07 02:30")
 
+    # Resolve last 16 individual contest components dynamically
+    m89_h = resolve_winner_team("Winner Match 73", 73)
+    m89_a = resolve_winner_team("Winner Match 75", 75)
+    
+    m90_h = resolve_winner_team("Winner Match 74", 74)
+    m90_a = resolve_winner_team("Winner Match 77", 77)
+    
+    m91_h = resolve_winner_team("Winner Match 76", 76)
+    m91_a = resolve_winner_team("Winner Match 78", 78)
+    
+    m92_h = resolve_winner_team("Winner Match 79", 79)
+    m92_a = resolve_winner_team("Winner Match 80", 80)
+    
+    m93_h = resolve_winner_team("Winner Match 83", 83)
+    m93_a = resolve_winner_team("Winner Match 84", 84)
+    
+    m94_h = resolve_winner_team("Winner Match 81", 81)
+    m94_a = resolve_winner_team("Winner Match 82", 82)
+    
+    m95_h = resolve_winner_team("Winner Match 86", 86)
+    m95_a = resolve_winner_team("Winner Match 88", 88)
+    
+    m96_h = resolve_winner_team("Winner Match 85", 85)
+    m96_a = resolve_winner_team("Winner Match 87", 87)
+
     st.markdown('<div class="ko-stage-title">Last 16</div>', unsafe_allow_html=True)
-    render_ko_match(resolve_winner_team("Winner Match 73", 73), resolve_winner_team("Winner Match 75", 75), "04/07 18:00")
-    render_ko_match(resolve_winner_team("Winner Match 74", 74), resolve_winner_team("Winner Match 77", 77), "04/07 22:00")
-    render_ko_match(resolve_winner_team("Winner Match 76", 76), resolve_winner_team("Winner Match 78", 78), "05/07 21:00")
-    render_ko_match(resolve_winner_team("Winner Match 79", 79), resolve_winner_team("Winner Match 80", 80), "06/07 01:00")
-    render_ko_match(resolve_winner_team("Winner Match 83", 83), resolve_winner_team("Winner Match 84", 84), "06/07 20:00")
-    render_ko_match(resolve_winner_team("Winner Match 81", 81), resolve_winner_team("Winner Match 82", 82), "07/07 01:00")
-    render_ko_match(resolve_winner_team("Winner Match 86", 86), resolve_winner_team("Winner Match 88", 88), "07/07 17:00")
-    render_ko_match(resolve_winner_team("Winner Match 85", 85), resolve_winner_team("Winner Match 87", 87), "08/07 01:00")
+    render_ko_match(m89_h, m89_a, "04/07 18:00")
+    render_ko_match(m90_h, m90_a, "04/07 22:00")
+    render_ko_match(m91_h, m91_a, "05/07 21:00")
+    render_ko_match(m92_h, m92_a, "06/07 01:00")
+    render_ko_match(m93_h, m93_a, "06/07 20:00")
+    render_ko_match(m94_h, m94_a, "07/07 01:00")
+    render_ko_match(m95_h, m95_a, "07/07 17:00")
+    render_ko_match(m96_h, m96_a, "08/07 01:00")
+
+    # Cascade to determine Quarter-final teams based on Last 16 results
+    m97_h = extract_bracket_winner(m89_h, m89_a, "Winner Match 89")
+    m97_a = extract_bracket_winner(m90_h, m90_a, "Winner Match 90")
+    
+    m98_h = extract_bracket_winner(m93_h, m93_a, "Winner Match 93")
+    m98_a = extract_bracket_winner(m94_h, m94_a, "Winner Match 94")
+    
+    m99_h = extract_bracket_winner(m91_h, m91_a, "Winner Match 91")
+    m99_a = extract_bracket_winner(m92_h, m92_a, "Winner Match 92")
+    
+    m100_h = extract_bracket_winner(m95_h, m95_a, "Winner Match 95")
+    m100_a = extract_bracket_winner(m96_h, m96_a, "Winner Match 96")
 
     st.markdown('<div class="ko-stage-title">Quarter-finals</div>', unsafe_allow_html=True)
-    render_ko_match("Winner Match 89", "Winner Match 90", "09/07 21:00")
-    render_ko_match("Winner Match 93", "Winner Match 94", "10/07 20:00")
-    render_ko_match("Winner Match 91", "Winner Match 92", "11/07 22:00")
-    render_ko_match("Winner Match 95", "Winner Match 96", "12/07 02:00")
+    render_ko_match(m97_h, m97_a, "09/07 21:00")
+    render_ko_match(m98_h, m98_a, "10/07 20:00")
+    render_ko_match(m99_h, m99_a, "11/07 22:00")
+    render_ko_match(m100_h, m100_a, "12/07 02:00")
+
+    # Cascade to determine Semi-final teams based on Quarter-final results
+    m101_h = extract_bracket_winner(m97_h, m97_a, "Winner Match 97")
+    m101_a = extract_bracket_winner(m98_h, m98_a, "Winner Match 98")
+    
+    m102_h = extract_bracket_winner(m99_h, m99_a, "Winner Match 99")
+    m102_a = extract_bracket_winner(m100_h, m100_a, "Winner Match 100")
 
     st.markdown('<div class="ko-stage-title">Semi-finals</div>', unsafe_allow_html=True)
-    render_ko_match("Winner Match 97", "Winner Match 98", "14/07 20:00")
-    render_ko_match("Winner Match 99", "Winner Match 100", "15/07 20:00")
+    render_ko_match(m101_h, m101_a, "14/07 20:00")
+    render_ko_match(m102_h, m102_a, "15/07 20:00")
+
+    # Cascade to determine Third Place and Final matches
+    loser_101 = extract_bracket_loser(m101_h, m101_a, "Loser Match 101")
+    loser_102 = extract_bracket_loser(m102_h, m102_a, "Loser Match 102")
 
     st.markdown('<div class="ko-stage-title">Third place play-off</div>', unsafe_allow_html=True)
-    render_ko_match("Loser Match 101", "Loser Match 102", "18/07 22:00")
+    render_ko_match(loser_101, loser_102, "18/07 22:00")
+
+    winner_101 = extract_bracket_winner(m101_h, m101_a, "Winner Match 101")
+    winner_102 = extract_bracket_winner(m102_h, m102_a, "Winner Match 102")
 
     st.markdown('<div class="ko-stage-title">Final</div>', unsafe_allow_html=True)
-    render_ko_match("Winner Match 101", "Winner Match 102", "19/07 20:00")
+    render_ko_match(winner_101, winner_102, "19/07 20:00")
 
 # ── GROUPS CANVAS ─────────────────────────────────────────────────────────
 with st.expander("📊 Group stage", expanded=not is_group_stage_done):
